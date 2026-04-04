@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "项目进度管理系统",
+    "description": "专业的项目管理和团队协作平台",
+    "login": "登录",
+    "register": "注册",
+    "logout": "退出登录",
+    "dashboard": "仪表盘",
+    "tasks": "任务",
+    "projects": "项目",
+    "reports": "报告",
+    "settings": "设置"
+  },
+  "auth": {
+    "username": "用户名",
+    "password": "密码",
+    "email": "邮箱",
+    "confirmPassword": "确认密码",
+    "rememberMe": "记住我",
+    "forgotPassword": "忘记密码？",
+    "noAccount": "还没有账号？",
+    "haveAccount": "已有账号？",
+    "loginSuccess": "登录成功",
+    "registerSuccess": "注册成功"
+  },
+  "task": {
+    "title": "任务标题",
+    "description": "任务描述",
+    "priority": "优先级",
+    "status": "状态",
+    "assignee": "负责人",
+    "dueDate": "截止日期",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间",
+    "createTask": "创建任务",
+    "editTask": "编辑任务",
+    "deleteTask": "删除任务",
+    "markComplete": "标记完成"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "view": "查看",
+    "search": "搜索",
+    "filter": "筛选",
+    "refresh": "刷新",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "confirm": "确认",
+    "warning": "警告",
+    "error": "错误",
+    "success": "成功"
+  }
+}
