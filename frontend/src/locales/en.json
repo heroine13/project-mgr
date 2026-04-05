@@ -1,0 +1,104 @@
+{
+  "app": {
+    "name": "Project Management System",
+    "description": "Efficient project management and collaboration platform"
+  },
+  "login": {
+    "title": "Login",
+    "subtitle": "Welcome back, please login to your account",
+    "username": "Username",
+    "password": "Password",
+    "rememberMe": "Remember me",
+    "button": "Login",
+    "registerLink": "Register new account",
+    "forgotPassword": "Forgot password?",
+    "usernameRequired": "Please enter username",
+    "usernameMinLength": "Username must be at least 3 characters",
+    "passwordRequired": "Please enter password",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "success": "Login successful",
+    "error": "Login failed, please check username and password"
+  },
+  "dashboard": {
+    "welcome": "Welcome",
+    "newProject": "New Project",
+    "refresh": "Refresh",
+    "activeProjects": "Active Projects",
+    "totalTasks": "Total Tasks",
+    "overdueTasks": "Overdue Tasks",
+    "teamMembers": "Team Members",
+    "recentProjects": "Recent Projects",
+    "viewAll": "View All",
+    "noProjects": "No projects yet",
+    "createProject": "Create Project",
+    "recentTasks": "Recent Tasks",
+    "noTasks": "No tasks yet",
+    "createTask": "Create Task",
+    "recentActivity": "Recent Activity",
+    "view": "View"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "tasks": "Tasks",
+    "team": "Team",
+    "reports": "Reports",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "project": {
+    "name": "Project Name",
+    "description": "Description",
+    "code": "Project Code",
+    "status": "Status",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "budget": "Budget",
+    "actualCost": "Actual Cost",
+    "owner": "Owner",
+    "createdAt": "Created At",
+    "updatedAt": "Updated At"
+  },
+  "task": {
+    "title": "Task Title",
+    "description": "Description",
+    "status": "Status",
+    "priority": "Priority",
+    "assignee": "Assignee",
+    "dueDate": "Due Date",
+    "estimatedHours": "Estimated Hours",
+    "actualHours": "Actual Hours",
+    "tags": "Tags",
+    "createdBy": "Created By"
+  },
+  "status": {
+    "active": "Active",
+    "planning": "Planning",
+    "completed": "Completed",
+    "archived": "Archived",
+    "pending": "Pending",
+    "in_progress": "In Progress",
+    "review": "Under Review",
+    "blocked": "Blocked"
+  },
+  "priority": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "urgent": "Urgent"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "filter": "Filter",
+    "actions": "Actions",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "noData": "No data",
+    "success": "Operation successful",
+    "error": "Operation failed"
+  }
+}

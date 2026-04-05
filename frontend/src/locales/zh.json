@@ -1,0 +1,104 @@
+{
+  "app": {
+    "name": "项目进度管理系统",
+    "description": "高效的项目管理与协作平台"
+  },
+  "login": {
+    "title": "登录",
+    "subtitle": "欢迎回来，请登录您的账户",
+    "username": "用户名",
+    "password": "密码",
+    "rememberMe": "记住我",
+    "button": "登录",
+    "registerLink": "注册新账户",
+    "forgotPassword": "忘记密码？",
+    "usernameRequired": "请输入用户名",
+    "usernameMinLength": "用户名至少3个字符",
+    "passwordRequired": "请输入密码",
+    "passwordMinLength": "密码至少8个字符",
+    "success": "登录成功",
+    "error": "登录失败，请检查用户名和密码"
+  },
+  "dashboard": {
+    "welcome": "欢迎",
+    "newProject": "新建项目",
+    "refresh": "刷新",
+    "activeProjects": "活跃项目",
+    "totalTasks": "总任务数",
+    "overdueTasks": "逾期任务",
+    "teamMembers": "团队成员",
+    "recentProjects": "最近项目",
+    "viewAll": "查看全部",
+    "noProjects": "暂无项目",
+    "createProject": "创建项目",
+    "recentTasks": "最近任务",
+    "noTasks": "暂无任务",
+    "createTask": "创建任务",
+    "recentActivity": "最近活动",
+    "view": "查看"
+  },
+  "navigation": {
+    "dashboard": "仪表板",
+    "projects": "项目",
+    "tasks": "任务",
+    "team": "团队",
+    "reports": "报表",
+    "settings": "设置",
+    "logout": "退出登录"
+  },
+  "project": {
+    "name": "项目名称",
+    "description": "项目描述",
+    "code": "项目代码",
+    "status": "状态",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "budget": "预算",
+    "actualCost": "实际成本",
+    "owner": "负责人",
+    "createdAt": "创建时间",
+    "updatedAt": "更新时间"
+  },
+  "task": {
+    "title": "任务标题",
+    "description": "任务描述",
+    "status": "状态",
+    "priority": "优先级",
+    "assignee": "负责人",
+    "dueDate": "截止日期",
+    "estimatedHours": "预估工时",
+    "actualHours": "实际工时",
+    "tags": "标签",
+    "createdBy": "创建人"
+  },
+  "status": {
+    "active": "进行中",
+    "planning": "规划中",
+    "completed": "已完成",
+    "archived": "已归档",
+    "pending": "待处理",
+    "in_progress": "进行中",
+    "review": "审核中",
+    "blocked": "已阻塞"
+  },
+  "priority": {
+    "low": "低",
+    "medium": "中",
+    "high": "高",
+    "urgent": "紧急"
+  },
+  "common": {
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "search": "搜索",
+    "filter": "筛选",
+    "actions": "操作",
+    "confirm": "确认",
+    "loading": "加载中...",
+    "noData": "暂无数据",
+    "success": "操作成功",
+    "error": "操作失败"
+  }
+}
