@@ -10,6 +10,15 @@ import router from './router'
 
 import '@/styles/index.scss'
 
+// PWA 支持
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    import('./utils/pwa').then(({ skipWaiting }) => {
+      // 可以选择自动更新
+    })
+  })
+}
+
 // 多语言配置
 import zhCN from './locales/zh-CN.json'
 import enUS from './locales/en-US.json'
