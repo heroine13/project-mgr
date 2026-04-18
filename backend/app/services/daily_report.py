@@ -57,10 +57,16 @@ def get_git_status():
 def get_project_stats():
     """获取项目统计"""
     try:
-        # 代码行数
-        backend_files = list(PROJECT_PATH.glob("backend/app/**/*.py"))
-        frontend_files = list(PROJECT_PATH.glob("frontend/src/**/*.vue")) + \
-                        list(PROJECT_PATH.glob("frontend/src/**/*.ts"))
+        # 使用绝对路径
+        backend_path = Path("/root/.openclaw/project-mgr/backend/app")
+        frontend_path = Path("/root/.openclaw/project-mgr/frontend/src")
+        
+        backend_files = list(backend_path.glob("**/*.py")) if backend_path.exists() else []
+        frontend_files = []
+        if frontend_path.exists():
+            frontend_files = list(frontend_path.glob("**/*.vue")) + \
+                           list(frontend_path.glob("**/*.ts")) + \
+                           list(frontend_path.glob("**/*.js"))
         
         backend_lines = 0
         for f in backend_files:
@@ -70,13 +76,24 @@ def get_project_stats():
             except:
                 pass
         
+        frontend_lines = 0
+        for f in frontend_files:
+            try:
+                with open(f, 'r', encoding='utf-8') as file:
+                    frontend_lines += len(file.readlines())
+            except:
+                pass
+        
         return {
             "backend_files": len(backend_files),
             "frontend_files": len(frontend_files),
-            "backend_lines": backend_lines
+            "backend_lines": backend_lines,
+            "frontend_lines": frontend_lines,
+            "total_lines": backend_lines + frontend_lines
         }
     except Exception as e:
-        logger.error(f"获取项目统计失败: {e}")
+        import logging
+        logging.getLogger(__name__).error(f"获取项目统计失败: {e}")
         return {}
 
 
@@ -99,9 +116,9 @@ def build_daily_report():
 - 📊 总提交数: **{git_status.get('commit_count', '0')}**{uncommitted_note}
 
 ### 📈 项目统计
-- 🔙 后端文件: **{stats.get('backend_files', 0)}** 个
-- 🔜 前端文件: **{stats.get('frontend_files', 0)}** 个
-- 📝 后端代码: **{stats.get('backend_lines', 0)}** 行
+- 🔙 后端文件: **{stats.get('backend_files', 0)}** 个 ({stats.get('backend_lines', 0)} 行)
+- 🔜 前端文件: **{stats.get('frontend_files', 0)}** 个 ({stats.get('frontend_lines', 0)} 行)
+- 📊 总代码行数: **{stats.get('total_lines', 0)}** 行
 
 ### ✅ 今日完成
 - Day 6: 定时任务调度器 + 通知系统
