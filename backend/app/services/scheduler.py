@@ -316,19 +316,13 @@ class TaskScheduler:
 
 def daily_summary_task():
     """每日汇总任务"""
-    # 这里可以调用数据库获取实际数据
-    from .notify import WeComNotifier, NotificationTemplates
-    
-    notifier = WeComNotifier()
-    summary = NotificationTemplates.daily_summary(
-        tasks_completed=5,
-        tasks_pending=3,
-        project_name="项目进度管理系统"
-    )
-    
-    # 发送markdown格式的汇总
-    success = notifier.send_markdown(summary)
-    return {"sent": success, "type": "daily_summary"}
+    try:
+        from .daily_report import send_daily_report
+        result = send_daily_report()
+        return result
+    except Exception as e:
+        logger.error(f"每日汇总任务执行失败: {e}")
+        return {"status": "error", "message": str(e)}
 
 
 def health_check_task():
