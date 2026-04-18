@@ -258,8 +258,8 @@ async def stop_scheduler():
 # ==================== 预定义任务配置接口 ====================
 
 @router.post("/preset/daily-summary", summary="配置每日汇总任务")
-async def setup_daily_summary(hour: int = 9, minute: int = 0):
-    """配置每日汇总任务（默认每天 9:00 执行）"""
+async def setup_daily_summary(hour: int = 17, minute: int = 0):
+    """配置每日汇总任务（默认每天 17:00 执行）"""
     success = scheduler.add_task(
         task_id="daily_summary",
         name="每日工作汇总",

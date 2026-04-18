@@ -11,6 +11,18 @@ async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     # 启动时
     task_scheduler.start()
+    
+    # 自动配置每日汇报任务 (每天 17:00)
+    from app.services.scheduler import daily_summary_task
+    task_scheduler.add_task(
+        task_id="daily_summary",
+        name="每日自动汇报",
+        func=daily_summary_task,
+        trigger_type="cron",
+        trigger_config={"hour": 17, "minute": 0},
+        enabled=True
+    )
+    print("✅ 每日汇报任务已配置 (每天 17:00)")
     print("✅ 任务调度器已启动")
     yield
     # 关闭时
