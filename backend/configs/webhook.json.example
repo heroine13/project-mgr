@@ -1,0 +1,6 @@
+{
+  "comment": "企业微信机器人 Webhook 配置",
+  "webhook_url": "YOUR_WEBHOOK_URL_HERE",
+  "example": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=xxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+  "note": "请在企业微信群聊中添加机器人，然后替换这里的 URL"
+}
