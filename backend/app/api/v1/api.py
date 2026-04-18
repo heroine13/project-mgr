@@ -4,7 +4,9 @@ API v1路由整合
 from fastapi import APIRouter
 
 # 导入所有端点模块
-from app.api.v1.endpoints import auth, projects, tasks, gantt, websocket
+from app.api.v1 import auth, projects, tasks
+from app.api.v1.endpoints import gantt, websocket
+from app.api.v1 import notifications
 
 api_router = APIRouter()
 
@@ -22,3 +24,6 @@ api_router.include_router(gantt.router, prefix="/gantt", tags=["甘特图"])
 
 # 注册WebSocket路由
 api_router.include_router(websocket.router, prefix="/ws", tags=["WebSocket"])
+
+# 注册通知路由
+api_router.include_router(notifications.router, prefix="/notifications", tags=["通知管理"])
