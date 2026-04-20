@@ -57,6 +57,11 @@ const router = createRouter({
       path: '/documents',
       name: 'documents',
       component: () => import('@/views/DocumentManagementView.vue')
+    },
+    {
+      path: '/i18n',
+      name: 'i18n',
+      component: () => import('@/views/TranslationManagementView.vue')
     }
   ]
 })
