@@ -8,6 +8,7 @@ from app.api.v1 import auth, projects, tasks
 from app.api.v1.endpoints import gantt, websocket
 from app.api.v1 import notifications, export, integration
 from app.api.v1.issues import router as issues_router
+from app.api.v1.resources import router as resources_router
 
 api_router = APIRouter()
 
@@ -34,3 +35,6 @@ api_router.include_router(export.router, tags=["数据导出"])
 
 # 注册Issue路由
 api_router.include_router(issues_router, prefix="/issues", tags=["Issue管理"])
+
+# 注册资源管理路由
+api_router.include_router(resources_router, prefix="/resources", tags=["资源成本管理"])

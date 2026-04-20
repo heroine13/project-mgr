@@ -47,6 +47,11 @@ const router = createRouter({
       path: '/issues/:id',
       name: 'issue-detail',
       component: () => import('@/views/IssueDetailView.vue')
+    },
+    {
+      path: '/resources',
+      name: 'resources',
+      component: () => import('@/views/ResourceManagementView.vue')
     }
   ]
 })
