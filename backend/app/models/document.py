@@ -18,7 +18,8 @@ class Document(Base):
     description = Column(Text)
     
     # Category and tags
-    category = Column(String(100))  # design, document, report, etc.
+    category_id = Column(Integer, ForeignKey("document_categories.id"), nullable=True)
+    category = Column(String(100))  # Legacy: simple string category
     tags = Column(String(500))  # Comma separated tags
     
     # Project link
@@ -36,6 +37,7 @@ class Document(Base):
     
     # Relationships
     project = relationship("Project")
+    category_obj = relationship("DocumentCategory", back_populates="documents")
     creator = relationship("User", foreign_keys=[created_by])
     versions = relationship("DocumentVersion", back_populates="document", cascade="all, delete-orphan")
     

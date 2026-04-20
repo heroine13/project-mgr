@@ -62,6 +62,11 @@ const router = createRouter({
       path: '/i18n',
       name: 'i18n',
       component: () => import('@/views/TranslationManagementView.vue')
+    },
+    {
+      path: '/documents-search',
+      name: 'document-search',
+      component: () => import('@/views/DocumentSearchView.vue')
     }
   ]
 })

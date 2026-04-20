@@ -11,6 +11,7 @@ from app.api.v1.issues import router as issues_router
 from app.api.v1.resources import router as resources_router
 from app.api.v1.documents import router as documents_router
 from app.api.v1.i18n import router as i18n_router
+from app.api.v1.search import router as search_router
 
 api_router = APIRouter()
 
@@ -46,3 +47,6 @@ api_router.include_router(documents_router, prefix="/documents", tags=["文档�
 
 # 注册多语言管理路由
 api_router.include_router(i18n_router, prefix="/i18n", tags=["多语言管理"])
+
+# 注册文档搜索路由
+api_router.include_router(search_router, prefix="/documents-search", tags=["文档搜索"])
