@@ -6,7 +6,8 @@ from fastapi import APIRouter
 # 导入所有端点模块
 from app.api.v1 import auth, projects, tasks
 from app.api.v1.endpoints import gantt, websocket
-from app.api.v1 import notifications, export
+from app.api.v1 import notifications, export, integration
+from app.api.v1.issues import router as issues_router
 
 api_router = APIRouter()
 
@@ -30,3 +31,6 @@ api_router.include_router(notifications.router, prefix="/notifications", tags=["
 
 # 注册导出路由
 api_router.include_router(export.router, tags=["数据导出"])
+
+# 注册Issue路由
+api_router.include_router(issues_router, prefix="/issues", tags=["Issue管理"])

@@ -28,6 +28,7 @@ class Project(Base):
     # Relationships
     owner = relationship("User", foreign_keys=[owner_id])
     tasks = relationship("Task", back_populates="project")
+    issues = relationship("Issue", back_populates="project")
     
     def __repr__(self):
         return f"<Project(id={self.id}, name='{self.name}', code='{self.code}')>"
