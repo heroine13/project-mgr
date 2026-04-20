@@ -52,6 +52,11 @@ const router = createRouter({
       path: '/resources',
       name: 'resources',
       component: () => import('@/views/ResourceManagementView.vue')
+    },
+    {
+      path: '/documents',
+      name: 'documents',
+      component: () => import('@/views/DocumentManagementView.vue')
     }
   ]
 })

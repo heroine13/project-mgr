@@ -9,6 +9,7 @@ from app.api.v1.endpoints import gantt, websocket
 from app.api.v1 import notifications, export, integration
 from app.api.v1.issues import router as issues_router
 from app.api.v1.resources import router as resources_router
+from app.api.v1.documents import router as documents_router
 
 api_router = APIRouter()
 
@@ -38,3 +39,6 @@ api_router.include_router(issues_router, prefix="/issues", tags=["Issue管理"])
 
 # 注册资源管理路由
 api_router.include_router(resources_router, prefix="/resources", tags=["资源成本管理"])
+
+# 注册文档管理路由
+api_router.include_router(documents_router, prefix="/documents", tags=["文档版本控制"])
