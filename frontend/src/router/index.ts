@@ -67,6 +67,12 @@ const router = createRouter({
       path: '/documents-search',
       name: 'document-search',
       component: () => import('@/views/DocumentSearchView.vue')
+    },
+    {
+      path: '/backup',
+      name: 'backup',
+      component: () => import('@/views/BackupManagementView.vue'),
+      meta: { requiresAdmin: true }
     }
   ]
 })
