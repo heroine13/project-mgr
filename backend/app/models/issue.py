@@ -2,7 +2,7 @@
 Issue Model - Project Issue/Bug Tracking System
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum, Boolean
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum, Boolean, Index
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from enum import Enum as PyEnum
@@ -38,6 +38,12 @@ class Issue(Base):
     """Issue model for bug/feature tracking"""
     
     __tablename__ = "issues"
+    __table_args__ = (
+        Index('idx_issue_project_status', 'project_id', 'status'),
+        Index('idx_issue_assignee_status', 'assignee_id', 'status'),
+        Index('idx_issue_reporter_created', 'reporter_id', 'created_at'),
+        Index('idx_issue_priority_status', 'priority', 'status'),
+    )
     
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)

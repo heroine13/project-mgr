@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from app.api.v1 import scheduler, reports
 from app.api.v1 import integration
 from app.services.scheduler import scheduler as task_scheduler
+from app.core.performance import cache_manager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -28,7 +29,10 @@ async def lifespan(app: FastAPI):
     yield
     # 关闭时
     task_scheduler.stop()
+    # 清理缓存
+    cache_manager.clear()
     print("🛑 任务调度器已停止")
+    print("🛑 缓存已清理")
 
 app = FastAPI(
     title="项目进度管理系统 API",
@@ -58,7 +62,12 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    from app.core.performance import cache_manager
+    return {
+        "status": "healthy",
+        "cache_entries": len(cache_manager._cache),
+        "cache_ttl_count": len(cache_manager._ttl)
+    }
 
 @app.get("/api/v1/test")
 async def test_endpoint():
