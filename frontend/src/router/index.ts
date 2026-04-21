@@ -83,6 +83,12 @@ const router = createRouter({
       path: '/kanban',
       name: 'kanban',
       component: () => import('@/views/kanban/KanbanView.vue')
+    },
+    {
+      path: '/audit',
+      name: 'audit',
+      component: () => import('@/views/AuditLogView.vue'),
+      meta: { requiresAdmin: true }
     }
   ]
 })
