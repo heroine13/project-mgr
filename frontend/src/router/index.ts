@@ -114,6 +114,12 @@ const router = createRouter({
       path: '/team',
       name: 'team',
       component: () => import('@/views/TeamCollaborationView.vue')
+    },
+    {
+      path: '/external-contacts',
+      name: 'external-contacts',
+      component: () => import('@/views/ExternalContactView.vue'),
+      meta: { requiresAdmin: true }
     }
   ]
 })
