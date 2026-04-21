@@ -15,4 +15,4 @@ redis==5.0.1
 celery==5.3.4
 mysql-connector-python==8.2.0
 pymssql==2.2.8
-python-dotenv==1.0.0
+python-dotenv==1.0.0pydantic-settings>=2.0.0
