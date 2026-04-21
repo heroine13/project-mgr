@@ -9,6 +9,7 @@ import App from './App.vue'
 import router from './router'
 
 import '@/styles/index.scss'
+import '@/styles/dark-theme.css'
 
 // PWA 支持
 if ('serviceWorker' in navigator) {
