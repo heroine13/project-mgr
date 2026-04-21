@@ -73,6 +73,11 @@ const router = createRouter({
       name: 'backup',
       component: () => import('@/views/BackupManagementView.vue'),
       meta: { requiresAdmin: true }
+    },
+    {
+      path: '/workflows',
+      name: 'workflows',
+      component: () => import('@/views/WorkflowManagementView.vue')
     }
   ]
 })
