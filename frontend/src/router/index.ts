@@ -78,6 +78,11 @@ const router = createRouter({
       path: '/workflows',
       name: 'workflows',
       component: () => import('@/views/WorkflowManagementView.vue')
+    },
+    {
+      path: '/kanban',
+      name: 'kanban',
+      component: () => import('@/views/kanban/KanbanView.vue')
     }
   ]
 })
