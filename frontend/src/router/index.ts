@@ -109,6 +109,11 @@ const router = createRouter({
       path: '/project-templates',
       name: 'project-templates',
       component: () => import('@/views/ProjectTemplateView.vue')
+    },
+    {
+      path: '/team',
+      name: 'team',
+      component: () => import('@/views/TeamCollaborationView.vue')
     }
   ]
 })
