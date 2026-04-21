@@ -23,6 +23,8 @@ if ('serviceWorker' in navigator) {
 // 多语言配置
 import zhCN from './locales/zh-CN.json'
 import enUS from './locales/en-US.json'
+import jaJP from './locales/ja-JP.json'
+import koKR from './locales/ko-KR.json'
 
 const i18n = createI18n({
   legacy: false,
@@ -30,7 +32,9 @@ const i18n = createI18n({
   fallbackLocale: 'en-US',
   messages: {
     'zh-CN': zhCN,
-    'en-US': enUS
+    'en-US': enUS,
+    'ja-JP': jaJP,
+    'ko-KR': koKR
   }
 })
 
