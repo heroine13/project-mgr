@@ -55,7 +55,13 @@ async def create_new_project(
     current_user: dict = Depends(get_current_user)
 ):
     """Create new project"""
-    # TODO: Check if project code is unique
+    # Check if project code is unique
+    existing = db.query(Project).filter(Project.code == project_data.code).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Project code already exists"
+        )
     project = create_project(db, project_data, owner_id=current_user["user_id"])
     return project
 
@@ -74,7 +80,7 @@ async def update_existing_project(
             detail="Project not found"
         )
     
-    # TODO: Check permissions - only owner or admin can update
+    # Check permissions - only owner or admin can update
     if project.owner_id != current_user["user_id"] and not current_user.get("is_superuser", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

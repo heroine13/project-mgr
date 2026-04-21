@@ -19,6 +19,21 @@ def get_tasks_by_assignee(db: Session, assignee_id: int, skip: int = 0, limit: i
     """Get tasks by assignee ID"""
     return db.query(Task).filter(Task.assignee_id == assignee_id).offset(skip).limit(limit).all()
 
+def get_tasks_by_user(db: Session, user_id: int, skip: int = 0, limit: int = 100) -> List[Task]:
+    """Get tasks created by or assigned to a user"""
+    return db.query(Task).filter(
+        (Task.created_by == user_id) | (Task.assignee_id == user_id)
+    ).offset(skip).limit(limit).all()
+
+def is_project_member(db: Session, project_id: int, user_id: int) -> bool:
+    """Check if user is a member of the project"""
+    from app.models.project import ProjectMember
+    member = db.query(ProjectMember).filter(
+        ProjectMember.project_id == project_id,
+        ProjectMember.user_id == user_id
+    ).first()
+    return member is not None
+
 def create_task(db: Session, task_data: TaskCreate, created_by: int) -> Task:
     """Create new task"""
     db_task = Task(

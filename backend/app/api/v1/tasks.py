@@ -9,7 +9,8 @@ from typing import List, Optional
 from app.db.database import get_db
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
-from app.crud.task import get_task, get_tasks_by_project, get_tasks_by_assignee, create_task, update_task, delete_task
+from app.crud.task import get_task, get_tasks_by_project, get_tasks_by_assignee, get_tasks_by_user, create_task, update_task, delete_task
+from app.models.project import Project
 from app.auth.jwt_handler import verify_token
 
 router = APIRouter()
@@ -30,15 +31,14 @@ async def read_tasks(
     current_user: dict = Depends(get_current_user)
 ):
     """Get tasks with optional filters"""
-    # TODO: Implement proper filtering logic
-    # For now, return tasks from first project or by assignee
+    # Implement proper filtering logic
     if project_id:
         return get_tasks_by_project(db, project_id, skip, limit)
     elif assignee_id:
         return get_tasks_by_assignee(db, assignee_id, skip, limit)
     else:
-        # Return empty list for now
-        return []
+        # Return all tasks for the user
+        return get_tasks_by_user(db, current_user["user_id"], skip, limit)
 
 @router.get("/{task_id}", response_model=TaskResponse)
 async def read_task(
@@ -62,7 +62,19 @@ async def create_new_task(
     current_user: dict = Depends(get_current_user)
 ):
     """Create new task"""
-    # TODO: Check if project exists and user has permission
+    # Check if project exists and user has permission
+    project = db.query(Project).filter(Project.id == task_data.project_id).first()
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found"
+        )
+    # Check if user is project member or owner
+    if project.owner_id != current_user["user_id"] and not is_project_member(db, task_data.project_id, current_user["user_id"]):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to create task in this project"
+        )
     task = create_task(db, task_data, created_by=current_user["user_id"])
     return task
 
@@ -80,8 +92,12 @@ async def update_existing_task(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
-    
-    # TODO: Check permissions
+    # Check permissions - only owner, assignee or project member can update
+    if task.created_by != current_user["user_id"] and task.assignee_id != current_user["user_id"] and project.owner_id != current_user["user_id"] and not current_user.get("is_superuser", False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to update this task"
+        )
     updated_task = update_task(db, task_id, task_data)
     return updated_task
 
@@ -98,8 +114,13 @@ async def delete_existing_task(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Task not found"
         )
-    
-    # TODO: Check permissions
+    # Check permissions - only owner or project owner can delete
+    project = db.query(Project).filter(Project.id == task.project_id).first()
+    if task.created_by != current_user["user_id"] and project.owner_id != current_user["user_id"] and not current_user.get("is_superuser", False):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to delete this task"
+        )
     success = delete_task(db, task_id)
     if not success:
         raise HTTPException(
