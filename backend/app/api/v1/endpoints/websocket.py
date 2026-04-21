@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from app.websocket.connection_manager import connection_manager
 from app.websocket.message_handler import message_handler
-from app.api import deps
+from app.core.database import get_db
 from app.models import User
 
 router = APIRouter()

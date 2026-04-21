@@ -5,7 +5,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 
-from app.api import deps
+from app.core.database import get_db
 from app.models import User, Project
 from app.models.gantt import GanttTask, GanttDependency, GanttView, GanttBaseline
 from app.schemas.gantt import (
