@@ -1,0 +1,116 @@
+# ========================================
+# 演示环境 Docker Compose 配置
+# ========================================
+# 用途: 对外演示、客户展示
+# 特点: 使用PostgreSQL，数据持久化，包含演示数据
+# 启动命令: docker-compose -f docker-compose.demo.yml up -d
+
+version: '3.8'
+
+services:
+  # PostgreSQL数据库 (演示数据)
+  postgres-demo:
+    image: postgres:15
+    container_name: project-mgr-postgres-demo
+    environment:
+      POSTGRES_DB: project_mgr_demo
+      POSTGRES_USER: demo
+      POSTGRES_PASSWORD: demo123
+    ports:
+      - "5433:5432"  # 使用5433端口
+    volumes:
+      - postgres_demo_data:/var/lib/postgresql/data
+      - ./scripts/demo-init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - demo-network
+
+  # Redis缓存
+  redis-demo:
+    image: redis:7-alpine
+    container_name: project-mgr-redis-demo
+    ports:
+      - "6380:6379"  # 使用6380端口
+    networks:
+      - demo-network
+    command: redis-server --requirepass demo123
+
+  # 演示环境后端
+  backend-demo:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.simple
+    container_name: project-mgr-backend-demo
+    ports:
+      - "8002:8000"  # 使用8002端口
+    environment:
+      # PostgreSQL数据库
+      DATABASE_URL: postgresql://demo:demo123@postgres-demo:5432/project_mgr_demo
+      DATABASE_TYPE: postgres
+      # Redis缓存
+      REDIS_URL: redis://:demo123@redis-demo:6379
+      # 安全配置
+      SECRET_KEY: demo-secret-key-change-in-production
+      DEBUG: "false"
+      ENVIRONMENT: demo
+      # CORS配置
+      ALLOWED_ORIGINS: http://demo.yourdomain.com,http://localhost:3002
+    depends_on:
+      postgres-demo:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./uploads_demo:/app/uploads
+    command: >
+      sh -c "
+        echo '🎬 启动演示环境后端...' &&
+        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 2
+      "
+    networks:
+      - demo-network
+
+  # 演示环境前端
+  frontend-demo:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: project-mgr-frontend-demo
+    ports:
+      - "3002:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_BASE_URL: http://localhost:8002/api/v1
+      VITE_ENV: demo
+      VITE_TITLE: 项目管理系统 - 演示环境
+    command: npm run dev
+    networks:
+      - demo-network
+
+  # Nginx反向代理 (演示)
+  nginx-demo:
+    image: nginx:alpine
+    container_name: project-mgr-nginx-demo
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./nginx/nginx.demo.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - backend-demo
+      - frontend-demo
+    networks:
+      - demo-network
+
+networks:
+  demo-network:
+    driver: bridge
+
+volumes:
+  postgres_demo_data:
