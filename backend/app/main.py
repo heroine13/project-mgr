@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from app.api.v1 import scheduler, reports
 from app.api.v1 import integration, backup, workflow, kanban, audit
+from app.api.v1 import reports as reports_enhanced
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
 
@@ -83,6 +84,7 @@ async def test_endpoint():
 # 注册路由
 app.include_router(scheduler.router)
 app.include_router(reports.router)
+app.include_router(reports_enhanced.router)
 app.include_router(integration.router)
 app.include_router(backup.router)
 app.include_router(workflow.router)
