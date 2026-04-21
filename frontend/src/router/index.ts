@@ -104,6 +104,11 @@ const router = createRouter({
       path: '/calendar',
       name: 'calendar',
       component: () => import('@/views/CalendarView.vue')
+    },
+    {
+      path: '/project-templates',
+      name: 'project-templates',
+      component: () => import('@/views/ProjectTemplateView.vue')
     }
   ]
 })
