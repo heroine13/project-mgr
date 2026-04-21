@@ -99,6 +99,11 @@ const router = createRouter({
       path: '/ai-assistant',
       name: 'ai-assistant',
       component: () => import('@/views/AIAssistantView.vue')
+    },
+    {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/CalendarView.vue')
     }
   ]
 })
