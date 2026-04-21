@@ -6,6 +6,7 @@ from contextlib import asynccontextmanager
 from app.api.v1 import scheduler, reports
 from app.api.v1 import integration, backup, workflow, kanban, audit
 from app.api.v1 import reports as reports_enhanced
+from app.api.v1 import ai
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
 
@@ -90,6 +91,7 @@ app.include_router(backup.router)
 app.include_router(workflow.router)
 app.include_router(kanban.router)
 app.include_router(audit.router)
+app.include_router(ai.router)
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

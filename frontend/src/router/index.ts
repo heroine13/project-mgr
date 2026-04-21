@@ -94,6 +94,11 @@ const router = createRouter({
       path: '/reports',
       name: 'reports',
       component: () => import('@/views/EnhancedReportsView.vue')
+    },
+    {
+      path: '/ai-assistant',
+      name: 'ai-assistant',
+      component: () => import('@/views/AIAssistantView.vue')
     }
   ]
 })
