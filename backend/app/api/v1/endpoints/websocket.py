@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from app.websocket.connection_manager import connection_manager
 from app.websocket.message_handler import message_handler
 from app.core.database import get_db
-from app.models import User
+from app.auth import verify_token
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ async def websocket_endpoint(
     websocket: WebSocket,
     project_id: int,
     token: str = None,
-    db: Session = Depends(deps.get_db)
+    db: Session = Depends(get_db)
 ):
     """WebSocket端点"""
     # 验证Token获取用户ID（这里简化处理）
@@ -89,7 +89,7 @@ async def broadcast_message(
     project_id: int,
     message_type: str,
     message_data: dict,
-    current_user: User = Depends(deps.get_current_active_user)
+    current_user: dict = Depends(verify_token)
 ):
     """广播消息到项目房间（需要管理员权限）"""
     # 检查权限（这里简化处理）
@@ -116,7 +116,7 @@ async def broadcast_message(
 async def notify_user(
     user_id: int,
     notification_data: dict,
-    current_user: User = Depends(deps.get_current_active_user)
+    current_user: dict = Depends(verify_token)
 ):
     """发送通知给特定用户"""
     success = await connection_manager.send_to_user(

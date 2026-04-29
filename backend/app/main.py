@@ -3,12 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
 
+from app.api.v1 import auth, projects, tasks
 from app.api.v1 import scheduler, reports
 from app.api.v1 import integration, backup, workflow, kanban, audit
 from app.api.v1 import reports as reports_enhanced
 from app.api.v1 import ai
 from app.api.v1 import calendar, team, external
 from app.api.v1 import project_template
+from app.api.v1.issues import router as issues_router
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
 
@@ -85,6 +87,10 @@ async def test_endpoint():
     }
 
 # 注册路由
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(projects.router, prefix="/api/v1/projects", tags=["projects"])
+app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
+app.include_router(issues_router, prefix="/api/v1/issues", tags=["issues"])
 app.include_router(scheduler.router)
 app.include_router(reports.router)
 app.include_router(reports_enhanced.router)

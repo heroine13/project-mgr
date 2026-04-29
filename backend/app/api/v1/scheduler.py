@@ -8,8 +8,8 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import logging
 
-from ..services.scheduler import scheduler, daily_summary_task, health_check_task
-from ..services.notify import WeComNotifier, NotificationTemplates
+from app.services.scheduler import scheduler, daily_summary_task, health_check_task
+from app.services.notify import WeComNotifier, NotificationTemplates
 
 logger = logging.getLogger(__name__)
 

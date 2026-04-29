@@ -6,32 +6,27 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: () => import('@/views/HomeView.vue')
+      component: () => import('@/views/DashboardView.vue')
     },
     {
       path: '/login',
       name: 'login',
-      component: () => import('@/views/auth/LoginView.vue')
-    },
-    {
-      path: '/register',
-      name: 'register',
-      component: () => import('@/views/auth/RegisterView.vue')
+      component: () => import('@/views/LoginView.vue')
     },
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: () => import('@/views/dashboard/DashboardView.vue')
+      component: () => import('@/views/DashboardView.vue')
     },
     {
       path: '/tasks',
       name: 'tasks',
-      component: () => import('@/views/tasks/TaskListView.vue')
+      component: () => import('@/views/TaskDetailView.vue')
     },
     {
       path: '/projects',
       name: 'projects',
-      component: () => import('@/views/projects/ProjectListView.vue')
+      component: () => import('@/views/ProjectDetailView.vue')
     },
     {
       path: '/notifications',
@@ -120,6 +115,16 @@ const router = createRouter({
       name: 'external-contacts',
       component: () => import('@/views/ExternalContactView.vue'),
       meta: { requiresAdmin: true }
+    },
+    {
+      path: '/statistics',
+      name: 'statistics',
+      component: () => import('@/views/StatisticsView.vue')
+    },
+    {
+      path: '/users',
+      name: 'users',
+      component: () => import('@/views/UserManagementView.vue')
     }
   ]
 })

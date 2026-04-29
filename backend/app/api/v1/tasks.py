@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.db.database import get_db
+from app.core.database import get_db
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from app.crud.task import get_task, get_tasks_by_project, get_tasks_by_assignee, get_tasks_by_user, create_task, update_task, delete_task

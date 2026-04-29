@@ -75,7 +75,7 @@ class UserProfile(Base):
 class AuditLog(Base):
     """Audit log for user actions"""
     
-    __tablename__ = "audit_logs"
+    __tablename__ = "user_audit_logs"
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, nullable=True)

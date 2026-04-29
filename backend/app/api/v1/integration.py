@@ -8,7 +8,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime, timedelta
 import logging
 
-from ..services.integration import calendar, email_integration, CalendarProvider, EmailProvider
+from app.services.integration import calendar, email_integration, CalendarProvider, EmailProvider
 
 logger = logging.getLogger(__name__)
 
