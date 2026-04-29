@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import router from '@/router'
 
 export interface User {
   id: number
@@ -22,7 +22,6 @@ export interface AuthState {
 }
 
 export const useUserStore = defineStore('user', () => {
-  const router = useRouter()
   
   // State
   const token = ref<string | null>(localStorage.getItem('access_token'))
@@ -101,7 +100,7 @@ export const useUserStore = defineStore('user', () => {
     localStorage.removeItem('refresh_token')
     localStorage.removeItem('user')
     
-    router.push('/login')
+    router?.push('/login')
   }
   
   const refreshAccessToken = async () => {
