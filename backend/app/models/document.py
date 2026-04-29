@@ -37,7 +37,7 @@ class Document(Base):
     
     # Relationships
     project = relationship("Project")
-    category_obj = relationship("DocumentCategory", back_populates="documents")
+    category = relationship("DocumentCategory", back_populates="documents")
     creator = relationship("User", foreign_keys=[created_by])
     versions = relationship("DocumentVersion", back_populates="document", cascade="all, delete-orphan")
     
