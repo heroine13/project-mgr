@@ -484,7 +484,7 @@ const handleProjectCommand = (command: string) => {
 }
 
 const createTask = () => {
-  router.push(`/projects/${project.value.id}/tasks/new`)
+  router.push('/tasks/new')
 }
 
 const viewTask = (task: any) => {
