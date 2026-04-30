@@ -64,10 +64,58 @@
           <template #title>{{ $t('navigation.team') }}</template>
         </el-menu-item>
         
+        <!-- Calendar -->
+        <el-menu-item index="/calendar">
+          <el-icon><Calendar /></el-icon>
+          <template #title>{{ $t('navigation.calendar') }}</template>
+        </el-menu-item>
+        
+        <!-- Kanban -->
+        <el-menu-item index="/kanban">
+          <el-icon><Grid /></el-icon>
+          <template #title>{{ $t('navigation.kanban') }}</template>
+        </el-menu-item>
+        
+        <!-- Documents -->
+        <el-menu-item index="/documents">
+          <el-icon><Document /></el-icon>
+          <template #title>{{ $t('navigation.documents') }}</template>
+        </el-menu-item>
+        
+        <!-- Resources -->
+        <el-menu-item index="/resources">
+          <el-icon><Box /></el-icon>
+          <template #title>{{ $t('navigation.resources') }}</template>
+        </el-menu-item>
+        
+        <!-- Issues -->
+        <el-menu-item index="/issues">
+          <el-icon><Warning /></el-icon>
+          <template #title>{{ $t('navigation.issues') }}</template>
+        </el-menu-item>
+        
+        <!-- AI Assistant -->
+        <el-menu-item index="/ai-assistant">
+          <el-icon><ChatDotRound /></el-icon>
+          <template #title>{{ $t('navigation.aiAssistant') }}</template>
+        </el-menu-item>
+        
         <!-- Reports -->
         <el-menu-item index="/reports">
           <el-icon><DataAnalysis /></el-icon>
           <template #title>{{ $t('navigation.reports') }}</template>
+        </el-menu-item>
+        
+        <!-- Statistics -->
+        <el-menu-item index="/statistics">
+          <el-icon><TrendCharts /></el-icon>
+          <template #title>{{ $t('navigation.statistics') }}</template>
+        </el-menu-item>
+        
+        <!-- Users -->
+        <el-menu-item index="/users">
+          <el-icon><UserFilled /></el-icon>
+          <template #title>{{ $t('navigation.users') }}</template>
         </el-menu-item>
         
         <!-- Settings -->
