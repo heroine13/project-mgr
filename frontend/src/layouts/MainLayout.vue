@@ -509,6 +509,8 @@ onMounted(() => {
   flex-direction: column;
   transition: width 0.3s ease;
   z-index: 1000;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .sidebar-collapsed {
