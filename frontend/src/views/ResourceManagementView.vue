@@ -385,7 +385,7 @@ onMounted(() => {
           </el-col>
         </el-row>
         <el-form-item label="是否可用">
-          <el-switch v-model="resourceForm.is_available" />
+          <el-switch v-model="resourceForm.is_available" :active-value="true" :inactive-value="false" />
         </el-form-item>
       </el-form>
       <template #footer>

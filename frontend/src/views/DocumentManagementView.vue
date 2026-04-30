@@ -325,7 +325,7 @@ onMounted(() => {
           <el-input v-model="newDocument.tags" placeholder="用逗号分隔多个标签" />
         </el-form-item>
         <el-form-item label="公开">
-          <el-switch v-model="newDocument.is_public" />
+          <el-switch v-model="newDocument.is_public" :active-value="true" :inactive-value="false" />
         </el-form-item>
       </el-form>
       <template #footer>

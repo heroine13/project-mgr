@@ -348,11 +348,11 @@
           </el-form-item>
           
           <el-form-item :label="$t('common.includeCharts')">
-            <el-switch v-model="exportForm.includeCharts" />
+            <el-switch v-model="exportForm.includeCharts" :active-value="true" :inactive-value="false" />
           </el-form-item>
           
           <el-form-item :label="$t('common.includeDetails')">
-            <el-switch v-model="exportForm.includeDetails" />
+            <el-switch v-model="exportForm.includeDetails" :active-value="true" :inactive-value="false" />
           </el-form-item>
         </el-form>
       </div>
