@@ -9,6 +9,7 @@ from app.api.v1 import integration, backup, workflow, kanban, audit
 from app.api.v1 import reports as reports_enhanced
 from app.api.v1 import ai
 from app.api.v1 import calendar, team, external
+from app.api.v1 import notifications
 from app.api.v1 import project_template
 from app.api.v1.issues import router as issues_router
 from app.services.scheduler import scheduler as task_scheduler
@@ -104,6 +105,7 @@ app.include_router(calendar.router)
 app.include_router(project_template.router)
 app.include_router(team.router)
 app.include_router(external.router)
+app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
