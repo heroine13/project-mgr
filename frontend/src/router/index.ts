@@ -23,9 +23,33 @@ const routes = [
         component: () => import('@/views/TaskDetailView.vue')
       },
       {
+        path: 'tasks/my',
+        name: 'tasks-my',
+        component: () => import('@/views/TaskDetailView.vue'),
+        meta: { title: '我的任务' }
+      },
+      {
+        path: 'tasks/overdue',
+        name: 'tasks-overdue',
+        component: () => import('@/views/TaskDetailView.vue'),
+        meta: { title: '逾期任务' }
+      },
+      {
         path: 'projects',
         name: 'projects',
         component: () => import('@/views/ProjectDetailView.vue')
+      },
+      {
+        path: 'projects/new',
+        name: 'projects-new',
+        component: () => import('@/views/ProjectDetailView.vue'),
+        meta: { title: '新建项目' }
+      },
+      {
+        path: 'projects/archived',
+        name: 'projects-archived',
+        component: () => import('@/views/ProjectDetailView.vue'),
+        meta: { title: '已归档项目' }
       },
       {
         path: 'notifications',

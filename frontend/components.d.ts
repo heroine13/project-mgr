@@ -61,6 +61,7 @@ declare module 'vue' {
     GanttTaskList: typeof import('./src/components/gantt/GanttTaskList.vue')['default']
     GanttToolbar: typeof import('./src/components/gantt/GanttToolbar.vue')['default']
     NotificationCenter: typeof import('./src/components/NotificationCenter.vue')['default']
+    PageError: typeof import('./src/components/PageError.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TaskComments: typeof import('./src/components/gantt/TaskComments.vue')['default']
