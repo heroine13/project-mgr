@@ -334,11 +334,11 @@ const handleUserCommand = (command: string) => {
 }
 
 const createNewTask = () => {
-  router.push('/tasks/new')
+  router.push('/tasks')
 }
 
 const createNewProject = () => {
-  router.push('/projects/new')
+  router.push('/projects')
 }
 
 const handleSearch = () => {

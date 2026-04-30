@@ -311,11 +311,11 @@ const isOverdue = (dueDate: string) => {
 }
 
 const createNewProject = () => {
-  router.push('/projects/new')
+  router.push('/projects')
 }
 
 const createNewTask = () => {
-  router.push('/tasks/new')
+  router.push('/tasks')
 }
 
 const viewProject = (project: any) => {
