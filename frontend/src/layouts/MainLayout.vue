@@ -4,8 +4,6 @@
     <div 
       class="sidebar" 
       :class="{ 'sidebar-collapsed': isCollapsed }"
-      @mouseenter="isCollapsed = false"
-      @mouseleave="isCollapsed = true"
     >
       <div class="sidebar-header">
         <div class="logo">
