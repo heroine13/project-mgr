@@ -227,7 +227,7 @@
             </div>
             <div class="team-actions">
               <el-button type="primary" size="small" @click="addTeamMember" plain>
-                <el-icon><UserAdd /></el-icon>
+                <el-icon><UserFilled /></el-icon>
                 {{ $t('common.addMember') }}
               </el-button>
             </div>
@@ -309,7 +309,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { 
   Edit, Download, More, Plus, Search, 
-  Clock, Setting, UserAdd, Upload, 
+  Clock, Setting, UserFilled, Upload, 
   View, Delete 
 } from '@element-plus/icons-vue'
 

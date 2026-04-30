@@ -1090,4 +1090,46 @@ onMounted(() => {
   gap: 12px;
   padding: 12px;
   background: var(--el-fill-color-light);
-  border-radius:
+  border-radius: 8px;
+}
+
+.attachment-icon {
+  font-size: 24px;
+  color: var(--el-color-primary);
+}
+
+.attachment-info {
+  flex: 1;
+}
+
+.attachment-name {
+  font-weight: 500;
+  color: var(--el-text-color-primary);
+}
+
+.attachment-size {
+  font-size: 12px;
+  color: var(--el-text-color-secondary);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .task-detail {
+    padding: 12px;
+  }
+  
+  .task-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  
+  .task-title {
+    font-size: 22px;
+  }
+  
+  .task-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+</style>

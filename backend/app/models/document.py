@@ -19,7 +19,7 @@ class Document(Base):
     
     # Category and tags
     category_id = Column(Integer, ForeignKey("document_categories.id"), nullable=True)
-    category = Column(String(100))  # Legacy: simple string category
+    category_name = Column(String(100))  # Legacy: simple string category
     tags = Column(String(500))  # Comma separated tags
     
     # Project link
