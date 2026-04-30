@@ -7,6 +7,19 @@
           <el-icon><Plus /></el-icon>
           {{ $t('dashboard.newProject') }}
         </el-button>
+        <el-dropdown @command="handleExport">
+          <el-button>
+            <el-icon><Download /></el-icon>
+            {{ $t('common.export') }}
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="excel">Excel</el-dropdown-item>
+              <el-dropdown-item command="json">JSON</el-dropdown-item>
+              <el-dropdown-item command="pdf">PDF</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-button @click="refreshData">
           <el-icon><Refresh /></el-icon>
           {{ $t('dashboard.refresh') }}
@@ -264,6 +277,30 @@ const loadDashboardData = async () => {
 
 const refreshData = () => {
   loadDashboardData()
+}
+
+const handleExport = (type: string) => {
+  const exportData = {
+    projects: recentProjects.value,
+    tasks: recentTasks.value,
+    activities: recentActivities.value,
+    stats: stats.value,
+    exportedAt: new Date().toISOString()
+  }
+  
+  if (type === 'excel') {
+    import('@/utils/export').then(({ exportToExcel }) => {
+      exportToExcel(exportData.projects, 'dashboard-projects')
+    })
+  } else if (type === 'json') {
+    import('@/utils/export').then(({ exportToJSON }) => {
+      exportToJSON(exportData, 'dashboard-data')
+    })
+  } else if (type === 'pdf') {
+    import('@/utils/export').then(({ exportToPDF }) => {
+      exportToPDF(exportData, 'dashboard-report')
+    })
+  }
 }
 
 const getStatusType = (status: string) => {
