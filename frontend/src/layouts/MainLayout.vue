@@ -53,7 +53,8 @@
             <span>{{ $t('navigation.tasks') }}</span>
           </template>
           <el-menu-item index="/tasks">{{ $t('navigation.tasks') }}</el-menu-item>
-          <el-menu-item index="/tasks/my">{{ $t('task.assignee') }}</el-menu-item>
+          <el-menu-item index="/tasks/new">新建任务</el-menu-item>
+        <el-menu-item index="/tasks/my">{{ $t('task.assignee') }}</el-menu-item>
           <el-menu-item index="/tasks/overdue">{{ $t('dashboard.overdueTasks') }}</el-menu-item>
         </el-sub-menu>
         

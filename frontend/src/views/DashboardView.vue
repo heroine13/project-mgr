@@ -311,11 +311,11 @@ const isOverdue = (dueDate: string) => {
 }
 
 const createNewProject = () => {
-  router.push('/projects')
+  router.push('/projects/new')
 }
 
 const createNewTask = () => {
-  router.push('/tasks')
+  router.push('/tasks/new')
 }
 
 const viewProject = (project: any) => {
@@ -323,11 +323,11 @@ const viewProject = (project: any) => {
 }
 
 const goToProjects = () => {
-  router.push('/projects')
+  router.push('/projects/new')
 }
 
 const goToTasks = () => {
-  router.push('/tasks')
+  router.push('/tasks/new')
 }
 </script>
 

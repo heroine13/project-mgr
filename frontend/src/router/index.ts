@@ -23,16 +23,10 @@ const routes = [
         component: () => import('@/views/TaskDetailView.vue')
       },
       {
-        path: 'tasks/my',
-        name: 'tasks-my',
-        component: () => import('@/views/TaskDetailView.vue'),
-        meta: { title: '我的任务' }
-      },
-      {
-        path: 'tasks/overdue',
-        name: 'tasks-overdue',
-        component: () => import('@/views/TaskDetailView.vue'),
-        meta: { title: '逾期任务' }
+        path: 'tasks/new',
+        name: 'tasks-new',
+        component: () => import('@/views/CreateTaskView.vue'),
+        meta: { title: '创建任务' }
       },
       {
         path: 'projects',
@@ -42,8 +36,8 @@ const routes = [
       {
         path: 'projects/new',
         name: 'projects-new',
-        component: () => import('@/views/ProjectDetailView.vue'),
-        meta: { title: '新建项目' }
+        component: () => import('@/views/CreateProjectView.vue'),
+        meta: { title: '创建项目' }
       },
       {
         path: 'projects/archived',
