@@ -60,6 +60,40 @@ const permissionModules = [
 ]
 
 const loading = ref(false), activeTab = ref('users')
+
+// 用户对话框
+const userDialogVisible = ref(false)
+const userDialogTitle = ref('')
+const userForm = ref({
+  id: null as number | null,
+  username: '',
+  email: '',
+  full_name: '',
+  role_id: null as number | null,
+  department_id: null as number | null,
+  is_active: true
+})
+
+// 角色对话框
+const roleDialogVisible = ref(false)
+const roleDialogTitle = ref('')
+const roleForm = ref({
+  id: null as number | null,
+  name: '',
+  description: ''
+})
+
+// 部门相关
+const departments = ref<any[]>([])
+const departmentDialogVisible = ref(false)
+const departmentDialogTitle = ref('')
+const departmentForm = ref({
+  id: null as number | null,
+  name: '',
+  code: '',
+  parent_id: null as number | null
+})
+
 // 权限对话框相关
 const permissionDialogVisible = ref(false)
 const currentRoleId = ref<number | null>(null)
@@ -75,7 +109,7 @@ const handlePermissionCheck = (node: any, checked: any) => {
     ...checked.halfCheckedKeys
   ]
 }
-const users = ref<any[]>([]), roles = ref<any[]>([]), logs = ref<any[]>([])
+const users = ref<any[]>([]), roles = ref<any[]>([]), logs = ref<any[]>([]), departments = ref<any[]>
 const total = ref(0), page = ref(1), pageSize = ref(20)
 const search = ref(''), filterActive = ref<boolean | null>(null)
 
@@ -141,6 +175,137 @@ const deleteRole = async (id: number) => {
   } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
 }
 
+// 用户增删改
+const openUserDialog = (user?: any) => {
+  if (user) {
+    userDialogTitle.value = '编辑用户'
+    userForm.value = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      full_name: user.full_name,
+      role_id: user.role_id,
+      department_id: user.department_id,
+      is_active: user.is_active
+    }
+  } else {
+    userDialogTitle.value = '新增用户'
+    userForm.value = {
+      id: null,
+      username: '',
+      email: '',
+      full_name: '',
+      role_id: null,
+      department_id: null,
+      is_active: true
+    }
+  }
+  userDialogVisible.value = true
+}
+
+const saveUser = async () => {
+  if (!userForm.value.username || !userForm.value.email) {
+    ElMessage.warning('请填写用户名和邮箱')
+    return
+  }
+  try {
+    if (userForm.value.id) {
+      await api.put(`/users/users/${userForm.value.id}`, userForm.value)
+      ElMessage.success('用户更新成功')
+    } else {
+      await api.post('/users/users', userForm.value)
+      ElMessage.success('用户创建成功')
+    }
+    userDialogVisible.value = false
+    loadUsers()
+  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+}
+
+const deleteUser = async (user: any) => {
+  try {
+    await ElMessageBox.confirm(`确定删除用户 "${user.username}"?`, '提示', { type: 'warning' })
+    await api.delete(`/users/users/${user.id}`)
+    ElMessage.success('删除成功')
+    loadUsers()
+  } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
+}
+
+// 角色编辑
+const openRoleDialog = (role?: any) => {
+  if (role) {
+    roleDialogTitle.value = '编辑角色'
+    roleForm.value = { id: role.id, name: role.name, description: role.description || '' }
+  } else {
+    roleDialogTitle.value = '新增角色'
+    roleForm.value = { id: null, name: '', description: '' }
+  }
+  roleDialogVisible.value = true
+}
+
+const saveRole = async () => {
+  if (!roleForm.value.name) {
+    ElMessage.warning('请填写角色名称')
+    return
+  }
+  try {
+    if (roleForm.value.id) {
+      await api.put(`/users/roles/${roleForm.value.id}`, roleForm.value)
+      ElMessage.success('角色更新成功')
+    } else {
+      await api.post('/users/roles', roleForm.value)
+      ElMessage.success('角色创建成功')
+    }
+    roleDialogVisible.value = false
+    loadRoles()
+  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+}
+
+// 部门管理
+const loadDepartments = async () => {
+  try {
+    const res = await api.get('/users/departments', { params: { page_size: 100 } })
+    departments.value = res.items || res || []
+  } catch (e: any) { console.error('加载部门失败', e) }
+}
+
+const openDepartmentDialog = (dept?: any) => {
+  if (dept) {
+    departmentDialogTitle.value = '编辑部门'
+    departmentForm.value = { id: dept.id, name: dept.name, code: dept.code || '', parent_id: dept.parent_id }
+  } else {
+    departmentDialogTitle.value = '新增部门'
+    departmentForm.value = { id: null, name: '', code: '', parent_id: null }
+  }
+  departmentDialogVisible.value = true
+}
+
+const saveDepartment = async () => {
+  if (!departmentForm.value.name) {
+    ElMessage.warning('请填写部门名称')
+    return
+  }
+  try {
+    if (departmentForm.value.id) {
+      await api.put(`/users/departments/${departmentForm.value.id}`, departmentForm.value)
+      ElMessage.success('部门更新成功')
+    } else {
+      await api.post('/users/departments', departmentForm.value)
+      ElMessage.success('部门创建成功')
+    }
+    departmentDialogVisible.value = false
+    loadDepartments()
+  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+}
+
+const deleteDepartment = async (dept: any) => {
+  try {
+    await ElMessageBox.confirm(`确定删除部门 "${dept.name}"?`, '提示', { type: 'warning' })
+    await api.delete(`/users/departments/${dept.id}`)
+    ElMessage.success('删除成功')
+    loadDepartments()
+  } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
+}
+
 // 权限管理
 const openPermissionDialog = async (role: any) => {
   currentRoleId.value = role.id
@@ -192,10 +357,11 @@ const handleTab = (t: string) => {
   activeTab.value = t
   if (t === 'users') loadUsers()
   else if (t === 'roles') loadRoles()
+  else if (t === 'departments') loadDepartments()
   else if (t === 'logs') loadLogs()
 }
 
-onMounted(() => { loadUsers(); loadRoles() })
+onMounted(() => { loadUsers(); loadRoles(); loadDepartments() })
 </script>
 
 <template>
@@ -210,6 +376,7 @@ onMounted(() => { loadUsers(); loadRoles() })
           <el-option :value="false" label="禁用" />
         </el-select>
         <el-button type="primary" style="margin-left:10px" @click="loadUsers">搜索</el-button>
+        <el-button type="success" style="margin-left:auto" @click="openUserDialog()">+ 新增用户</el-button>
       </el-row>
       <el-table :data="users" v-loading="loading">
         <el-table-column prop="id" label="ID" width="60" />
@@ -222,11 +389,14 @@ onMounted(() => { loadUsers(); loadRoles() })
           </template>
         </el-table-column>
         <el-table-column prop="role_name" label="角色" width="100" />
-        <el-table-column label="操作" width="150">
+        <el-table-column prop="department_name" label="部门" width="100" />
+        <el-table-column label="操作" width="220">
           <template #default="{ row }">
+            <el-button size="small" type="primary" @click="openUserDialog(row)">编辑</el-button>
             <el-button size="small" :type="row.is_active ? 'danger' : 'success'" @click="toggleUserStatus(row)">
               {{ row.is_active ? '禁用' : '启用' }}
             </el-button>
+            <el-button size="small" type="danger" @click="deleteUser(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -234,7 +404,7 @@ onMounted(() => { loadUsers(); loadRoles() })
     </el-tab-pane>
 
     <el-tab-pane label="角色管理" name="roles">
-      <el-button type="primary" style="margin-bottom:15px" @click="createRole">+ 添加角色</el-button>
+      <el-button type="primary" style="margin-bottom:15px" @click="openRoleDialog()">+ 添加角色</el-button>
       <el-table :data="roles">
         <el-table-column prop="id" label="ID" width="60" />
         <el-table-column prop="name" label="角色名" />
@@ -245,10 +415,27 @@ onMounted(() => { loadUsers(); loadRoles() })
             <span v-else>否</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="180">
+        <el-table-column label="操作" width="220">
           <template #default="{ row }">
+            <el-button type="primary" size="small" @click="openRoleDialog(row)">编辑</el-button>
             <el-button type="primary" size="small" @click="openPermissionDialog(row)">权限</el-button>
             <el-button v-if="!row.is_system" type="danger" size="small" @click="deleteRole(row.id)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-tab-pane>
+
+    <el-tab-pane label="部门管理" name="departments">
+      <el-button type="primary" style="margin-bottom:15px" @click="openDepartmentDialog()">+ 新增部门</el-button>
+      <el-table :data="departments">
+        <el-table-column prop="id" label="ID" width="60" />
+        <el-table-column prop="name" label="部门名称" />
+        <el-table-column prop="code" label="部门编码" />
+        <el-table-column prop="parent_name" label="上级部门" />
+        <el-table-column label="操作" width="180">
+          <template #default="{ row }">
+            <el-button type="primary" size="small" @click="openDepartmentDialog(row)">编辑</el-button>
+            <el-button type="danger" size="small" @click="deleteDepartment(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -267,6 +454,75 @@ onMounted(() => { loadUsers(); loadRoles() })
       </el-table>
     </el-tab-pane>
   </el-tabs>
+
+  <!-- 用户编辑对话框 -->
+  <el-dialog v-model="userDialogVisible" :title="userDialogTitle" width="500">
+    <el-form :model="userForm" label-width="80px">
+      <el-form-item label="用户名">
+        <el-input v-model="userForm.username" placeholder="请输入用户名" />
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="userForm.email" placeholder="请输入邮箱" />
+      </el-form-item>
+      <el-form-item label="姓名">
+        <el-input v-model="userForm.full_name" placeholder="请输入姓名" />
+      </el-form-item>
+      <el-form-item label="角色">
+        <el-select v-model="userForm.role_id" placeholder="请选择角色" clearable style="width:100%">
+          <el-option v-for="r in roles" :key="r.id" :label="r.name" :value="r.id" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="部门">
+        <el-select v-model="userForm.department_id" placeholder="请选择部门" clearable style="width:100%">
+          <el-option v-for="d in departments" :key="d.id" :label="d.name" :value="d.id" />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="状态">
+        <el-switch v-model="userForm.is_active" active-text="启用" inactive-text="禁用" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="userDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="saveUser">保存</el-button>
+    </template>
+  </el-dialog>
+
+  <!-- 角色编辑对话框 -->
+  <el-dialog v-model="roleDialogVisible" :title="roleDialogTitle" width="400">
+    <el-form :model="roleForm" label-width="80px">
+      <el-form-item label="角色名称">
+        <el-input v-model="roleForm.name" placeholder="请输入角色名称" />
+      </el-form-item>
+      <el-form-item label="描述">
+        <el-input v-model="roleForm.description" type="textarea" :rows="3" placeholder="请输入描述" />
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="roleDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="saveRole">保存</el-button>
+    </template>
+  </el-dialog>
+
+  <!-- 部门编辑对话框 -->
+  <el-dialog v-model="departmentDialogVisible" :title="departmentDialogTitle" width="400">
+    <el-form :model="departmentForm" label-width="80px">
+      <el-form-item label="部门名称">
+        <el-input v-model="departmentForm.name" placeholder="请输入部门名称" />
+      </el-form-item>
+      <el-form-item label="部门编码">
+        <el-input v-model="departmentForm.code" placeholder="请输入部门编码" />
+      </el-form-item>
+      <el-form-item label="上级部门">
+        <el-select v-model="departmentForm.parent_id" placeholder="请选择上级部门" clearable style="width:100%">
+          <el-option v-for="d in departments" :key="d.id" :label="d.name" :value="d.id" />
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <el-button @click="departmentDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="saveDepartment">保存</el-button>
+    </template>
+  </el-dialog>
 
   <!-- 权限编辑对话框 -->
   <el-dialog v-model="permissionDialogVisible" :title="`权限设置 - ${currentRoleName}`" width="500">
