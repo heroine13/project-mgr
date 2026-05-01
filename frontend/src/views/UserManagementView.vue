@@ -109,7 +109,7 @@ const handlePermissionCheck = (node: any, checked: any) => {
     ...checked.halfCheckedKeys
   ]
 }
-const users = ref<any[]>([]), roles = ref<any[]>([]), logs = ref<any[]>([]), departments = ref<any[]>
+const users = ref<any[]>([]), roles = ref<any[]>([]), logs = ref<any[]>([])
 const total = ref(0), page = ref(1), pageSize = ref(20)
 const search = ref(''), filterActive = ref<boolean | null>(null)
 
