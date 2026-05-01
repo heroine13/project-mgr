@@ -13,6 +13,8 @@ from ...schemas.user_mgmt import (
     UserManagementUpdate, UserListResponse,
     UserProfileUpdate, UserProfileResponse,
     AuditLogListResponse,
+    UserCreate, UserUpdate, UserResponse,
+    DepartmentCreate, DepartmentUpdate, DepartmentResponse,
 )
 from ...crud import user_mgmt as crud_user
 
@@ -20,6 +22,30 @@ router = APIRouter()
 
 
 # ============ User Management ============
+
+@router.post("/users", response_model=UserResponse)
+def create_user(
+    user_data: UserCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    try:
+        user = crud_user.create_user(db, user_data)
+        role = crud_user.get_role(db, user.role_id) if user.role_id else None
+        return {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "full_name": user.full_name,
+            "is_active": user.is_active,
+            "role_id": user.role_id,
+            "role_name": role.name if role else None,
+            "created_at": user.created_at,
+            "last_login": None,
+        }
+    except ValueError as e:
+        return {"error": str(e)}
+
 
 @router.get("/users", response_model=dict)
 def list_users(
@@ -52,6 +78,42 @@ def update_user_status(
     if not user:
         return {"error": "User not found"}
     return {"message": "User updated successfully", "user_id": user_id}
+
+
+@router.put("/users/{user_id}", response_model=UserResponse)
+def update_user(
+    user_id: int,
+    user_update: UserUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    user = crud_user.update_user(db, user_id, user_update)
+    if not user:
+        return {"error": "User not found"}
+    role = crud_user.get_role(db, user.role_id) if user.role_id else None
+    return {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "full_name": user.full_name,
+        "is_active": user.is_active,
+        "role_id": user.role_id,
+        "role_name": role.name if role else None,
+        "created_at": user.created_at,
+        "last_login": None,
+    }
+
+
+@router.delete("/users/{user_id}")
+def delete_user(
+    user_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    success = crud_user.delete_user(db, user_id)
+    if not success:
+        return {"error": "User not found or cannot be deleted"}
+    return {"message": "User deleted successfully"}
 
 
 @router.get("/users/{user_id}/profile", response_model=UserProfileResponse)
@@ -122,6 +184,66 @@ def delete_role(
     if not success:
         return {"error": "Role not found or is system role"}
     return {"message": "Role deleted successfully"}
+
+
+# ============ Department Management ============
+
+@router.get("/departments", response_model=dict)
+def list_departments(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(100, ge=1, le=500),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    skip = (page - 1) * page_size
+    depts, total = crud_user.get_departments(db, skip, page_size)
+    return {"total": total, "items": depts, "page": page, "page_size": page_size}
+
+
+@router.get("/departments/tree")
+def get_department_tree(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    tree = crud_user.get_all_departments_tree(db)
+    return {"items": tree}
+
+
+@router.post("/departments", response_model=DepartmentResponse)
+def create_department(
+    dept: DepartmentCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    return crud_user.create_department(db, dept)
+
+
+@router.put("/departments/{dept_id}", response_model=DepartmentResponse)
+def update_department(
+    dept_id: int,
+    dept_update: DepartmentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    dept = crud_user.update_department(db, dept_id, dept_update)
+    if not dept:
+        return {"error": "Department not found"}
+    return dept
+
+
+@router.delete("/departments/{dept_id}")
+def delete_department(
+    dept_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    try:
+        success = crud_user.delete_department(db, dept_id)
+        if not success:
+            return {"error": "Department not found"}
+        return {"message": "Department deleted successfully"}
+    except ValueError as e:
+        return {"error": str(e)}
 
 
 # ============ Audit Logs ============

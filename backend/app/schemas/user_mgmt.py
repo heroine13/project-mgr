@@ -83,6 +83,69 @@ class UserListResponse(BaseModel):
         from_attributes = True
 
 
+class UserCreate(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+    email: EmailStr
+    full_name: Optional[str] = None
+    password: str = Field(..., min_length=6)
+    role_id: Optional[int] = None
+    is_active: bool = True
+
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    full_name: Optional[str] = None
+    password: Optional[str] = None
+    role_id: Optional[int] = None
+    is_active: Optional[bool] = None
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    full_name: Optional[str]
+    is_active: bool
+    role_id: Optional[int]
+    role_name: Optional[str]
+    created_at: datetime
+    last_login: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
+# ============ Department ============
+class DepartmentBase(BaseModel):
+    name: str = Field(..., min_length=1, max_length=100)
+    code: Optional[str] = Field(None, max_length=50)
+    parent_id: Optional[int] = None
+    description: Optional[str] = None
+    sort_order: int = 0
+
+
+class DepartmentCreate(DepartmentBase):
+    pass
+
+
+class DepartmentUpdate(BaseModel):
+    name: Optional[str] = None
+    code: Optional[str] = None
+    parent_id: Optional[int] = None
+    description: Optional[str] = None
+    sort_order: Optional[int] = None
+
+
+class DepartmentResponse(DepartmentBase):
+    id: int
+    created_at: datetime
+    updated_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True
+
+
 class AuditLogResponse(BaseModel):
     id: int
     user_id: Optional[int]

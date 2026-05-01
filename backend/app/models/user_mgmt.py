@@ -4,7 +4,7 @@ User Management Models
 
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, Enum
 from sqlalchemy.sql import func
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, backref
 from enum import Enum as PyEnum
 from .user import Base
 
@@ -90,3 +90,26 @@ class AuditLog(Base):
     
     def __repr__(self):
         return f"<AuditLog(action='{self.action}', user_id={self.user_id})>"
+
+
+class Department(Base):
+    """Department/Organization unit"""
+    
+    __tablename__ = "departments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    code = Column(String(50), unique=True, nullable=True)
+    parent_id = Column(Integer, nullable=True)  # For hierarchical structure
+    description = Column(String(500))
+    sort_order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    
+    # Self-referential for hierarchy
+    children = relationship("Department", backref=backref("parent", remote_side=[id]))
+    
+    def __repr__(self):
+        return f"<Department(name='{self.name}')>"
