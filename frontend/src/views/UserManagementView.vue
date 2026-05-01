@@ -1,9 +1,80 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick, watch } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import api from '@/utils/api'
 
+// 权限模块数据
+const permissionModules = [
+  { id: 'dashboard', label: '仪表盘', children: [{ id: 'dashboard:view', label: '查看' }] },
+  { id: 'projects', label: '项目管理', children: [
+    { id: 'projects:view', label: '查看' },
+    { id: 'projects:create', label: '创建' },
+    { id: 'projects:edit', label: '编辑' },
+    { id: 'projects:delete', label: '删除' }
+  ]},
+  { id: 'tasks', label: '任务管理', children: [
+    { id: 'tasks:view', label: '查看' },
+    { id: 'tasks:create', label: '创建' },
+    { id: 'tasks:edit', label: '编辑' },
+    { id: 'tasks:delete', label: '删除' }
+  ]},
+  { id: 'team', label: '团队管理', children: [
+    { id: 'team:view', label: '查看' },
+    { id: 'team:create', label: '创建' },
+    { id: 'team:edit', label: '编辑' },
+    { id: 'team:delete', label: '删除' }
+  ]},
+  { id: 'reports', label: '报表', children: [
+    { id: 'reports:view', label: '查看' },
+    { id: 'reports:export', label: '导出' }
+  ]},
+  { id: 'documents', label: '文档管理', children: [
+    { id: 'documents:view', label: '查看' },
+    { id: 'documents:create', label: '创建' },
+    { id: 'documents:edit', label: '编辑' },
+    { id: 'documents:delete', label: '删除' },
+    { id: 'documents:export', label: '导出' }
+  ]},
+  { id: 'resources', label: '资源管理', children: [
+    { id: 'resources:view', label: '查看' },
+    { id: 'resources:create', label: '创建' },
+    { id: 'resources:edit', label: '编辑' },
+    { id: 'resources:delete', label: '删除' }
+  ]},
+  { id: 'issues', label: '问题管理', children: [
+    { id: 'issues:view', label: '查看' },
+    { id: 'issues:create', label: '创建' },
+    { id: 'issues:edit', label: '编辑' },
+    { id: 'issues:delete', label: '删除' }
+  ]},
+  { id: 'settings', label: '系统设置', children: [
+    { id: 'settings:view', label: '查看' },
+    { id: 'settings:edit', label: '编辑' }
+  ]},
+  { id: 'users', label: '用户管理', children: [
+    { id: 'users:view', label: '查看' },
+    { id: 'users:create', label: '创建' },
+    { id: 'users:edit', label: '编辑' },
+    { id: 'users:delete', label: '删除' }
+  ]}
+]
+
 const loading = ref(false), activeTab = ref('users')
+// 权限对话框相关
+const permissionDialogVisible = ref(false)
+const currentRoleId = ref<number | null>(null)
+const currentRoleName = ref('')
+const selectedPermissions = ref<string[]>([])
+const permissionTreeRef = ref()
+
+// 处理权限树勾选事件
+const handlePermissionCheck = (node: any, checked: any) => {
+  // 合并选中节点和半选中节点
+  selectedPermissions.value = [
+    ...checked.checkedKeys,
+    ...checked.halfCheckedKeys
+  ]
+}
 const users = ref<any[]>([]), roles = ref<any[]>([]), logs = ref<any[]>([])
 const total = ref(0), page = ref(1), pageSize = ref(20)
 const search = ref(''), filterActive = ref<boolean | null>(null)
@@ -70,6 +141,53 @@ const deleteRole = async (id: number) => {
   } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
 }
 
+// 权限管理
+const openPermissionDialog = async (role: any) => {
+  currentRoleId.value = role.id
+  currentRoleName.value = role.name
+  selectedPermissions.value = []
+  
+  // 尝试获取当前角色的权限
+  try {
+    const res = await api.get(`/users/roles/${role.id}/permissions`)
+    if (res.permissions && Array.isArray(res.permissions)) {
+      selectedPermissions.value = res.permissions
+    }
+  } catch (e: any) {
+    // 如果接口返回错误，可能该角色还没有权限，使用空数组
+    console.log('获取权限失败，使用默认空权限', e)
+  }
+  
+  permissionDialogVisible.value = true
+  
+  // 等待对话框渲染完成后设置树节点的选中状态
+  await nextTick()
+  if (permissionTreeRef.value) {
+    permissionTreeRef.value.setCheckedKeys(selectedPermissions.value)
+  }
+}
+
+// 监听对话框关闭事件，重置状态
+watch(permissionDialogVisible, (val) => {
+  if (!val) {
+    selectedPermissions.value = []
+    currentRoleId.value = null
+    currentRoleName.value = ''
+  }
+})
+
+const savePermissions = async () => {
+  if (!currentRoleId.value) return
+  try {
+    await api.put(`/users/roles/${currentRoleId.value}/permissions`, {
+      permissions: selectedPermissions.value
+    })
+    ElMessage.success('权限保存成功')
+    permissionDialogVisible.value = false
+    loadRoles()
+  } catch (e: any) { ElMessage.error(e?.detail || '保存权限失败') }
+}
+
 const handleTab = (t: string) => {
   activeTab.value = t
   if (t === 'users') loadUsers()
@@ -127,8 +245,9 @@ onMounted(() => { loadUsers(); loadRoles() })
             <span v-else>否</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="100">
+        <el-table-column label="操作" width="180">
           <template #default="{ row }">
+            <el-button type="primary" size="small" @click="openPermissionDialog(row)">权限</el-button>
             <el-button v-if="!row.is_system" type="danger" size="small" @click="deleteRole(row.id)">删除</el-button>
           </template>
         </el-table-column>
@@ -148,6 +267,24 @@ onMounted(() => { loadUsers(); loadRoles() })
       </el-table>
     </el-tab-pane>
   </el-tabs>
+
+  <!-- 权限编辑对话框 -->
+  <el-dialog v-model="permissionDialogVisible" :title="`权限设置 - ${currentRoleName}`" width="500">
+    <el-tree
+      ref="permissionTreeRef"
+      :data="permissionModules"
+      :props="{ label: 'label', children: 'children' }"
+      show-checkbox
+      node-key="id"
+      :default-checked-keys="selectedPermissions"
+      @check="handlePermissionCheck"
+      :check-strictly="false"
+    />
+    <template #footer>
+      <el-button @click="permissionDialogVisible = false">取消</el-button>
+      <el-button type="primary" @click="savePermissions">保存</el-button>
+    </template>
+  </el-dialog>
 </div>
 </template>
 

@@ -186,6 +186,38 @@ def delete_role(
     return {"message": "Role deleted successfully"}
 
 
+@router.get("/roles/{role_id}/permissions")
+def get_role_permissions(
+    role_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    role = crud_user.get_role(db, role_id)
+    if not role:
+        return {"error": "Role not found"}
+    import json
+    permissions = json.loads(role.permissions) if role.permissions else []
+    return {"permissions": permissions}
+
+
+@router.put("/roles/{role_id}/permissions")
+def update_role_permissions(
+    role_id: int,
+    permissions_data: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_admin),
+):
+    role = crud_user.get_role(db, role_id)
+    if not role:
+        return {"error": "Role not found"}
+    import json
+    permissions_str = json.dumps(permissions_data.get("permissions", []))
+    role.permissions = permissions_str
+    db.commit()
+    db.refresh(role)
+    return {"message": "Permissions updated successfully", "permissions": permissions_data.get("permissions", [])}
+
+
 # ============ Department Management ============
 
 @router.get("/departments", response_model=dict)
