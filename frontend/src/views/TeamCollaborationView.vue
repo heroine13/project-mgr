@@ -160,11 +160,8 @@
           <el-input v-model="inviteForm.name" placeholder="请输入成员姓名" />
         </el-form-item>
         <el-form-item label="部门">
-          <el-select v-model="inviteForm.department" placeholder="选择部门">
-            <el-option label="技术部" value="技术部" />
-            <el-option label="产品部" value="产品部" />
-            <el-option label="设计部" value="设计部" />
-            <el-option label="市场部" value="市场部" />
+          <el-select v-model="inviteForm.department" placeholder="选择部门" clearable>
+            <el-option v-for="dept in departments" :key="dept.id" :label="dept.name" :value="dept.name" />
           </el-select>
         </el-form-item>
       </el-form>
@@ -195,6 +192,7 @@ const teamStats = ref({})
 const departmentStats = ref([])
 const showInviteDialog = ref(false)
 const inviteForm = ref({ email: '', name: '', department: '' })
+const departments = ref([])
 
 const formatTime = (dateStr) => {
   if (!dateStr) return '-'
@@ -298,11 +296,21 @@ const inviteMember = async () => {
   }
 }
 
+const loadDepartments = async () => {
+  try {
+    const res = await axios.get('/api/v1/users/departments', { params: { page_size: 100 } })
+    departments.value = res.data.items || []
+  } catch (e) {
+    console.error('加载部门失败', e)
+  }
+}
+
 onMounted(() => {
   fetchMembers()
   fetchActivities()
   fetchWorkload()
   fetchStats()
+  loadDepartments()
 })
 </script>
 
