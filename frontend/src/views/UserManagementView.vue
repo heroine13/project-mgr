@@ -122,7 +122,7 @@ const loadUsers = async () => {
     const res = await api.get('/users/users', { params })
     users.value = res.items
     total.value = res.total
-  } catch (e) { ElMessage.error('加载用户失败') }
+  } catch (e) { console.warn('加载用户失败', e); users.value = [] }
   finally { loading.value = false }
 }
 
@@ -130,7 +130,7 @@ const loadRoles = async () => {
   try {
     const res = await api.get('/users/roles', { params: { page_size: 100 } })
     roles.value = res.items
-  } catch (e) { console.error(e) }
+  } catch (e) { console.warn('加载角色失败', e); roles.value = [] }
 }
 
 const loadLogs = async () => {
@@ -265,7 +265,7 @@ const loadDepartments = async () => {
   try {
     const res = await api.get('/users/departments', { params: { page_size: 100 } })
     departments.value = res.items || res || []
-  } catch (e: any) { console.error('加载部门失败', e) }
+  } catch (e: any) { console.warn('加载部门失败', e); departments.value = [] }
 }
 
 const openDepartmentDialog = (dept?: any) => {

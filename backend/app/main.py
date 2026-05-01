@@ -11,6 +11,7 @@ from app.api.v1 import ai
 from app.api.v1 import calendar, team, external
 from app.api.v1 import notifications
 from app.api.v1 import project_template
+from app.api.v1 import user_mgmt
 from app.api.v1.issues import router as issues_router
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
@@ -106,6 +107,7 @@ app.include_router(project_template.router)
 app.include_router(team.router)
 app.include_router(external.router)
 app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
+app.include_router(user_mgmt.router, prefix="/api/v1/users", tags=["users"])
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

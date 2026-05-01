@@ -55,6 +55,21 @@ def get_current_active_user(
     return current_user
 
 
+def require_admin(
+    current_user: User = Depends(get_current_user)
+) -> User:
+    """Require admin user (role_id = 1 is admin)"""
+    if not current_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive user")
+    # role_id = 1 is admin role
+    if current_user.role_id != 1:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Admin access required"
+        )
+    return current_user
+
+
 __all__ = [
     "get_current_user",
     "get_current_active_user",

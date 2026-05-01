@@ -98,7 +98,8 @@ const loadResources = async () => {
     resources.value = res.items
     resourceTotal.value = res.total
   } catch (error) {
-    ElMessage.error('加载资源失败')
+    console.warn('加载资源失败', error)
+    resources.value = []
   } finally {
     loading.value = false
   }
@@ -112,7 +113,8 @@ const loadAllocations = async () => {
     allocations.value = res.items
     allocationTotal.value = res.total
   } catch (error) {
-    ElMessage.error('加载分配记录失败')
+    console.warn('加载分配记录失败', error)
+    allocations.value = []
   } finally {
     loading.value = false
   }
@@ -126,7 +128,8 @@ const loadCosts = async () => {
     costs.value = res.items
     costTotal.value = res.total
   } catch (error) {
-    ElMessage.error('加载成本记录失败')
+    console.warn('加载成本记录失败', error)
+    costRecords.value = []
   } finally {
     loading.value = false
   }

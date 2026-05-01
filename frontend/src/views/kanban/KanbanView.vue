@@ -149,8 +149,8 @@ const fetchTasks = async () => {
     const statsResponse = await axios.get(`${API_BASE}/kanban/stats`, { params })
     stats.value = statsResponse.data
   } catch (error) {
-    ElMessage.error('获取任务失败')
-    console.error(error)
+    console.warn('获取任务失败', error)
+    tasks.value = []
   } finally {
     loading.value = false
   }
@@ -161,7 +161,8 @@ const fetchProjects = async () => {
     const response = await axios.get(`${API_BASE}/projects/`)
     projects.value = response.data
   } catch (error) {
-    console.error('获取项目失败', error)
+    console.warn('获取项目失败', error)
+    projects.value = []
   }
 }
 

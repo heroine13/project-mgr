@@ -249,7 +249,8 @@ const fetchEvents = async () => {
     const response = await axios.get(`${API_BASE}/events`, { params })
     events.value = response.data.events || []
   } catch (error) {
-    ElMessage.error('获取日历事件失败')
+    console.warn('获取日历事件失败', error)
+    events.value = []
   } finally {
     loading.value = false
   }
@@ -266,7 +267,8 @@ const fetchUpcoming = async () => {
     const response = await axios.get(`${API_BASE}/upcoming`, { params })
     upcomingTasks.value = response.data.upcoming || []
   } catch (error) {
-    console.error('获取即将到期任务失败', error)
+    console.warn('获取即将到期任务失败', error)
+    upcomingTasks.value = []
   } finally {
     loadingUpcoming.value = false
   }
@@ -277,7 +279,8 @@ const fetchProjects = async () => {
     const response = await axios.get('/api/v1/projects/')
     projects.value = response.data
   } catch (error) {
-    console.error('获取项目列表失败', error)
+    console.warn('获取项目列表失败', error)
+    projects.value = []
   }
 }
 

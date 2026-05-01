@@ -39,6 +39,18 @@ const routes = [
         meta: { title: '创建任务' }
       },
       {
+        path: 'tasks/my',
+        name: 'tasks-my',
+        component: () => import('@/views/TaskDetailView.vue'),
+        meta: { title: '我的任务' }
+      },
+      {
+        path: 'tasks/overdue',
+        name: 'tasks-overdue',
+        component: () => import('@/views/TaskDetailView.vue'),
+        meta: { title: '逾期任务' }
+      },
+      {
         path: 'projects',
         name: 'projects',
         component: () => import('@/views/ProjectDetailView.vue')
@@ -157,6 +169,11 @@ const routes = [
         path: 'permissions',
         name: 'permissions',
         component: () => import('@/views/PermissionsView.vue')
+      },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: () => import('@/views/SettingsView.vue')
       }
     ]
   }

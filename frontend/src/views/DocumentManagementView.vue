@@ -70,7 +70,8 @@ const loadDocuments = async () => {
     documents.value = res.items
     total.value = res.total
   } catch (error: any) {
-    ElMessage.error('加载文档失败')
+    console.warn('加载文档失败', error)
+    documents.value = []
   } finally {
     loading.value = false
   }

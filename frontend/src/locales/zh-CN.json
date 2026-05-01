@@ -80,7 +80,11 @@
     "editTask": "编辑任务",
     "deleteTask": "删除任务",
     "markComplete": "标记完成",
-    "comments": "评论"
+    "comments": "评论",
+    "estimatedHours": "预估工时",
+    "actualHours": "实际工时",
+    "tags": "标签",
+    "createdBy": "创建人"
   },
   "priority": {
     "urgent": "紧急",
