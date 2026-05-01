@@ -54,7 +54,7 @@ def list_users(
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     skip = (page - 1) * page_size
     users, total = crud_user.get_all_users_with_roles(db, is_active, search, skip, page_size)
@@ -145,7 +145,7 @@ def list_roles(
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     skip = (page - 1) * page_size
     roles, total = crud_user.get_roles(db, skip, page_size)
@@ -225,7 +225,7 @@ def list_departments(
     page: int = Query(1, ge=1),
     page_size: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     skip = (page - 1) * page_size
     depts, total = crud_user.get_departments(db, skip, page_size)
@@ -235,7 +235,7 @@ def list_departments(
 @router.get("/departments/tree")
 def get_department_tree(
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     tree = crud_user.get_all_departments_tree(db)
     return {"items": tree}
