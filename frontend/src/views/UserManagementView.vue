@@ -209,11 +209,18 @@ const saveUser = async () => {
     return
   }
   try {
-    if (userForm.value.id) {
-      await api.put(`/users/users/${userForm.value.id}`, userForm.value)
+    const userData = { ...userForm.value }
+    // 新增用户需要密码，编辑不需要
+    if (!userData.id && !userData.password) {
+      userData.password = '123456' // 默认密码
+    }
+    // 删除id字段避免API报错
+    if (userData.id) {
+      delete userData.id
+      await api.put(`/users/users/${userForm.value.id}`, userData)
       ElMessage.success('用户更新成功')
     } else {
-      await api.post('/users/users', userForm.value)
+      await api.post('/users/users', userData)
       ElMessage.success('用户创建成功')
     }
     userDialogVisible.value = false

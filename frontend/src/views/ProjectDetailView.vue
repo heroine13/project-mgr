@@ -307,6 +307,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Edit, Download, More, Plus, Search, 
   Clock, Setting, UserFilled, Upload, 
@@ -479,7 +480,21 @@ const handleProjectCommand = (command: string) => {
   if (command === 'archive') {
     // TODO: Archive project
   } else if (command === 'delete') {
-    // TODO: Delete project with confirmation
+    try {
+      await ElMessageBox.confirm('确定要删除此项目吗？此操作不可恢复。', '删除项目', {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+      await api.delete(`/projects/${project.value.id}`)
+      ElMessage.success('项目已删除')
+      router.push('/projects')
+    } catch (e: any) {
+      if (e !== 'cancel') {
+        console.error('删除项目失败', e)
+        ElMessage.error(e?.detail || '删除失败')
+      }
+    }
   }
 }
 
