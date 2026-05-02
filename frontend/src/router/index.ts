@@ -21,6 +21,7 @@ const routes = [
     path: '/',
     component: MainLayout,
     redirect: '/dashboard',
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'dashboard',
@@ -188,6 +189,22 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+})
+
+// 全局守卫 - 需要登录才能访问
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = localStorage.getItem('access_token')
+  
+  // 公开路由
+  const publicRoutes = ['/login', '/register', '/forgot-password']
+  
+  if (!publicRoutes.includes(to.path) && !isAuthenticated) {
+    next('/login')
+  } else if (to.path === '/login' && isAuthenticated) {
+    next('/dashboard')
+  } else {
+    next()
+  }
 })
 
 export default router
