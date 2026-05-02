@@ -8,7 +8,7 @@ from app.api.v1 import scheduler, reports
 from app.api.v1 import integration, backup, workflow, kanban, audit
 from app.api.v1 import reports as reports_enhanced
 from app.api.v1 import ai
-from app.api.v1 import calendar, team, external
+from app.api.v1 import calendar, team, external, documents, resources
 from app.api.v1 import notifications
 from app.api.v1 import project_template
 from app.api.v1 import user_mgmt
@@ -99,12 +99,14 @@ app.include_router(reports_enhanced.router)
 app.include_router(integration.router)
 app.include_router(backup.router)
 app.include_router(workflow.router)
-app.include_router(kanban.router)
+app.include_router(kanban.router, prefix="/api/v1", tags=["kanban"])
 app.include_router(audit.router)
 app.include_router(ai.router)
 app.include_router(calendar.router)
 app.include_router(project_template.router)
 app.include_router(team.router)
+app.include_router(documents.router, prefix="/api/v1/documents", tags=["documents"])
+app.include_router(resources.router, prefix="/api/v1/resources", tags=["resources"])
 app.include_router(external.router)
 app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
 app.include_router(user_mgmt.router, prefix="/api/v1/users", tags=["users"])
