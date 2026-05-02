@@ -100,7 +100,7 @@ class Department(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
     code = Column(String(50), unique=True, nullable=True)
-    parent_id = Column(Integer, nullable=True)  # For hierarchical structure
+    parent_id = Column(Integer, ForeignKey("departments.id"), nullable=True)  # For hierarchical structure
     description = Column(String(500))
     sort_order = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
@@ -109,7 +109,7 @@ class Department(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Self-referential for hierarchy
-    children = relationship("Department", backref=backref("parent", remote_side=[id]))
+    children = relationship("Department", backref=backref("parent", remote_side=[id]), foreign_keys=[parent_id])
     
     def __repr__(self):
         return f"<Department(name='{self.name}')>"
