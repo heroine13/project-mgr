@@ -18,3 +18,4 @@ pymssql==2.2.8
 python-dotenv==1.0.0
 pydantic-settings>=2.0.0
 apscheduler==3.10.4
+requests==2.31.0
