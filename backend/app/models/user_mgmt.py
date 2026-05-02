@@ -2,7 +2,7 @@
 User Management Models
 """
 
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, Enum
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, Enum, ForeignKey
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship, backref
 from enum import Enum as PyEnum
