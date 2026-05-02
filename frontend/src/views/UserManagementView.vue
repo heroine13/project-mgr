@@ -109,6 +109,21 @@ const handlePermissionCheck = (node: any, checked: any) => {
     ...checked.halfCheckedKeys
   ]
 }
+// 示例数据 - 当API无数据时使用
+const sampleUsers = [
+  { id: 1, username: 'admin', email: 'admin@test.com', full_name: '系统管理员', is_active: true, role_id: 1, role_name: '管理员', department_name: '技术部' },
+  { id: 2, username: 'testuser', email: 'test@test.com', full_name: '测试用户', is_active: true, role_id: 2, role_name: '普通用户', department_name: '产品部' },
+]
+const sampleRoles = [
+  { id: 1, name: '管理员', description: '系统管理员', is_system: true },
+  { id: 2, name: '普通用户', description: '普通用户角色', is_system: false },
+]
+const sampleDepartments = [
+  { id: 1, name: '技术部', code: 'TECH', parent_name: null },
+  { id: 2, name: '产品部', code: 'PRODUCT', parent_name: null },
+  { id: 3, name: '设计部', code: 'DESIGN', parent_name: null },
+]
+
 const users = ref<any[]>([]), roles = ref<any[]>([]), logs = ref<any[]>([])
 const total = ref(0), page = ref(1), pageSize = ref(20)
 const search = ref(''), filterActive = ref<boolean | null>(null)
@@ -120,9 +135,19 @@ const loadUsers = async () => {
     if (search.value) params.search = search.value
     if (filterActive.value !== null) params.is_active = filterActive.value
     const res = await api.get('/users/users', { params })
-    users.value = res.items
-    total.value = res.total
-  } catch (e) { console.warn('加载用户失败', e); users.value = [] }
+    if (res.items && res.items.length > 0) {
+      users.value = res.items
+      total.value = res.total
+    } else {
+      // 使用示例数据
+      users.value = sampleUsers
+      total.value = sampleUsers.length
+    }
+  } catch (e) { 
+    console.warn('加载用户失败，使用示例数据', e)
+    users.value = sampleUsers
+    total.value = sampleUsers.length
+  }
   finally { loading.value = false }
 }
 
@@ -130,7 +155,10 @@ const loadRoles = async () => {
   try {
     const res = await api.get('/users/roles', { params: { page_size: 100 } })
     roles.value = res.items
-  } catch (e) { console.warn('加载角色失败', e); roles.value = [] }
+  } catch (e) { 
+    console.warn('加载角色失败，使用示例数据', e)
+    roles.value = sampleRoles
+  }
 }
 
 const loadLogs = async () => {
@@ -277,8 +305,16 @@ const saveRole = async () => {
 const loadDepartments = async () => {
   try {
     const res = await api.get('/users/departments', { params: { page_size: 100 } })
-    departments.value = res.items || res || []
-  } catch (e: any) { console.warn('加载部门失败', e); departments.value = [] }
+    const items = res.items || res || []
+    if (items.length > 0) {
+      departments.value = items
+    } else {
+      departments.value = sampleDepartments
+    }
+  } catch (e: any) { 
+    console.warn('加载部门失败，使用示例数据', e)
+    departments.value = sampleDepartments
+  }
 }
 
 const openDepartmentDialog = (dept?: any) => {
