@@ -18,10 +18,10 @@ services:
       - "8000:8000"
     volumes:
       - ./backend:/app
-      - ./test_db:/app/test_db
+      - ./test_db:/app/test_db:ro
     environment:
-      # SQLite数据库 (轻量级测试)
-      DATABASE_URL: sqlite:///./test_db/project_mgr_test.db
+      # SQLite数据库 - 使用容器内路径
+      DATABASE_URL: sqlite:////app/test_db/project_mgr.db
       DATABASE_TYPE: sqlite
       SECRET_KEY: test-secret-key-do-not-use-in-production
       DEBUG: "true"
