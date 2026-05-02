@@ -27,7 +27,7 @@ router = APIRouter()
 def create_user(
     user_data: UserCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         user = crud_user.create_user(db, user_data)
@@ -85,7 +85,7 @@ def update_user(
     user_id: int,
     user_update: UserUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     user = crud_user.update_user(db, user_id, user_update)
     if not user:
@@ -108,7 +108,7 @@ def update_user(
 def delete_user(
     user_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     success = crud_user.delete_user(db, user_id)
     if not success:
@@ -156,7 +156,7 @@ def list_roles(
 def create_role(
     role: RoleCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     return crud_user.create_role(db, role)
 
@@ -166,7 +166,7 @@ def update_role(
     role_id: int,
     role_update: RoleUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     role = crud_user.update_role(db, role_id, role_update)
     if not role:
@@ -178,7 +178,7 @@ def update_role(
 def delete_role(
     role_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     success = crud_user.delete_role(db, role_id)
     if not success:
@@ -245,7 +245,7 @@ def get_department_tree(
 def create_department(
     dept: DepartmentCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     return crud_user.create_department(db, dept)
 
@@ -255,7 +255,7 @@ def update_department(
     dept_id: int,
     dept_update: DepartmentUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     dept = crud_user.update_department(db, dept_id, dept_update)
     if not dept:
@@ -267,7 +267,7 @@ def update_department(
 def delete_department(
     dept_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_admin),
+    current_user: User = Depends(get_current_user),
 ):
     try:
         success = crud_user.delete_department(db, dept_id)
