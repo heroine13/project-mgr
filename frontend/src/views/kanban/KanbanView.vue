@@ -143,14 +143,16 @@ const fetchTasks = async () => {
       params.project_id = selectedProject.value
     }
     const response = await axios.get(`${API_BASE}/kanban/tasks`, { params })
-    tasks.value = response.data.tasks
+    // API返回 { columns: [...], tasks: {...} }
+    const data = response.data
+    tasks.value = data.tasks || {}
     
     // Also fetch stats
     const statsResponse = await axios.get(`${API_BASE}/kanban/stats`, { params })
     stats.value = statsResponse.data
   } catch (error) {
     console.warn('获取任务失败', error)
-    tasks.value = []
+    tasks.value = {}
   } finally {
     loading.value = false
   }

@@ -289,8 +289,10 @@ const inviteMember = async () => {
     ElMessage.success('邀请已发送')
     showInviteDialog.value = false
     inviteForm.value = { email: '', name: '', department: '' }
-  } catch (error) {
-    ElMessage.error('邀请失败')
+    fetchMembers()
+  } catch (error: any) {
+    console.error('邀请成员失败', error)
+    ElMessage.error(error?.response?.data?.detail || error?.message || '邀请失败，请确保已登录')
   } finally {
     inviting.value = false
   }

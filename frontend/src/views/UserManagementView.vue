@@ -225,7 +225,10 @@ const saveUser = async () => {
     }
     userDialogVisible.value = false
     loadUsers()
-  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+  } catch (e: any) { 
+    console.error('保存用户失败', e)
+    ElMessage.error(e?.detail || e?.message || '操作失败，请确保已登录')
+  }
 }
 
 const deleteUser = async (user: any) => {
@@ -264,7 +267,10 @@ const saveRole = async () => {
     }
     roleDialogVisible.value = false
     loadRoles()
-  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+  } catch (e: any) { 
+    console.error('保存角色失败', e)
+    ElMessage.error(e?.detail || e?.message || '操作失败，请确保已登录')
+  }
 }
 
 // 部门管理

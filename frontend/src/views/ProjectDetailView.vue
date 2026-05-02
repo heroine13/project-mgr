@@ -476,7 +476,7 @@ const exportProject = () => {
   console.log('Export project')
 }
 
-const handleProjectCommand = (command: string) => {
+const handleProjectCommand = async (command: string) => {
   if (command === 'archive') {
     // TODO: Archive project
   } else if (command === 'delete') {
