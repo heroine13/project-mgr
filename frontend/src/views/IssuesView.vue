@@ -97,7 +97,8 @@ const loadIssues = async () => {
     issues.value = res.items
     total.value = res.total
   } catch (error: any) {
-    ElMessage.error('加载Issue失败')
+    console.warn('加载Issue失败', error)
+    issues.value = []
   } finally {
     loading.value = false
   }
