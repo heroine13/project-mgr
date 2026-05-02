@@ -85,6 +85,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'element-plus'
+import { authApi } from '@/services/api'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -123,19 +124,22 @@ const handleLogin = async () => {
     await loginFormRef.value.validate()
     loading.value = true
     
-    // TODO: Call actual login API
-    // const response = await api.auth.login(loginForm)
+    // 调用实际登录API
+    const response = await authApi.login(loginForm)
     
-    // Mock successful login
-    setTimeout(() => {
-      ElMessage.success(t('login.success'))
-      router.push('/dashboard')
-      loading.value = false
-    }, 1000)
+    // 保存token到localStorage
+    localStorage.setItem('access_token', response.access_token)
+    localStorage.setItem('refresh_token', response.refresh_token)
+    localStorage.setItem('user_id', response.user_id)
+    localStorage.setItem('username', response.username)
     
-  } catch (error) {
+    ElMessage.success(t('login.success'))
+    router.push('/dashboard')
+    loading.value = false
+    
+  } catch (error: any) {
     console.error('Login failed:', error)
-    ElMessage.error(t('login.error'))
+    ElMessage.error(error?.response?.data?.detail || t('login.error'))
     loading.value = false
   }
 }
