@@ -103,6 +103,7 @@
     "onHold": "暂停"
   },
   "common": {
+    "profile": "个人资料",
     "save": "保存",
     "cancel": "取消",
     "delete": "删除",

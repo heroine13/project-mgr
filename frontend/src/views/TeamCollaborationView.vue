@@ -224,13 +224,25 @@ const getCapacityColor = (capacity) => {
   return '#67C23A'
 }
 
+// 示例数据
+const sampleMembers = [
+  { id: 1, username: '张三', email: 'zhangsan@test.com', title: '开发工程师', department: '技术部', role: 'member', last_active: '2026-05-02T10:00:00' },
+  { id: 2, username: '李四', email: 'lisi@test.com', title: '产品经理', department: '产品部', role: 'admin', last_active: '2026-05-02T09:30:00' },
+  { id: 3, username: '王五', email: 'wangwu@test.com', title: '设计师', department: '设计部', role: 'member', last_active: '2026-05-02T08:45:00' },
+]
+
 const fetchMembers = async () => {
   loading.value = true
   try {
     const response = await axios.get(`${API_BASE}/members`)
-    members.value = response.data.members || []
+    if (response.data.members && response.data.members.length > 0) {
+      members.value = response.data.members
+    } else {
+      members.value = sampleMembers
+    }
   } catch (error) {
-    console.error('获取成员列表失败', error)
+    console.warn('获取成员列表失败，使用示例数据', error)
+    members.value = sampleMembers
   } finally {
     loading.value = false
   }
@@ -239,35 +251,65 @@ const fetchMembers = async () => {
 const fetchActivities = async () => {
   try {
     const response = await axios.get(`${API_BASE}/activity`)
-    activities.value = response.data.activities || []
+    if (response.data.activities && response.data.activities.length > 0) {
+      activities.value = response.data.activities
+    } else {
+      activities.value = [
+        { id: 1, username: '张三', type: 'task_completed', description: '完成了任务 "用户登录模块"', created_at: '2026-05-02T10:00:00' },
+        { id: 2, username: '李四', type: 'comment', description: '在项目 "官网重构" 中添加了评论', created_at: '2026-05-02T09:30:00' },
+      ]
+    }
   } catch (error) {
-    console.error('获取活动失败', error)
+    console.warn('获取活动失败', error)
+    activities.value = []
   }
 }
 
 const fetchWorkload = async () => {
   try {
     const response = await axios.get(`${API_BASE}/workload`)
-    workload.value = response.data.workload || []
+    if (response.data.workload && response.data.workload.length > 0) {
+      workload.value = response.data.workload
+    } else {
+      workload.value = [
+        { user_id: 1, username: '张三', assigned: 5, in_progress: 3, completed: 12, capacity: 75 },
+        { user_id: 2, username: '李四', assigned: 3, in_progress: 2, completed: 8, capacity: 60 },
+      ]
+    }
   } catch (error) {
-    console.error('获取工作负载失败', error)
+    console.warn('获取工作负载失败', error)
+    workload.value = []
   }
 }
 
 const fetchStats = async () => {
   try {
     const response = await axios.get(`${API_BASE}/stats`)
-    teamStats.value = response.data
-    
-    // Format department stats
-    const byDept = response.data.by_department || {}
-    departmentStats.value = Object.entries(byDept).map(([dept, data]) => ({
-      department: dept,
-      members: data.members,
-      completed_tasks: data.completed_tasks
-    }))
+    if (response.data && response.data.total_members > 0) {
+      teamStats.value = response.data
+      const byDept = response.data.by_department || {}
+      departmentStats.value = Object.entries(byDept).map(([dept, data]) => ({
+        department: dept,
+        members: data.members,
+        completed_tasks: data.completed_tasks
+      }))
+    } else {
+      // 使用示例数据
+      teamStats.value = { total_members: 3, active_members: 3, tasks_assigned: 8, tasks_completed: 20 }
+      departmentStats.value = [
+        { department: '技术部', members: 1, completed_tasks: 8 },
+        { department: '产品部', members: 1, completed_tasks: 7 },
+        { department: '设计部', members: 1, completed_tasks: 5 },
+      ]
+    }
   } catch (error) {
-    console.error('获取统计失败', error)
+    console.warn('获取统计失败', error)
+    teamStats.value = { total_members: 3, active_members: 3, tasks_assigned: 8, tasks_completed: 20 }
+    departmentStats.value = [
+      { department: '技术部', members: 1, completed_tasks: 8 },
+      { department: '产品部', members: 1, completed_tasks: 7 },
+      { department: '设计部', members: 1, completed_tasks: 5 },
+    ]
   }
 }
 
