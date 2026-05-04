@@ -214,7 +214,7 @@ const initChart = () => {
     },
     yAxis: {
       type: 'category',
-      data: ganttStore.tasks.map(task => task.id),
+      data: (ganttStore.tasks || []).map(task => task.id),
       axisLabel: {
         formatter: (value: number) => {
           const task = ganttStore.tasks.find(t => t.id === value)
@@ -236,7 +236,7 @@ const initChart = () => {
           x: [0, 1],
           y: 2
         },
-        data: ganttStore.tasks.map(task => ({
+        data: (ganttStore.tasks || []).map(task => ({
           id: task.id,
           name: task.name,
           start_date: task.start_date,
@@ -337,10 +337,10 @@ const updateChart = () => {
   const option = chartInstance.getOption()
   
   // 更新Y轴数据
-  option.yAxis[0].data = ganttStore.tasks.map(task => task.id)
+  option.yAxis[0].data = (ganttStore.tasks || []).map(task => task.id)
   
   // 更新系列数据
-  option.series[0].data = ganttStore.tasks.map(task => ({
+  option.series[0].data = (ganttStore.tasks || []).map(task => ({
     id: task.id,
     name: task.name,
     start_date: task.start_date,
