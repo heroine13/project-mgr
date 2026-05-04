@@ -174,7 +174,6 @@
 </template>
 
 <script setup>
-import api from '@/utils/api'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
@@ -235,7 +234,7 @@ const sampleMembers = [
 const fetchMembers = async () => {
   loading.value = true
   try {
-    const response = await api.get(`${API_BASE}/members`)
+    const response = await axios.get(`${API_BASE}/members`)
     if (response.data.members && response.data.members.length > 0) {
       members.value = response.data.members
     } else {
@@ -251,7 +250,7 @@ const fetchMembers = async () => {
 
 const fetchActivities = async () => {
   try {
-    const response = await api.get(`${API_BASE}/activity`)
+    const response = await axios.get(`${API_BASE}/activity`)
     if (response.data.activities && response.data.activities.length > 0) {
       activities.value = response.data.activities
     } else {
@@ -268,7 +267,7 @@ const fetchActivities = async () => {
 
 const fetchWorkload = async () => {
   try {
-    const response = await api.get(`${API_BASE}/workload`)
+    const response = await axios.get(`${API_BASE}/workload`)
     if (response.data.workload && response.data.workload.length > 0) {
       workload.value = response.data.workload
     } else {
@@ -285,7 +284,7 @@ const fetchWorkload = async () => {
 
 const fetchStats = async () => {
   try {
-    const response = await api.get(`${API_BASE}/stats`)
+    const response = await axios.get(`${API_BASE}/stats`)
     if (response.data && response.data.total_members > 0) {
       teamStats.value = response.data
       const byDept = response.data.by_department || {}
@@ -326,7 +325,7 @@ const inviteMember = async () => {
   
   inviting.value = true
   try {
-    await api.post(`${API_BASE}/invite`, null, {
+    await axios.post(`${API_BASE}/invite`, null, {
       params: inviteForm.value
     })
     ElMessage.success('邀请已发送')
@@ -343,7 +342,7 @@ const inviteMember = async () => {
 
 const loadDepartments = async () => {
   try {
-    const res = await api.get('/api/v1/users/departments', { params: { page_size: 100 } })
+    const res = await axios.get('/api/v1/users/departments', { params: { page_size: 100 } })
     departments.value = res.data.items || []
   } catch (e) {
     console.error('加载部门失败', e)
