@@ -96,7 +96,6 @@ const loadResources = async () => {
     const params = { page: page.value, page_size: pageSize.value }
     const res = await api.get('/resources/resources', { params })
     const data = res.data || res
-    [a-z_]+.value = data.items
     resourceTotal.value = (res.data || res).total || 0
   } catch (error) {
     console.warn('加载资源失败', error)
@@ -112,7 +111,6 @@ const loadAllocations = async () => {
     const params = { page: page.value, page_size: pageSize.value }
     const res = await api.get('/resources/allocations', { params })
     const data = res.data || res
-    [a-z_]+.value = data.items
     allocationTotal.value = (res.data || res).total || 0
   } catch (error) {
     console.warn('加载分配记录失败', error)
@@ -128,7 +126,6 @@ const loadCosts = async () => {
     const params = { page: page.value, page_size: pageSize.value }
     const res = await api.get('/resources/costs', { params })
     const data = res.data || res
-    [a-z_]+.value = data.items
     costTotal.value = (res.data || res).total || 0
   } catch (error) {
     console.warn('加载成本记录失败', error)
@@ -142,7 +139,7 @@ const loadProjects = async () => {
   try {
     const res = await api.get('/projects/', { params: { page_size: 100 } })
     const data = res.data || res
-    [a-z_]+.value = data.items
+    projects.value = data.items || data || []
   } catch (error) {
     console.error('加载项目失败', error)
   }

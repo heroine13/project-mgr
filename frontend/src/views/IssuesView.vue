@@ -95,8 +95,8 @@ const loadIssues = async () => {
     
     const res = await api.get('/issues/', { params })
     const data = res.data || res
-    [a-z_]+.value = data.items
-    total.value = (res.data || res).total || 0
+    issues.value = data.items || []
+    total.value = data.total || 0
   } catch (error: any) {
     console.warn('加载Issue失败', error)
     issues.value = []
@@ -110,7 +110,7 @@ const loadStats = async () => {
     const res = await api.get('/issues/stats', { 
       params: filterProject.value ? { project_id: filterProject.value } : {} 
     })
-    stats.value = res
+    stats.value = res.data || res
   } catch (error) {
     console.error('加载统计失败', error)
   }
@@ -120,7 +120,7 @@ const loadProjects = async () => {
   try {
     const res = await api.get('/projects/', { params: { page_size: 100 } })
     const data = res.data || res
-    [a-z_]+.value = data.items
+    projects.value = data.items || data || []
   } catch (error) {
     console.error('加载项目失败', error)
   }

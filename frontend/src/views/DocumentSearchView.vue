@@ -39,10 +39,10 @@ const loadOptions = async () => {
       api.get('/documents-search/search/history', { params: { limit: 10 } }),
       api.get('/documents-search/search/saved')
     ])
-    categories.value = catRes.items
-    projects.value = projRes.items
-    searchHistory.value = histRes.items
-    savedSearches.value = saveRes.items
+    categories.value = (catRes.data || catRes).items || []
+    projects.value = (projRes.data || projRes).items || []
+    searchHistory.value = (histRes.data || histRes).items || []
+    savedSearches.value = (saveRes.data || saveRes).items || []
   } catch (e) { console.error(e) }
 }
 
@@ -56,7 +56,7 @@ const doSearch = async () => {
       page_size: 20
     })
     const data = res.data || res
-    [a-z_]+.value = data.items
+    searchResults.value = data.items || []
     total.value = (res.data || res).total || 0
     tookMs.value = res.took_ms
   } catch (e: any) { ElMessage.error(e?.detail || '搜索失败') }
