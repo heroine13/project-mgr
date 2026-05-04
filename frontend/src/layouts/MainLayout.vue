@@ -134,10 +134,10 @@
           </div>
         </div>
         
-        <div class="sidebar-actions" v-if="!isCollapsed">
+        <div class="sidebar-actions">
           <el-button type="text" @click="toggleTheme">
             <el-icon><Moon v-if="isDarkTheme" /><Sunny v-else /></el-icon>
-            {{ isDarkTheme ? $t('common.dark') : $t('common.light') }}
+            <span v-if="!isCollapsed">{{ isDarkTheme ? $t('common.dark') : $t('common.light') }}</span>
           </el-button>
           
           <el-dropdown @command="handleUserCommand">

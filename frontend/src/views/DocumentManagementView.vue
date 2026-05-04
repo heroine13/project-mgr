@@ -67,8 +67,9 @@ const loadDocuments = async () => {
     if (filterCategory.value) params.category = filterCategory.value
     
     const res = await api.get('/documents/', { params })
-    documents.value = res.items
-    total.value = res.total
+    const data = res.data || res
+    documents.value = data.items || []
+    total.value = data.total || 0
   } catch (error: any) {
     console.warn('加载文档失败', error)
     documents.value = []
@@ -81,7 +82,8 @@ const loadDocuments = async () => {
 const loadProjects = async () => {
   try {
     const res = await api.get('/projects/', { params: { page_size: 100 } })
-    projects.value = res.items
+    const data = res.data || res
+    projects.value = data.items || data || []
   } catch (error) {
     console.error('加载项目失败', error)
   }
@@ -91,7 +93,8 @@ const loadProjects = async () => {
 const loadVersions = async (docId: number) => {
   try {
     const res = await api.get(`/documents/${docId}/versions`)
-    documentVersions.value = res.items
+    const data = res.data || res
+    documentVersions.value = data.items || data || []
   } catch (error) {
     console.error('加载版本失败', error)
   }

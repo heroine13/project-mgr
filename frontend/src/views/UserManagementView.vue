@@ -135,15 +135,16 @@ const loadUsers = async () => {
     if (search.value) params.search = search.value
     if (filterActive.value !== null) params.is_active = filterActive.value
     const res = await api.get('/users/users', { params })
-    if (res.items && res.items.length > 0) {
-      users.value = res.items
-      total.value = res.total
+    const data = res.data || res
+    if (data.items && data.items.length > 0) {
+      users.value = data.items
+      total.value = data.total
     } else {
       // 使用示例数据
       users.value = sampleUsers
       total.value = sampleUsers.length
     }
-  } catch (e) { 
+  } catch (e: any) { 
     console.warn('加载用户失败，使用示例数据', e)
     users.value = sampleUsers
     total.value = sampleUsers.length
@@ -154,7 +155,7 @@ const loadUsers = async () => {
 const loadRoles = async () => {
   try {
     const res = await api.get('/users/roles', { params: { page_size: 100 } })
-    roles.value = res.items
+    roles.value = (res.data || res).items || res.items || []
   } catch (e) { 
     console.warn('加载角色失败，使用示例数据', e)
     roles.value = sampleRoles
@@ -164,7 +165,7 @@ const loadRoles = async () => {
 const loadLogs = async () => {
   try {
     const res = await api.get('/users/audit-logs', { params: { page_size: 50 } })
-    logs.value = res.items
+    logs.value = (res.data || res).items || res.items || []
   } catch (e) { console.error(e) }
 }
 
@@ -305,7 +306,8 @@ const saveRole = async () => {
 const loadDepartments = async () => {
   try {
     const res = await api.get('/users/departments', { params: { page_size: 100 } })
-    const items = res.items || res || []
+    const data = res.data || res
+    const items = data.items || data || []
     if (items.length > 0) {
       departments.value = items
     } else {
@@ -364,6 +366,7 @@ const openPermissionDialog = async (role: any) => {
   // 尝试获取当前角色的权限
   try {
     const res = await api.get(`/users/roles/${role.id}/permissions`)
+    const data = res.data || res
     if (res.permissions && Array.isArray(res.permissions)) {
       selectedPermissions.value = res.permissions
     }
