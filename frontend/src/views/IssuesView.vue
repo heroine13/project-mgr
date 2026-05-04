@@ -97,7 +97,7 @@ const loadIssues = async () => {
     const data = res.data || res
     issues.value = data.items || []
     total.value = data.total || 0
-  } catch (error: any) {
+  } catch (error) {
     console.warn('加载Issue失败', error)
     issues.value = []
   } finally {
@@ -141,7 +141,7 @@ const createIssue = async () => {
     newIssue.value = { title: '', description: '', issue_type: 'bug', priority: 'medium', project_id: null, labels: '' }
     loadIssues()
     loadStats()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '创建失败')
   } finally {
     creating.value = false

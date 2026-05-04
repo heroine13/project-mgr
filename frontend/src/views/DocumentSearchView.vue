@@ -59,7 +59,7 @@ const doSearch = async () => {
     searchResults.value = data.items || []
     total.value = (res.data || res).total || 0
     tookMs.value = res.took_ms
-  } catch (e: any) { ElMessage.error(e?.detail || '搜索失败') }
+  } catch (e) { ElMessage.error(e?.detail || '搜索失败') }
   finally { loading.value = false }
 }
 
@@ -70,7 +70,7 @@ const saveSearch = async () => {
     ElMessage.success('保存成功')
     showSaveDialog.value = false
     loadOptions()
-  } catch (e: any) { ElMessage.error(e?.detail || '保存失败') }
+  } catch (e) { ElMessage.error(e?.detail || '保存失败') }
 }
 
 const loadSavedSearch = (item: any) => {

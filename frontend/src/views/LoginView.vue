@@ -137,7 +137,7 @@ const handleLogin = async () => {
     router.push('/dashboard')
     loading.value = false
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Login failed:', error)
     ElMessage.error(error?.response?.data?.detail || t('login.error'))
     loading.value = false

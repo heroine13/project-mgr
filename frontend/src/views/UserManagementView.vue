@@ -136,7 +136,6 @@ const loadUsers = async () => {
     if (filterActive.value !== null) params.is_active = filterActive.value
     const res = await api.get('/users/users', { params })
     const data = res.data || res
-    const data = res.data || res
     if (data.items && data.items.length > 0) {
       users.value = data.items
       total.value = data.total
@@ -145,7 +144,7 @@ const loadUsers = async () => {
       users.value = sampleUsers
       total.value = sampleUsers.length
     }
-  } catch (e: any) { 
+  } catch (e) { 
     console.warn('加载用户失败，使用示例数据', e)
     users.value = sampleUsers
     total.value = sampleUsers.length
@@ -175,7 +174,7 @@ const toggleUserStatus = async (user: any) => {
     await api.patch(`/users/users/${user.id}/status`, { is_active: !user.is_active })
     ElMessage.success(user.is_active ? '已禁用' : '已启用')
     loadUsers()
-  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+  } catch (e) { ElMessage.error(e?.detail || '操作失败') }
 }
 
 const assignRole = async (userId: number, roleId: number) => {
@@ -183,7 +182,7 @@ const assignRole = async (userId: number, roleId: number) => {
     await api.patch(`/users/users/${userId}/status`, { role_id: roleId })
     ElMessage.success('角色分配成功')
     loadUsers()
-  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+  } catch (e) { ElMessage.error(e?.detail || '操作失败') }
 }
 
 const createRole = async () => {
@@ -193,7 +192,7 @@ const createRole = async () => {
     await api.post('/users/roles', { name, description: '' })
     ElMessage.success('创建成功')
     loadRoles()
-  } catch (e: any) { ElMessage.error(e?.detail || '创建失败') }
+  } catch (e) { ElMessage.error(e?.detail || '创建失败') }
 }
 
 const deleteRole = async (id: number) => {
@@ -202,7 +201,7 @@ const deleteRole = async (id: number) => {
     await api.delete(`/users/roles/${id}`)
     ElMessage.success('删除成功')
     loadRoles()
-  } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
+  } catch (e) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
 }
 
 // 用户增删改
@@ -255,7 +254,7 @@ const saveUser = async () => {
     }
     userDialogVisible.value = false
     loadUsers()
-  } catch (e: any) { 
+  } catch (e) { 
     console.error('保存用户失败', e)
     ElMessage.error(e?.detail || e?.message || '操作失败，请确保已登录')
   }
@@ -267,7 +266,7 @@ const deleteUser = async (user: any) => {
     await api.delete(`/users/users/${user.id}`)
     ElMessage.success('删除成功')
     loadUsers()
-  } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
+  } catch (e) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
 }
 
 // 角色编辑
@@ -297,7 +296,7 @@ const saveRole = async () => {
     }
     roleDialogVisible.value = false
     loadRoles()
-  } catch (e: any) { 
+  } catch (e) { 
     console.error('保存角色失败', e)
     ElMessage.error(e?.detail || e?.message || '操作失败，请确保已登录')
   }
@@ -314,7 +313,7 @@ const loadDepartments = async () => {
     } else {
       departments.value = sampleDepartments
     }
-  } catch (e: any) { 
+  } catch (e) { 
     console.warn('加载部门失败，使用示例数据', e)
     departments.value = sampleDepartments
   }
@@ -346,7 +345,7 @@ const saveDepartment = async () => {
     }
     departmentDialogVisible.value = false
     loadDepartments()
-  } catch (e: any) { ElMessage.error(e?.detail || '操作失败') }
+  } catch (e) { ElMessage.error(e?.detail || '操作失败') }
 }
 
 const deleteDepartment = async (dept: any) => {
@@ -355,7 +354,7 @@ const deleteDepartment = async (dept: any) => {
     await api.delete(`/users/departments/${dept.id}`)
     ElMessage.success('删除成功')
     loadDepartments()
-  } catch (e: any) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
+  } catch (e) { if (e !== 'cancel') ElMessage.error(e?.detail || '删除失败') }
 }
 
 // 权限管理
@@ -371,7 +370,7 @@ const openPermissionDialog = async (role: any) => {
     if (res.permissions && Array.isArray(res.permissions)) {
       selectedPermissions.value = res.permissions
     }
-  } catch (e: any) {
+  } catch (e) {
     // 如果接口返回错误，可能该角色还没有权限，使用空数组
     console.log('获取权限失败，使用默认空权限', e)
   }
@@ -403,7 +402,7 @@ const savePermissions = async () => {
     ElMessage.success('权限保存成功')
     permissionDialogVisible.value = false
     loadRoles()
-  } catch (e: any) { ElMessage.error(e?.detail || '保存权限失败') }
+  } catch (e) { ElMessage.error(e?.detail || '保存权限失败') }
 }
 
 const handleTab = (t: string) => {

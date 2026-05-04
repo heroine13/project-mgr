@@ -70,7 +70,7 @@ const loadDocuments = async () => {
     const data = res.data || res
     documents.value = data.items || []
     total.value = data.total || 0
-  } catch (error: any) {
+  } catch (error) {
     console.warn('加载文档失败', error)
     documents.value = []
   } finally {
@@ -114,7 +114,7 @@ const createDocument = async () => {
     showCreateDialog.value = false
     resetForm()
     loadDocuments()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '创建失败')
   } finally {
     creating.value = false
@@ -135,7 +135,7 @@ const uploadNewVersion = async () => {
     showVersionDialog.value = false
     loadVersions(currentDocument.value.id)
     loadDocuments()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '上传失败')
   } finally {
     uploading.value = false
@@ -150,7 +150,7 @@ const rollbackVersion = async (versionId: number) => {
     ElMessage.success('回滚成功')
     loadVersions(currentDocument.value.id)
     loadDocuments()
-  } catch (error: any) {
+  } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error(error?.detail || '回滚失败')
     }
@@ -164,7 +164,7 @@ const deleteDocument = async (docId: number) => {
     await api.delete(`/documents/${docId}`)
     ElMessage.success('删除成功')
     loadDocuments()
-  } catch (error: any) {
+  } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
     }

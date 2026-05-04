@@ -489,7 +489,7 @@ const handleProjectCommand = async (command: string) => {
       await api.delete(`/projects/${project.value.id}`)
       ElMessage.success('项目已删除')
       router.push('/projects')
-    } catch (e: any) {
+    } catch (e) {
       if (e !== 'cancel') {
         console.error('删除项目失败', e)
         ElMessage.error(e?.detail || '删除失败')

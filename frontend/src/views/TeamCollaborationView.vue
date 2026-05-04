@@ -179,7 +179,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 
-const API_BASE = '/api/v1/team'
+const API_BASE = '/team'
 
 const activeTab = ref('members')
 const loading = ref(false)
@@ -332,7 +332,7 @@ const inviteMember = async () => {
     showInviteDialog.value = false
     inviteForm.value = { email: '', name: '', department: '' }
     fetchMembers()
-  } catch (error: any) {
+  } catch (error) {
     console.error('邀请成员失败', error)
     ElMessage.error(error?.response?.data?.detail || error?.message || '邀请失败，请确保已登录')
   } finally {

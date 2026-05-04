@@ -157,7 +157,7 @@ const createResource = async () => {
     showResourceDialog.value = false
     resetResourceForm()
     loadResources()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '创建失败')
   }
 }
@@ -177,7 +177,7 @@ const createAllocation = async () => {
     showAllocationDialog.value = false
     resetAllocationForm()
     loadAllocations()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '创建失败')
   }
 }
@@ -196,7 +196,7 @@ const createCost = async () => {
     showCostDialog.value = false
     resetCostForm()
     loadCosts()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '创建失败')
   }
 }

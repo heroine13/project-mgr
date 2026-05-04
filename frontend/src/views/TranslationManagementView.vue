@@ -70,7 +70,7 @@ const loadKeys = async () => {
     const data = res.data || res
     translationKeys.value = data.items || []
     total.value = data.total || 0
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error('加载翻译Key失败')
   } finally {
     loading.value = false
@@ -102,7 +102,7 @@ const createKey = async () => {
     showKeyDialog.value = false
     keyForm.value = { key: '', description: '', module: '' }
     loadKeys()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '创建失败')
   } finally {
     editing.value = false
@@ -116,7 +116,7 @@ const deleteKey = async (keyId: number) => {
     await api.delete(`/i18n/keys/${keyId}`)
     ElMessage.success('删除成功')
     loadKeys()
-  } catch (error: any) {
+  } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('删除失败')
     }
@@ -152,7 +152,7 @@ const saveTranslation = async () => {
     showTranslationDialog.value = false
     loadTranslations(currentKey.value)
     loadUntranslated()
-  } catch (error: any) {
+  } catch (error) {
     ElMessage.error(error?.detail || '保存失败')
   }
 }
