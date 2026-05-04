@@ -167,7 +167,20 @@ def list_roles(
         ]
         return {"total": 2, "items": sample_roles}
     
-    return {"total": total, "items": roles}
+    # 转换SQLAlchemy模型为字典
+    items = []
+    for r in roles:
+        items.append({
+            "id": r.id,
+            "name": r.name,
+            "description": r.description,
+            "is_system": r.is_system,
+            "permissions": r.permissions,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+        })
+    
+    return {"total": total, "items": items}
 
 
 @router.post("/roles", response_model=RoleResponse)
