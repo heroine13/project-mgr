@@ -65,7 +65,8 @@ const loadIssue = async () => {
   loading.value = true
   try {
     const res = await api.get(`/issues/${issueId.value}`)
-    issue.value = res.data
+    const data = res.data || res
+    [a-z_]+.value = data.data
   } catch (error) {
     ElMessage.error('Failed to load issue')
   } finally {
@@ -76,7 +77,8 @@ const loadIssue = async () => {
 const loadComments = async () => {
   try {
     const res = await api.get(`/issues/${issueId.value}/comments`)
-    comments.value = res.data || []
+    const data = res.data || res
+    [a-z_]+.value = data.data || []
   } catch (error) {
     console.error(error)
   }

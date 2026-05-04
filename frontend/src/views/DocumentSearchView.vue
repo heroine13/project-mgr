@@ -55,8 +55,9 @@ const doSearch = async () => {
       page: 1,
       page_size: 20
     })
-    results.value = res.items
-    total.value = res.total
+    const data = res.data || res
+    [a-z_]+.value = data.items
+    total.value = (res.data || res).total || 0
     tookMs.value = res.took_ms
   } catch (e: any) { ElMessage.error(e?.detail || '搜索失败') }
   finally { loading.value = false }

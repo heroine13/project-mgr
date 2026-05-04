@@ -136,6 +136,7 @@ const loadUsers = async () => {
     if (filterActive.value !== null) params.is_active = filterActive.value
     const res = await api.get('/users/users', { params })
     const data = res.data || res
+    const data = res.data || res
     if (data.items && data.items.length > 0) {
       users.value = data.items
       total.value = data.total
@@ -155,7 +156,7 @@ const loadUsers = async () => {
 const loadRoles = async () => {
   try {
     const res = await api.get('/users/roles', { params: { page_size: 100 } })
-    roles.value = (res.data || res).items || res.items || []
+    roles.value = (res.data || res).items || (res.data || res).items || [] || []
   } catch (e) { 
     console.warn('加载角色失败，使用示例数据', e)
     roles.value = sampleRoles
@@ -165,7 +166,7 @@ const loadRoles = async () => {
 const loadLogs = async () => {
   try {
     const res = await api.get('/users/audit-logs', { params: { page_size: 50 } })
-    logs.value = (res.data || res).items || res.items || []
+    logs.value = (res.data || res).items || (res.data || res).items || [] || []
   } catch (e) { console.error(e) }
 }
 
