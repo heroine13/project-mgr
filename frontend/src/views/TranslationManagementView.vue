@@ -51,7 +51,8 @@ const modules = [
 const loadLanguages = async () => {
   try {
     const res = await api.get('/i18n/languages', { params: { page_size: 100 } })
-    languages.value = res.items
+    const data = res.data || res
+    languages.value = data.items || []
   } catch (error) {
     console.error('加载语言失败', error)
   }
@@ -66,8 +67,9 @@ const loadKeys = async () => {
     if (filterModule.value) params.module = filterModule.value
     
     const res = await api.get('/i18n/keys', { params })
-    translationKeys.value = res.items
-    total.value = res.total
+    const data = res.data || res
+    translationKeys.value = data.items || []
+    total.value = data.total || 0
   } catch (error: any) {
     ElMessage.error('加载翻译Key失败')
   } finally {
@@ -79,7 +81,8 @@ const loadKeys = async () => {
 const loadUntranslated = async () => {
   try {
     const res = await api.get('/i18n/untranslated')
-    untranslated.value = res.items
+    const data = res.data || res
+    untranslated.value = data.items || []
   } catch (error) {
     console.error('加载未翻译Key失败', error)
   }
@@ -125,6 +128,7 @@ const loadTranslations = async (key: any) => {
   currentKey.value = key
   try {
     const res = await api.get(`/i18n/keys/${key.id}/translations`)
+    const data = res.data || res
     currentKey.value.translations = res.translations
   } catch (error) {
     console.error('加载翻译失败', error)
