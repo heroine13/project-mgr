@@ -178,7 +178,6 @@ import api from '@/utils/api'
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import axios from 'axios'
 
 const API_BASE = '/api/v1/team'
 
@@ -343,7 +342,7 @@ const inviteMember = async () => {
 
 const loadDepartments = async () => {
   try {
-    const res = await api.get('/api/v1/users/departments', { params: { page_size: 100 } })
+    const res = await api.get('/users/departments', { params: { page_size: 100 } })
     departments.value = res.data.items || []
   } catch (e) {
     console.error('加载部门失败', e)
