@@ -118,7 +118,7 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/utils/api'
 
 const loading = ref(false)
 const creating = ref(false)
@@ -133,7 +133,7 @@ const selectedBackup = ref(null)
 const uploadRef = ref(null)
 const uploadFile = ref(null)
 
-const API_BASE = '/api/v1/backup'
+const API_BASE = '/backup'
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '-'
@@ -150,8 +150,9 @@ const formatSize = (bytes) => {
 const fetchBackups = async () => {
   loading.value = true
   try {
-    const response = await axios.get(`${API_BASE}/list`)
-    backups.value = response.data.backups || []
+    const response = await api.get(`${API_BASE}/list`)
+    const data = response.data || response
+    backups.value = data.backups || data.items || []
   } catch (error) {
     ElMessage.error('获取备份列表失败')
     console.error(error)
@@ -163,11 +164,11 @@ const fetchBackups = async () => {
 const createBackup = async () => {
   creating.value = true
   try {
-    const response = await axios.post(`${API_BASE}/create`)
+    await api.post(`${API_BASE}/create`)
     ElMessage.success('备份创建成功')
     fetchBackups()
   } catch (error) {
-    ElMessage.error(error.response?.data?.detail || '创建备份失败')
+    ElMessage.error(error?.response?.data?.detail || '创建备份失败')
   } finally {
     creating.value = false
   }
@@ -201,11 +202,11 @@ const restoreBackup = async () => {
   
   restoring.value = true
   try {
-    await axios.post(`${API_BASE}/restore/${selectedBackup.value.name}`)
+    await api.post(`${API_BASE}/restore/${selectedBackup.value.name}`)
     ElMessage.success('恢复成功')
     restoreDialogVisible.value = false
   } catch (error) {
-    ElMessage.error(error.response?.data?.detail || '恢复失败')
+    ElMessage.error(error?.response?.data?.detail || '恢复失败')
   } finally {
     restoring.value = false
   }
@@ -221,12 +222,12 @@ const deleteBackup = async () => {
   
   deleting.value = true
   try {
-    await axios.delete(`${API_BASE}/${selectedBackup.value.name}`)
+    await api.delete(`${API_BASE}/${selectedBackup.value.name}`)
     ElMessage.success('删除成功')
     deleteDialogVisible.value = false
     fetchBackups()
   } catch (error) {
-    ElMessage.error(error.response?.data?.detail || '删除失败')
+    ElMessage.error(error?.response?.data?.detail || '删除失败')
   } finally {
     deleting.value = false
   }

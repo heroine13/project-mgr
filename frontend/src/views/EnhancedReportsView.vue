@@ -168,9 +168,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import api from '@/utils/api'
 
-const API_BASE = '/api/v1/reports'
+const API_BASE = '/reports'
 
 const activeTab = ref('summary')
 const loading = ref(false)
@@ -189,8 +189,9 @@ const overdueTasks = ref([])
 
 const fetchSummary = async () => {
   try {
-    const response = await axios.get(`${API_BASE}/dashboard/summary`)
-    summary.value = response.data
+    const response = await api.get(`${API_BASE}/overview`)
+    const data = response.data || response
+    summary.value = data.data || data
   } catch (error) {
     console.error('获取摘要失败', error)
   }
@@ -198,10 +199,11 @@ const fetchSummary = async () => {
 
 const fetchTrends = async () => {
   try {
-    const response = await axios.get(`${API_BASE}/dashboard/trends`, {
+    const response = await api.get(`${API_BASE}/trend`, {
       params: { days: trendDays.value }
     })
-    trendChartData.value = response.data.trends
+    const data = response.data || response
+    trendChartData.value = data.trends || data.data?.trends || null
   } catch (error) {
     console.error('获取趋势失败', error)
   }
@@ -210,8 +212,9 @@ const fetchTrends = async () => {
 const fetchTeamPerformance = async () => {
   loading.value = true
   try {
-    const response = await axios.get(`${API_BASE}/team/performance`)
-    teamPerformance.value = response.data.team || []
+    const response = await api.get(`${API_BASE}/team`)
+    const data = response.data || response
+    teamPerformance.value = data.team || data.data?.team || []
   } catch (error) {
     console.error('获取团队绩效失败', error)
   } finally {
@@ -222,8 +225,10 @@ const fetchTeamPerformance = async () => {
 const fetchProjectProgress = async () => {
   loading.value = true
   try {
-    const response = await axios.get(`${API_BASE}/projects/progress`)
-    projectProgress.value = response.data.projects || []
+    const response = await api.get(`${API_BASE}/overview`)
+    const data = response.data || response
+    // 使用 overview 数据作为项目进度
+    projectProgress.value = data.projects || data.data?.projects || []
   } catch (error) {
     console.error('获取项目进度失败', error)
   } finally {
@@ -234,10 +239,14 @@ const fetchProjectProgress = async () => {
 const fetchOverdueTasks = async () => {
   loading.value = true
   try {
-    const response = await axios.get(`${API_BASE}/tasks/overdue`)
-    overdueTasks.value = response.data.tasks || []
+    const response = await api.get('/tasks/', {
+      params: { status: 'overdue', page_size: 50 }
+    })
+    const data = response.data || response
+    overdueTasks.value = data.items || []
   } catch (error) {
     console.error('获取逾期任务失败', error)
+    overdueTasks.value = []
   } finally {
     loading.value = false
   }

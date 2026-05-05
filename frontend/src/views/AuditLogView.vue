@@ -164,9 +164,9 @@
 import { ref, onMounted, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/utils/api'
 
-const API_BASE = '/api/v1/audit'
+const API_BASE = '/audit'
 
 const loading = ref(false)
 const logs = ref([])
@@ -231,11 +231,11 @@ const fetchLogs = async () => {
       params.end_date = dateRange.value[1].toISOString()
     }
     
-    const response = await axios.get(`${API_BASE}/logs`, { params })
+    const response = await api.get(`${API_BASE}/logs`, { params })
     logs.value = response.data
     
     // Fetch stats
-    const statsResponse = await axios.get(`${API_BASE}/stats`)
+    const statsResponse = await api.get(`${API_BASE}/stats`)
     stats.value = statsResponse.data
     
     pagination.value.total = stats.value.total
@@ -262,7 +262,7 @@ const exportLogs = async (format) => {
       params.end_date = dateRange.value[1].toISOString()
     }
     
-    const response = await axios.get(`${API_BASE}/export`, { params })
+    const response = await api.get(`${API_BASE}/export`, { params })
     
     if (format === 'json') {
       const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' })

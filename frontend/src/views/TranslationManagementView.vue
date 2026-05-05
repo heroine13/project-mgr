@@ -80,11 +80,14 @@ const loadKeys = async () => {
 // 加载未翻译的Key
 const loadUntranslated = async () => {
   try {
-    const res = await api.get('/i18n/untranslated')
+    // 使用 /i18n/stats 获取未翻译统计
+    const res = await api.get('/i18n/stats')
     const data = res.data || res
-    untranslated.value = data.items || []
+    // 从stats中获取untranslated数量，设为空数组因为接口返回的是统计数字
+    untranslated.value = data.untranslated ? Array(data.untranslated).fill({}) : []
   } catch (error) {
     console.error('加载未翻译Key失败', error)
+    untranslated.value = []
   }
 }
 
