@@ -189,34 +189,47 @@ const overdueTasks = ref([])
 
 const fetchSummary = async () => {
   try {
-    const response = await api.get(`${API_BASE}/overview`)
+    const response = await api.get(`${API_BASE}/dashboard/summary`)
     const data = response.data || response
-    summary.value = data.data || data
+    // 添加空值保护
+    summary.value = {
+      tasks: data.tasks || { total: 0, completed: 0, in_progress: 0, completion_rate: 0 },
+      projects: data.projects || { total: 0, active: 0, completed: 0 },
+      issues: data.issues || { total: 0, open: 0, resolved: 0 }
+    }
   } catch (error) {
     console.error('获取摘要失败', error)
+    // 使用默认空值
+    summary.value = {
+      tasks: { total: 0, completed: 0, in_progress: 0, completion_rate: 0 },
+      projects: { total: 0, active: 0, completed: 0 },
+      issues: { total: 0, open: 0, resolved: 0 }
+    }
   }
 }
 
 const fetchTrends = async () => {
   try {
-    const response = await api.get(`${API_BASE}/trend`, {
+    const response = await api.get(`${API_BASE}/dashboard/trends`, {
       params: { days: trendDays.value }
     })
     const data = response.data || response
     trendChartData.value = data.trends || data.data?.trends || null
   } catch (error) {
     console.error('获取趋势失败', error)
+    trendChartData.value = []
   }
 }
 
 const fetchTeamPerformance = async () => {
   loading.value = true
   try {
-    const response = await api.get(`${API_BASE}/team`)
+    const response = await api.get(`${API_BASE}/team/performance`)
     const data = response.data || response
     teamPerformance.value = data.team || data.data?.team || []
   } catch (error) {
     console.error('获取团队绩效失败', error)
+    teamPerformance.value = []
   } finally {
     loading.value = false
   }
@@ -225,12 +238,13 @@ const fetchTeamPerformance = async () => {
 const fetchProjectProgress = async () => {
   loading.value = true
   try {
-    const response = await api.get(`${API_BASE}/overview`)
+    const response = await api.get(`${API_BASE}/projects/progress`)
     const data = response.data || response
-    // 使用 overview 数据作为项目进度
+    // 使用 projects/progress 数据作为项目进度
     projectProgress.value = data.projects || data.data?.projects || []
   } catch (error) {
     console.error('获取项目进度失败', error)
+    projectProgress.value = []
   } finally {
     loading.value = false
   }

@@ -22,7 +22,7 @@
     
     <!-- 通知列表 -->
     <div class="notification-list" v-loading="isLoading">
-      <template v-if="notifications.length > 0">
+      <template v-if="notifications && notifications.length > 0">
         <el-card
           v-for="notification in notifications"
           :key="notification.id"
