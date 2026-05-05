@@ -124,9 +124,9 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
+import api from '@/utils/api'
 
-const API_BASE = '/api/v1/calendar'
+const API_BASE = '/calendar'
 
 const router = useRouter()
 const loading = ref(false)
@@ -246,8 +246,9 @@ const fetchEvents = async () => {
       params.project_id = selectedProject.value
     }
     
-    const response = await axios.get(`${API_BASE}/events`, { params })
-    events.value = response.data.events || []
+    const response = await api.get(`${API_BASE}/events`, { params })
+    const data = response.data || response
+    events.value = data.events || []
   } catch (error) {
     console.warn('获取日历事件失败', error)
     events.value = []
@@ -264,8 +265,9 @@ const fetchUpcoming = async () => {
       params.project_id = selectedProject.value
     }
     
-    const response = await axios.get(`${API_BASE}/upcoming`, { params })
-    upcomingTasks.value = response.data.upcoming || []
+    const response = await api.get(`${API_BASE}/upcoming`, { params })
+    const data = response.data || response
+    upcomingTasks.value = data.upcoming || data.tasks || []
   } catch (error) {
     console.warn('获取即将到期任务失败', error)
     upcomingTasks.value = []
@@ -276,8 +278,9 @@ const fetchUpcoming = async () => {
 
 const fetchProjects = async () => {
   try {
-    const response = await axios.get('/api/v1/projects/')
-    projects.value = response.data
+    const response = await api.get('/projects/')
+    const data = response.data || response
+    projects.value = data.items || data || []
   } catch (error) {
     console.warn('获取项目列表失败', error)
     projects.value = []
