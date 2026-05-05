@@ -19,6 +19,7 @@
     "babel-runtime": "^6.26.0",
     "echarts": "^6.0.0",
     "element-plus": "^2.4.0",
+    "markdown-it": "^14.1.1",
     "pinia": "^2.1.0",
     "register-service-worker": "^1.7.2",
     "vite-plugin-pwa": "^1.2.0",

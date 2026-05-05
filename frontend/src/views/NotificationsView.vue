@@ -170,7 +170,7 @@ onMounted(async () => {
 async function loadNotifications() {
   const unreadOnly = filterType.value === 'unread'
   const data = await notificationStore.fetchNotifications(unreadOnly)
-  total.value = data.length
+  total.value = data?.length || 0
 }
 
 // 筛选变化

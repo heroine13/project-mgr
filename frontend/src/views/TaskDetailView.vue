@@ -83,7 +83,7 @@
             </template>
             <div class="description-content">
               <div v-if="task.description" class="description-text">
-                <vue-markdown :source="task.description" />
+                <div v-html="renderMarkdown(task.description)" class="markdown-content"></div>
               </div>
               <div v-else class="empty-description">
                 <el-empty :description="$t('common.noDescription')" />
@@ -145,7 +145,7 @@
                     </div>
                   </div>
                   <div class="comment-content">
-                    <vue-markdown :source="comment.content" />
+                    <div v-html="renderMarkdown(comment.content)" class="markdown-content"></div>
                   </div>
                   <div class="comment-attachments" v-if="comment.attachments && comment.attachments.length > 0">
                     <div class="attachment-list">
@@ -499,7 +499,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import VueMarkdown from 'vue-markdown'
+import MarkdownIt from 'markdown-it'
 import { 
   Edit, Delete, Folder, User, Clock,
   ChatDotRound, More, Plus, Upload,
@@ -509,6 +509,18 @@ import {
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+
+// Markdown renderer
+const md = new MarkdownIt({
+  html: false,
+  linkify: true,
+  typographer: true
+})
+
+const renderMarkdown = (content: string) => {
+  if (!content) return ''
+  return md.render(content)
+}
 
 // Mock data - TODO: Replace with API calls
 const task = ref({
