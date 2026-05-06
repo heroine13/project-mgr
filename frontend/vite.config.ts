@@ -9,7 +9,14 @@ import { fileURLToPath, URL } from 'node:url'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    vue({
+      template: {
+        compilerOptions: {
+          // 禁用 hydration mismatch 警告
+          isCustomElement: (tag) => tag.startsWith('ion-')
+        }
+      }
+    }),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),

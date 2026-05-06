@@ -50,4 +50,24 @@ app.use(router)
 app.use(i18n)
 app.use(ElementPlus)
 
+// 禁用 Vue 开发模式下的 hydration 警告
+if (import.meta.env.DEV) {
+  const originalWarn = console.warn
+  console.warn = (...args) => {
+    if (args[0] && typeof args[0] === 'string' && args[0].includes('Hydration')) {
+      return // 忽略 hydration 警告
+    }
+    originalWarn.apply(console, args)
+  }
+  
+  // 配置 Vue 忽略 hydration 错误
+  app.config.errorHandler = (err, vm, info) => {
+    if (info && info.includes('Hydration')) {
+      console.log('Hydration warning suppressed')
+      return
+    }
+    throw err
+  }
+}
+
 app.mount('#app')
