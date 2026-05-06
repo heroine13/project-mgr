@@ -1,5 +1,5 @@
 {
-  "name": "Project Manager Dev",
+  "name": "Project Manager",
   "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
   "features": {
     "ghcr.io/devcontainers/features/python:1": {
@@ -10,23 +10,14 @@
     "vscode": {
       "extensions": [
         "Vue.volar",
-        "Python.python",
-        "EditorConfig.EditorConfig"
+        "Python.python"
       ]
     }
   },
-  "onCreateCommand": "echo 'Waiting for devcontainer setup...'",
-  "updateContentCommand": "echo '=== Installing dependencies ===' && cd backend && pip install -q -r requirements.simple.txt && cd ../frontend && npm install --legacy-peer-deps && echo '=== Initializing database ===' && python3 init_db.py",
+  "postCreateCommand": "pip install -q -r backend/requirements.simple.txt && cd frontend && npm install",
   "portsAttributes": {
-    "5173": {
-      "label": "Frontend (Vue)",
-      "onAutoForward": "notify"
-    },
-    "8000": {
-      "label": "Backend (FastAPI)",
-      "onAutoForward": "notify"
-    }
+    "5173": {"label": "Frontend"},
+    "8000": {"label": "Backend API"}
   },
-  "forwardPorts": [5173, 8000],
-  "postStartCommand": "echo '=== Environment Ready ===' && echo 'Node version:' && node --version && echo 'Python version:' && python3 --version"
+  "forwardPorts": [5173, 8000]
 }
