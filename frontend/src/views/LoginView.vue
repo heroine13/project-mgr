@@ -148,7 +148,9 @@ const doLogin = async () => {
     
     console.log('Token saved, navigating to dashboard')
     ElMessage.success('登录成功')
-    router.push('/dashboard')
+    
+    // 使用 window.location 强制跳转
+    window.location.href = '/dashboard'
     loading.value = false
     
   } catch (error) {
