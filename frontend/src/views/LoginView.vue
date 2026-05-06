@@ -6,50 +6,48 @@
         <p>{{ $t('login.subtitle') }}</p>
       </div>
       
-      <el-form 
-        ref="loginFormRef" 
-        :model="loginForm" 
-        :rules="loginRules" 
-        class="login-form"
-      >
-        <el-form-item prop="username">
+      <!-- 使用原生表单提交备用方案 -->
+      <form @submit.prevent="handleLoginSubmit" class="login-form">
+        <div class="form-item">
           <el-input
             v-model="loginForm.username"
-            :placeholder="$t('login.username')"
+            placeholder="请输入用户名"
             prefix-icon="User"
             size="large"
+            name="username"
           />
-        </el-form-item>
+        </div>
         
-        <el-form-item prop="password">
+        <div class="form-item">
           <el-input
             v-model="loginForm.password"
             type="password"
-            :placeholder="$t('login.password')"
+            placeholder="请输入密码"
             prefix-icon="Lock"
             size="large"
             show-password
+            name="password"
           />
-        </el-form-item>
+        </div>
         
-        <el-form-item>
+        <div class="form-item">
           <el-checkbox v-model="loginForm.rememberMe">
-            {{ $t('login.rememberMe') }}
+            记住我
           </el-checkbox>
-        </el-form-item>
+        </div>
         
-        <el-form-item>
+        <div class="form-item">
           <el-button 
             type="primary" 
             size="large" 
             class="login-button"
             :loading="loading"
-            @click="handleLogin"
+            native-type="submit"
           >
-            {{ $t('login.button') }}
+            {{ loading ? '登录中...' : '登录' }}
           </el-button>
-        </el-form-item>
-      </el-form>
+        </div>
+      </form>
       
       <div class="login-footer">
         <el-link type="primary" @click="switchToRegister">
@@ -118,11 +116,14 @@ const languages = [
 ]
 
 const handleLogin = async () => {
-  if (!loginFormRef.value) {
-    console.error('loginFormRef is null')
-    return
-  }
-  
+  await doLogin()
+}
+
+const handleLoginSubmit = async () => {
+  await doLogin()
+}
+
+const doLogin = async () => {
   try {
     // 简化验证 - 只检查必填字段
     if (!loginForm.username || !loginForm.password) {
@@ -146,13 +147,13 @@ const handleLogin = async () => {
     localStorage.setItem('username', response.username)
     
     console.log('Token saved, navigating to dashboard')
-    ElMessage.success(t('login.success'))
+    ElMessage.success('登录成功')
     router.push('/dashboard')
     loading.value = false
     
   } catch (error) {
     console.error('Login failed:', error)
-    ElMessage.error(error?.response?.data?.detail || t('login.error'))
+    ElMessage.error(error?.response?.data?.detail || '登录失败，请检查用户名和密码')
     loading.value = false
   }
 }
