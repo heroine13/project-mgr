@@ -58,5 +58,14 @@ export default defineConfig({
         changeOrigin: true
       }
     }
+  },
+  vue: {
+    compilerOptions: {
+      // 禁用 hydration mismatch 错误提示
+      errorHandler: false
+    }
+  },
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'pinia', 'element-plus']
   }
 })
