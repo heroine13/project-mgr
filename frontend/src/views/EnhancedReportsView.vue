@@ -170,7 +170,7 @@ import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import api from '@/utils/api'
 
-const API_BASE = '/reports'
+const API_BASE = ''
 
 const activeTab = ref('summary')
 const loading = ref(false)
@@ -189,17 +189,22 @@ const overdueTasks = ref([])
 
 const fetchSummary = async () => {
   try {
-    const response = await api.get(`${API_BASE}/dashboard/summary`)
-    const data = response.data || response
-    // 添加空值保护
+    const response = await api.get(`/reports/dashboard`)
+    const data = response.data?.data || response.data || {}
+    // 适配后端 API 响应格式
+    const summaryData = data.summary || {}
     summary.value = {
-      tasks: data.tasks || { total: 0, completed: 0, in_progress: 0, completion_rate: 0 },
+      tasks: { 
+        total: summaryData.total_tasks || 0, 
+        completed: summaryData.completed || 0, 
+        in_progress: summaryData.in_progress || 0, 
+        completion_rate: summaryData.completion_rate || 0 
+      },
       projects: data.projects || { total: 0, active: 0, completed: 0 },
-      issues: data.issues || { total: 0, open: 0, resolved: 0 }
+      issues: { total: data.risk_count || 0, open: 0, resolved: 0 }
     }
   } catch (error) {
     console.error('获取摘要失败', error)
-    // 使用默认空值
     summary.value = {
       tasks: { total: 0, completed: 0, in_progress: 0, completion_rate: 0 },
       projects: { total: 0, active: 0, completed: 0 },
@@ -210,11 +215,11 @@ const fetchSummary = async () => {
 
 const fetchTrends = async () => {
   try {
-    const response = await api.get(`${API_BASE}/dashboard/trends`, {
+    const response = await api.get(`/reports/trend`, {
       params: { days: trendDays.value }
     })
-    const data = response.data || response
-    trendChartData.value = data.trends || data.data?.trends || null
+    const data = response.data?.data || response.data || {}
+    trendChartData.value = data.trend || data.trends || null
   } catch (error) {
     console.error('获取趋势失败', error)
     trendChartData.value = []
@@ -224,9 +229,9 @@ const fetchTrends = async () => {
 const fetchTeamPerformance = async () => {
   loading.value = true
   try {
-    const response = await api.get(`${API_BASE}/team/performance`)
-    const data = response.data || response
-    teamPerformance.value = data.team || data.data?.team || []
+    const response = await api.get(`/reports/team`)
+    const data = response.data?.data || response.data || {}
+    teamPerformance.value = data.performance || data.team || []
   } catch (error) {
     console.error('获取团队绩效失败', error)
     teamPerformance.value = []
@@ -238,10 +243,11 @@ const fetchTeamPerformance = async () => {
 const fetchProjectProgress = async () => {
   loading.value = true
   try {
-    const response = await api.get(`${API_BASE}/projects/progress`)
-    const data = response.data || response
-    // 使用 projects/progress 数据作为项目进度
-    projectProgress.value = data.projects || data.data?.projects || []
+    // 从 dashboard 获取项目数据
+    const response = await api.get(`/reports/dashboard`)
+    const data = response.data?.data || response.data || {}
+    // 使用 top_performers 数据作为项目进度
+    projectProgress.value = data.projects ? [data.projects] : []
   } catch (error) {
     console.error('获取项目进度失败', error)
     projectProgress.value = []

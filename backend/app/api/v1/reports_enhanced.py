@@ -16,7 +16,7 @@ from app.models.task import Task, TaskStatus, TaskPriority
 from app.models.project import Project
 from app.models.issue import Issue, IssueStatus, IssuePriority
 
-router = APIRouter(prefix="/reports", tags=["报表增强"])
+router = APIRouter(tags=["报表增强"])
 
 
 # === Dashboard Reports ===
