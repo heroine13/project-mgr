@@ -102,11 +102,11 @@ const loginForm = reactive({
 const loginRules = {
   username: [
     { required: true, message: t('login.usernameRequired'), trigger: 'blur' },
-    { min: 3, message: t('login.usernameMinLength'), trigger: 'blur' }
+    { min: 1, message: t('login.usernameMinLength'), trigger: 'blur' }
   ],
   password: [
     { required: true, message: t('login.passwordRequired'), trigger: 'blur' },
-    { min: 8, message: t('login.passwordMinLength'), trigger: 'blur' }
+    { min: 1, message: t('login.passwordMinLength'), trigger: 'blur' }
   ]
 }
 
@@ -118,14 +118,26 @@ const languages = [
 ]
 
 const handleLogin = async () => {
-  if (!loginFormRef.value) return
+  if (!loginFormRef.value) {
+    console.error('loginFormRef is null')
+    return
+  }
   
   try {
-    await loginFormRef.value.validate()
+    // 简化验证 - 只检查必填字段
+    if (!loginForm.username || !loginForm.password) {
+      ElMessage.error('请输入用户名和密码')
+      return
+    }
+    
     loading.value = true
+    
+    console.log('Attempting login with:', loginForm)
     
     // 调用实际登录API
     const response = await authApi.login(loginForm)
+    
+    console.log('Login response:', response)
     
     // 保存token到localStorage
     localStorage.setItem('access_token', response.access_token)
@@ -133,6 +145,7 @@ const handleLogin = async () => {
     localStorage.setItem('user_id', response.user_id)
     localStorage.setItem('username', response.username)
     
+    console.log('Token saved, navigating to dashboard')
     ElMessage.success(t('login.success'))
     router.push('/dashboard')
     loading.value = false
