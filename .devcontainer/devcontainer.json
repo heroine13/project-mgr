@@ -1,0 +1,31 @@
+{
+  "name": "Project Manager Dev",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "Python.python",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  },
+  "postCreateCommand": "cd backend && pip install -r requirements.simple.txt && cd ../frontend && npm install",
+  "portsAttributes": {
+    "5173": {
+      "label": "Frontend (Vue)",
+      "onAutoForward": "notify"
+    },
+    "8000": {
+      "label": "Backend (FastAPI)",
+      "onAutoForward": "notify"
+    }
+  },
+  "forwardPorts": [5173, 8000]
+}

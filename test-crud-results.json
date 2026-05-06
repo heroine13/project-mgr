@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-05-05T00:13:16.069Z",
+  "crudTests": [
+    {
+      "feature": "创建项目",
+      "status": "input_found",
+      "detail": "项目名称输入框存在"
+    },
+    {
+      "feature": "创建项目提交",
+      "status": "clicked",
+      "detail": "点击了创建按钮"
+    },
+    {
+      "feature": "创建任务",
+      "status": "input_found",
+      "detail": "任务标题输入框存在"
+    },
+    {
+      "feature": "用户管理",
+      "status": "loaded",
+      "detail": "用户表格已加载"
+    }
+  ],
+  "bugs": []
+}

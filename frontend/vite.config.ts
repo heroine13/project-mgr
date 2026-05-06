@@ -37,69 +37,10 @@ export default defineConfig({
           },
           {
             src: '/icons/icon-512x512.png',
-            sizes: '512x512',
+            'sizes': '512x512',
             type: 'image/png'
-          },
-          {
-            src: '/icons/icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ],
-        shortcuts: [
-          {
-            name: '新建任务',
-            short_name: '新建任务',
-            url: '/tasks/new?source=pwa'
-          },
-          {
-            name: '我的任务',
-            short_name: '我的任务',
-            url: '/tasks?filter=mine'
-          },
-          {
-            name: '项目概览',
-            short_name: '概览',
-            url: '/dashboard'
           }
         ]
-      },
-      workbox: {
-        // 缓存策略
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        runtimeCaching: [
-          {
-            // API 缓存策略 - Network First
-            urlPattern: /^https?.*\/api\/v1\/.*/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 60 * 60 * 24 // 24小时
-              },
-              cacheableResponse: {
-                statuses: [0, 200]
-              }
-            }
-          },
-          {
-            // 静态资源缓存 - StaleWhileRevalidate
-            urlPattern: /^https?.*\.(js|css|woff2|png|jpg|jpeg|gif|svg)/,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'static-resources',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30天
-              }
-            }
-          }
-        ]
-      },
-      devOptions: {
-        enabled: true
       }
     })
   ],
@@ -109,8 +50,8 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3000,
     host: '0.0.0.0',
+    port: 3000,
     proxy: {
       '/api': {
         target: 'http://project-mgr-backend-test:8000',
