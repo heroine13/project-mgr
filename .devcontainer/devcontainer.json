@@ -16,7 +16,7 @@
       ]
     }
   },
-  "postCreateCommand": "cd backend && pip install -r requirements.simple.txt && cd ../frontend && npm install",
+  "postCreateCommand": "echo '=== Installing dependencies ===' && echo 'Node version:' && node --version && echo 'Python version:' && python3 --version && cd backend && pip install --quiet -r requirements.simple.txt && cd ../frontend && npm install --legacy-peer-deps",
   "portsAttributes": {
     "5173": {
       "label": "Frontend (Vue)",
@@ -27,5 +27,6 @@
       "onAutoForward": "notify"
     }
   },
-  "forwardPorts": [5173, 8000]
+  "forwardPorts": [5173, 8000],
+  "postAttachCommand": "echo '=== Project ready! ===' && echo 'Run: cd frontend && npm run dev' && echo 'Run: cd backend && uvicorn app.main:app --port 8000'"
 }
