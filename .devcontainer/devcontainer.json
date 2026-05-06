@@ -16,7 +16,7 @@
     }
   },
   "onCreateCommand": "echo 'Waiting for devcontainer setup...'",
-  "updateContentCommand": "echo '=== Installing dependencies ===' && cd backend && pip install -q -r requirements.simple.txt && cd ../frontend && npm install --legacy-peer-deps && echo '=== Initializing database ===' && cd backend && python3 init_db.py",
+  "updateContentCommand": "echo '=== Installing dependencies ===' && cd backend && pip install -q -r requirements.simple.txt && cd ../frontend && npm install --legacy-peer-deps && echo '=== Initializing database ===' && python3 init_db.py",
   "portsAttributes": {
     "5173": {
       "label": "Frontend (Vue)",
