@@ -16,11 +16,17 @@ class Settings(BaseSettings):
     
     # CORS配置 - 支持环境变量配置，多个域名用逗号分隔
     BACKEND_CORS_ORIGINS: List[str] = [
+        # 本地开发
         "http://localhost:5173",
         "http://127.0.0.1:5173",
         "http://localhost:3000",
-        "http://localhost:8000",
+        "http://localhost:3001",
         "http://localhost:8080",
+        "http://localhost:8081",
+        "http://127.0.0.1:8080",
+        # Docker 容器
+        "http://localhost:3000",
+        "http://frontend:3000",
     ]
     
     def __init__(self, **kwargs):

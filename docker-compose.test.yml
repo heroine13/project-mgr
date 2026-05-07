@@ -26,7 +26,7 @@ services:
       SECRET_KEY: test-secret-key-do-not-use-in-production
       DEBUG: "true"
       ENVIRONMENT: test
-      CORS_ORIGINS: "http://localhost:5173"
+      CORS_ORIGINS: "http://localhost:5173,http://frontend-test:3000"
     command: >
       sh -c "
         echo '🧪 启动测试环境后端...' &&

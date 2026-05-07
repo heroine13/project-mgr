@@ -60,6 +60,7 @@ services:
       DATABASE_URL: mysql://project_user:project_password@db-mysql:3306/project_mgr
       POSTGRES_URL: postgresql://project_user:project_password@db-postgres:5432/project_mgr
       SECRET_KEY: dev-secret-key-change-in-production
+      CORS_ORIGINS: "http://localhost:5173,http://localhost:3000,http://frontend:3000"
     networks:
       - project-network
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
