@@ -1,27 +1,6 @@
 import axios from 'axios'
 
-// 自动检测环境并设置API地址
-function getApiBaseUrl() {
-  const envUrl = import.meta.env.VITE_API_BASE_URL
-  const currentHost = window.location.host
-  
-  // 如果环境变量已经是绝对地址，直接使用
-  if (envUrl && (envUrl.startsWith('http://') || envUrl.startsWith('https://'))) {
-    return envUrl
-  }
-  
-  // 如果当前访问的是 GitHub Codespace 环境
-  if (currentHost.includes('.app.github.dev')) {
-    // 将端口 5173 替换为 8000
-    const backendHost = currentHost.replace('-5173', '-8000')
-    return `https://${backendHost}/api/v1`
-  }
-  
-  // 本地开发环境：使用环境变量配置的相对路径
-  return envUrl || '/api/v1'
-}
-
-const API_BASE_URL = getApiBaseUrl()
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
 const api = axios.create({
   baseURL: API_BASE_URL,
