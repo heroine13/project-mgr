@@ -51,16 +51,58 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS配置 - 从环境变量读取并合并
-cors_origins = settings.BACKEND_CORS_ORIGINS.copy()
-cors_env = os.environ.get("CORS_ORIGINS", "")
-if cors_env:
-    extra = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
-    cors_origins.extend(extra)
-    print(f"📝 CORS 额外来源: {extra}")
+# CORS配置 - 允许所有 GitHub Codespace 域名和本地开发
+from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+import re
 
+def get_cors_origins():
+    """动态获取 CORS 允许的来源"""
+    origins = settings.BACKEND_CORS_ORIGINS.copy()
+    
+    # 从环境变量读取额外域名
+    cors_env = os.environ.get("CORS_ORIGINS", "")
+    if cors_env:
+        extra = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+        origins.extend(extra)
+    
+    return origins
+
+cors_origins = get_cors_origins()
 print(f"📝 CORS 允许的来源: {cors_origins}")
 
+# 自定义 CORS 中间件，允许所有 .app.github.dev 域名
+@app.middleware("http")
+async def cors_middleware(request: Request, call_next):
+    origin = request.headers.get("origin", "")
+    
+    # 检查是否是允许的来源
+    allowed = False
+    
+    # 1. 检查是否在显式允许列表中
+    if origin in cors_origins:
+        allowed = True
+    
+    # 2. 检查是否是 GitHub Codespace 环境
+    if ".app.github.dev" in origin or "github.dev" in origin:
+        allowed = True
+    
+    # 3. 检查是否是本地开发
+    if "localhost" in origin or "127.0.0.1" in origin:
+        allowed = True
+    
+    if allowed:
+        response = await call_next(request)
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+        response.headers["Access-Control-Allow-Methods"] = "*"
+        response.headers["Access-Control-Allow-Headers"] = "*"
+        return response
+    
+    return await call_next(request)
+
+# 保留原有的 CORS 中间件作为备用
 app.add_middleware(
     CORSMiddleware,
     allow_origins=cors_origins,
