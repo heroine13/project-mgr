@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
+import os
 
 from app.api.v1 import auth, projects, tasks
 from app.api.v1 import scheduler, reports
@@ -50,10 +51,19 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS配置 - 从 settings 读取
+# CORS配置 - 从环境变量读取并合并
+cors_origins = settings.BACKEND_CORS_ORIGINS.copy()
+cors_env = os.environ.get("CORS_ORIGINS", "")
+if cors_env:
+    extra = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+    cors_origins.extend(extra)
+    print(f"📝 CORS 额外来源: {extra}")
+
+print(f"📝 CORS 允许的来源: {cors_origins}")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
