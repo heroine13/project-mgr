@@ -16,8 +16,27 @@ export class WebSocketClient {
   lastError = ref<string | null>(null)
   connectionId = ref<string | null>(null)
   
-  // 连接配置
-  private baseUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000'
+  // 连接配置 - 自动检测环境
+  private getBaseUrl() {
+    const envUrl = import.meta.env.VITE_WS_URL
+    const currentHost = window.location.host
+    
+    // 如果环境变量已经是绝对地址，直接使用
+    if (envUrl && (envUrl.startsWith('ws://') || envUrl.startsWith('wss://'))) {
+      return envUrl
+    }
+    
+    // 如果当前访问的是 GitHub Codespace 环境
+    if (currentHost.includes('.app.github.dev')) {
+      const backendHost = currentHost.replace('-5173', '-8000')
+      return `wss://${backendHost}/ws`
+    }
+    
+    // 本地开发环境
+    return envUrl || 'ws://localhost:8000'
+  }
+  
+  private baseUrl = this.getBaseUrl()
   private reconnectDelay = 5000  // 5秒重连延迟
   private pingIntervalMs = 30000 // 30秒心跳间隔
   
