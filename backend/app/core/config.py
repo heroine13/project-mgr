@@ -14,12 +14,23 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # CORS配置
+    # CORS配置 - 支持环境变量配置，多个域名用逗号分隔
     BACKEND_CORS_ORIGINS: List[str] = [
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "http://localhost:3000",
         "http://localhost:8000",
+        "http://localhost:8080",
     ]
+    
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # 从环境变量读取 CORS_ORIGINS 并合并
+        cors_env = os.environ.get("CORS_ORIGINS", "")
+        if cors_env:
+            extra_origins = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+            self.BACKEND_CORS_ORIGINS = list(set(self.BACKEND_CORS_ORIGINS + extra_origins))
+    
     ALLOWED_HOSTS: List[str] = ["*"]
     
     # 数据库配置

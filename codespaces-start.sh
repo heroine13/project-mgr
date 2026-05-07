@@ -26,9 +26,50 @@ else
     echo "数据库已存在"
 fi
 
-# 2. 启动后端 (端口 8000)
-echo -e "${YELLOW}[2/5] 启动后端服务 (端口 8000)...${NC}"
+# 2. 检测环境并配置
+echo -e "${YELLOW}[2/5] 检测环境并配置...${NC}"
+
+CODENAME=""
+CORS_ORIGINS=""
+
+if [ -n "$CODESPACE_NAME" ]; then
+    CODENAME=$(echo "$CODESPACE_NAME" | sed 's/-5173$//;s/-8000$//;s/-3000$//;s/-[0-9]*$//')
+fi
+
+if [ -n "$CODENAME" ]; then
+    # Codespace 环境
+    FRONTEND_ORIGIN="https://${CODENAME}-5173.app.github.dev"
+    BACKEND_ORIGIN="https://${CODENAME}-8000.app.github.dev"
+    API_BASE_URL="${BACKEND_ORIGIN}/api/v1"
+    WS_URL="wss://${CODENAME}-8000.app.github.dev/ws"
+    CORS_ORIGINS="${FRONTEND_ORIGIN},${BACKEND_ORIGIN}"
+    echo "Codespace 环境: $CODENAME"
+    echo "  前端: $FRONTEND_ORIGIN"
+    echo "  后端: $BACKEND_ORIGIN"
+    echo "  CORS: $CORS_ORIGINS"
+else
+    # 本地开发环境
+    API_BASE_URL="/api/v1"
+    WS_URL="ws://localhost:8000"
+    echo "本地开发环境"
+fi
+
+# 写入前端 .env.local
+cat > frontend/.env.local << EOF
+VITE_API_BASE_URL=$API_BASE_URL
+VITE_WS_URL=$WS_URL
+EOF
+echo "已写入 frontend/.env.local"
+
+# 3. 启动后端
+echo -e "${YELLOW}[3/5] 启动后端服务 (端口 8000)...${NC}"
 cd backend
+
+# 使用环境变量传入 CORS 配置
+if [ -n "$CORS_ORIGINS" ]; then
+    export CORS_ORIGINS="$CORS_ORIGINS"
+fi
+
 nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 BACKEND_PID=$!
 echo "后端 PID: $BACKEND_PID"
@@ -41,44 +82,7 @@ else
     echo -e "${YELLOW}⚠ 后端可能还在启动中...${NC}"
 fi
 
-# 3. 检测环境并配置前端API地址
-echo -e "${YELLOW}[3/5] 配置前端 API 地址...${NC}"
-
-# 检测 Codespace 环境
-CODENAME=""
-if [ -n "$CODESPACE_NAME" ]; then
-    # CODESPACE_NAME 格式: xxx-xxx-xxx-xxx-5173
-    # 提取基础名称 (去掉末尾的 -端口号)
-    CODENAME=$(echo "$CODESPACE_NAME" | sed 's/-5173$//;s/-8000$//;s/-3000$//;s/-[0-9]*$//')
-    echo "检测到 CODESPACE_NAME: $CODESPACE_NAME"
-    echo "提取的 Codespace 名称: $CODENAME"
-fi
-
-# 写入 .env.local
-if [ -n "$CODENAME" ]; then
-    # Codespace 环境：使用绝对地址
-    BACKEND_URL="https://${CODENAME}-8000.app.github.dev"
-    API_BASE_URL="${BACKEND_URL}/api/v1"
-    WS_URL="wss://${CODENAME}-8000.app.github.dev/ws"
-    echo "Codespace 环境配置:"
-    echo "  API: $API_BASE_URL"
-    echo "  WS: $WS_URL"
-else
-    # 本地开发环境：使用相对路径
-    API_BASE_URL="/api/v1"
-    WS_URL="ws://localhost:8000"
-    echo "本地开发环境配置:"
-    echo "  API: $API_BASE_URL"
-fi
-
-# 写入 .env.local (优先级高于 .env)
-cat > frontend/.env.local << EOF
-VITE_API_BASE_URL=$API_BASE_URL
-VITE_WS_URL=$WS_URL
-EOF
-echo "已写入 frontend/.env.local"
-
-# 4. 启动前端 (端口 5173)
+# 4. 启动前端
 echo -e "${YELLOW}[4/5] 启动前端服务 (端口 5173)...${NC}"
 cd frontend
 nohup npm run dev -- --host 0.0.0.0 --port 5173 > ../frontend.log 2>&1 &

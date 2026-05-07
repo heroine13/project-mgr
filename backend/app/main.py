@@ -15,6 +15,7 @@ from app.api.v1 import user_mgmt, i18n
 from app.api.v1.issues import router as issues_router
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
+from app.core.config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -49,10 +50,10 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS配置
+# CORS配置 - 从 settings 读取
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
