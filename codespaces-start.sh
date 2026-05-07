@@ -65,12 +65,13 @@ echo "已写入 frontend/.env.local"
 echo -e "${YELLOW}[3/5] 启动后端服务 (端口 8000)...${NC}"
 cd backend
 
-# 使用环境变量传入 CORS 配置
+# 使用环境变量传入 CORS 配置（直接在命令前设置）
 if [ -n "$CORS_ORIGINS" ]; then
-    export CORS_ORIGINS="$CORS_ORIGINS"
+    CORS_ORIGINS="$CORS_ORIGINS" nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
+else
+    nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 fi
 
-nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 BACKEND_PID=$!
 echo "后端 PID: $BACKEND_PID"
 cd ..
