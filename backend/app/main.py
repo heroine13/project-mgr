@@ -1,52 +1,48 @@
-import sys
-import os
-
-# 确保当前目录在 Python 路径中
-_backend_dir = os.path.dirname(os.path.abspath(__file__))
-if _backend_dir not in sys.path:
-    sys.path.insert(0, _backend_dir)
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
+import os
+
+from app.api.v1 import auth, projects, tasks
+from app.api.v1 import scheduler, reports
+from app.api.v1 import integration, backup, workflow, kanban, audit
+from app.api.v1 import reports as reports_enhanced
+from app.api.v1 import ai
+from app.api.v1 import calendar, team, external, documents, resources
+from app.api.v1 import notifications
+from app.api.v1 import project_template
+from app.api.v1 import user_mgmt, i18n
+from app.api.v1.issues import router as issues_router
+from app.services.scheduler import scheduler as task_scheduler
+from app.core.performance import cache_manager
 from app.core.config import settings
 
-# 尝试导入，失败则跳过
-try:
-    from app.services.scheduler import scheduler as task_scheduler
-    _scheduler_available = True
-except Exception as e:
-    print(f"⚠️ 调度器导入失败: {e}")
-    _scheduler_available = False
-    task_scheduler = None
-
-try:
-    from app.api.v1 import scheduler, reports
-    _api_available = True
-except Exception as e:
-    print(f"⚠️ API导入失败: {e}")
-    _api_available = False
-    scheduler = None
-    reports = None
-
-try:
-    from app.api.v1 import integration
-except Exception as e:
-    print(f"⚠️ integration导入失败: {e}")
-    integration = None
-
+@asynccontextmanager
 async def lifespan(app: FastAPI):
     """应用生命周期管理"""
     # 启动时
-    if _scheduler_available and task_scheduler:
-        task_scheduler.start()
-        print("✅ 任务调度器已启动")
+    task_scheduler.start()
+    
+    # 自动配置每日汇报任务 (每天 17:00)
+    from app.services.scheduler import daily_summary_task
+    task_scheduler.add_task(
+        task_id="daily_summary",
+        name="每日自动汇报",
+        func=daily_summary_task,
+        trigger_type="cron",
+        trigger_config={"hour": 17, "minute": 0},
+        enabled=True
+    )
+    print("✅ 每日汇报任务已配置 (每天 17:00)")
+    print("✅ 任务调度器已启动")
     yield
     # 关闭时
-    if _scheduler_available and task_scheduler:
-        task_scheduler.stop()
-        print("🛑 任务调度器已停止")
+    task_scheduler.stop()
+    # 清理缓存
+    cache_manager.clear()
+    print("🛑 任务调度器已停止")
+    print("🛑 缓存已清理")
 
 app = FastAPI(
     title="项目进度管理系统 API",
@@ -55,24 +51,58 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# CORS配置 — 使用 config.py 中的环境变量
-# 解析 BACKEND_CORS_ORIGINS（支持逗号分隔和 JSON 数组格式）
-_cors_origins_raw = settings.BACKEND_CORS_ORIGINS if isinstance(settings.BACKEND_CORS_ORIGINS, list) else []
-try:
-    if isinstance(settings.BACKEND_CORS_ORIGINS, str) and settings.BACKEND_CORS_ORIGINS.strip():
-        _cors_origins_raw = [o.strip() for o in settings.BACKEND_CORS_ORIGINS.split(",")]
-except Exception:
-    _cors_origins_raw = []
+# CORS配置 - 允许所有 GitHub Codespace 域名和本地开发
+from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
+import re
 
-# 开发环境或为空时允许所有来源；生产环境建议按环境配置具体域名
-if settings.ENVIRONMENT == "development" or not _cors_origins_raw:
-    _cors_origins = ["*"]
-else:
-    _cors_origins = _cors_origins_raw
+def get_cors_origins():
+    """动态获取 CORS 允许的来源"""
+    origins = settings.BACKEND_CORS_ORIGINS.copy()
+    
+    # 从环境变量读取额外域名
+    cors_env = os.environ.get("CORS_ORIGINS", "")
+    if cors_env:
+        extra = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+        origins.extend(extra)
+    
+    return origins
 
+cors_origins = get_cors_origins()
+print(f"📝 CORS 允许的来源: {cors_origins}")
+
+# 自定义 CORS 中间件，允许所有 .app.github.dev 域名
+@app.middleware("http")
+async def cors_middleware(request: Request, call_next):
+    origin = request.headers.get("origin", "")
+    
+    # 检查是否是允许的来源
+    allowed = False
+    
+    # 1. 检查是否在显式允许列表中
+    if origin in cors_origins:
+        allowed = True
+    
+    # 2. 检查是否是 GitHub Codespace 环境
+    if ".app.github.dev" in origin or "github.dev" in origin:
+        allowed = True
+    
+    # 3. 检查是否是本地开发
+    if "localhost" in origin or "127.0.0.1" in origin:
+        allowed = True
+    
+    response = await call_next(request)
+    response.headers["Access-Control-Allow-Origin"] = origin
+    response.headers["Access-Control-Allow-Credentials"] = "true"
+    response.headers["Access-Control-Allow-Methods"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "*"
+    return response
+
+# 保留原有的 CORS 中间件作为备用
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=_cors_origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -90,7 +120,12 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy"}
+    from app.core.performance import cache_manager
+    return {
+        "status": "healthy",
+        "cache_entries": len(cache_manager._cache),
+        "cache_ttl_count": len(cache_manager._ttl)
+    }
 
 @app.get("/api/v1/test")
 async def test_endpoint():
@@ -104,25 +139,28 @@ async def test_endpoint():
     }
 
 # 注册路由
-if _api_available:
-    # 导入并注册所有API路由
-    try:
-        from app.api.v1 import auth, projects, tasks
-        app.include_router(auth.router, prefix="/api/v1/auth", tags=["认证"])
-        app.include_router(projects.router, prefix="/api/v1/projects", tags=["项目"])
-        app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["任务"])
-    except Exception as e:
-        print(f"⚠️ 核心API导入失败: {e}")
-    
-    if scheduler:
-        app.include_router(scheduler.router)
-    if reports:
-        app.include_router(reports.router)
-    if integration:
-        try:
-            app.include_router(integration.router)
-        except:
-            pass
+app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+app.include_router(projects.router, prefix="/api/v1/projects", tags=["projects"])
+app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
+app.include_router(issues_router, prefix="/api/v1/issues", tags=["issues"])
+app.include_router(scheduler.router)
+app.include_router(reports.router)
+app.include_router(reports_enhanced.router, prefix="/api/v1", tags=["reports_enhanced"])
+app.include_router(integration.router)
+app.include_router(backup.router, prefix="/api/v1", tags=["backup"])
+app.include_router(workflow.router, prefix="/api/v1", tags=["workflow"])
+app.include_router(kanban.router, prefix="/api/v1", tags=["kanban"])
+app.include_router(audit.router, prefix="/api/v1", tags=["audit"])
+app.include_router(team.router, prefix="/api/v1", tags=["team"])
+app.include_router(ai.router)
+app.include_router(calendar.router, prefix="/api/v1", tags=["calendar"])
+app.include_router(project_template.router, prefix="/api/v1", tags=["project_template"])
+app.include_router(documents.router, prefix="/api/v1/documents", tags=["documents"])
+app.include_router(resources.router, prefix="/api/v1/resources", tags=["resources"])
+app.include_router(external.router, prefix="/api/v1", tags=["external"])
+app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
+app.include_router(user_mgmt.router, prefix="/api/v1/users", tags=["users"])
+app.include_router(i18n.router, prefix="/api/v1/i18n", tags=["国际化"])
 
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

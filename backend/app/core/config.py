@@ -14,14 +14,30 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # CORS配置（逗号分隔字符串，环境变量可覆盖）
-    BACKEND_CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000"
-    ALLOWED_HOSTS: List[str] = ["*"]
+    # CORS配置 - 支持环境变量配置，多个域名用逗号分隔
+    BACKEND_CORS_ORIGINS: List[str] = [
+        # 本地开发
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://localhost:3001",
+        "http://localhost:8080",
+        "http://localhost:8081",
+        "http://127.0.0.1:8080",
+        # Docker 容器
+        "http://localhost:3000",
+        "http://frontend:3000",
+    ]
     
-    # 前端代理地址（开发环境）
-    VITE_API_BASE_URL: str = "http://localhost:8000"
-    # WebSocket 地址（开发环境）
-    VITE_WS_URL: str = "ws://localhost:8000"
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # 从环境变量读取 CORS_ORIGINS 并合并
+        cors_env = os.environ.get("CORS_ORIGINS", "")
+        if cors_env:
+            extra_origins = [origin.strip() for origin in cors_env.split(",") if origin.strip()]
+            self.BACKEND_CORS_ORIGINS = list(set(self.BACKEND_CORS_ORIGINS + extra_origins))
+    
+    ALLOWED_HOSTS: List[str] = ["*"]
     
     # 数据库配置
     DATABASE_URL: str = "sqlite:///./project_mgr.db"
