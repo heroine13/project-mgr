@@ -3,7 +3,32 @@
 </template>
 
 <script setup lang="ts">
+import { onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
+
+// 初始化语言设置
+onMounted(() => {
+  const savedLanguage = localStorage.getItem('user_language')
+  if (savedLanguage) {
+    locale.value = savedLanguage
+  }
+})
 </script>
 
-<style scoped>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+#app {
+  min-height: 100vh;
+}
 </style>

@@ -21,11 +21,15 @@ def get_tasks_by_assignee(db: Session, assignee_id: int, skip: int = 0, limit: i
 
 def create_task(db: Session, task_data: TaskCreate, created_by: int) -> Task:
     """Create new task"""
+    # 将 Pydantic 枚举转换为字符串
+    status_value = task_data.status.value if hasattr(task_data.status, 'value') else task_data.status
+    priority_value = task_data.priority.value if hasattr(task_data.priority, 'value') else task_data.priority
+    
     db_task = Task(
         title=task_data.title,
         description=task_data.description,
-        status=task_data.status,
-        priority=task_data.priority,
+        status=status_value,
+        priority=priority_value,
         assignee_id=task_data.assignee_id,
         project_id=task_data.project_id,
         due_date=task_data.due_date,
@@ -43,8 +47,11 @@ def update_task(db: Session, task_id: int, task_data: TaskUpdate) -> Optional[Ta
     """Update task"""
     db_task = get_task(db, task_id)
     if db_task:
-        update_data = task_data.dict(exclude_unset=True)
+        update_data = task_data.model_dump(exclude_unset=True)
         for key, value in update_data.items():
+            # 将 Pydantic 枚举转换为字符串
+            if hasattr(value, 'value'):
+                value = value.value
             setattr(db_task, key, value)
         db.commit()
         db.refresh(db_task)

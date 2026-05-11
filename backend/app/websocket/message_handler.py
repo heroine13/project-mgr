@@ -6,7 +6,7 @@ from typing import Dict, Any, Optional
 from datetime import datetime
 from fastapi import WebSocket
 from app.websocket.connection_manager import connection_manager
-from app.crud import crud_comment
+from app.crud import comment as crud_comment
 
 
 class MessageHandler:

@@ -31,8 +31,8 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(200), nullable=False)
     description = Column(Text)
-    status = Column(Enum(TaskStatus), default=TaskStatus.PENDING)
-    priority = Column(Enum(TaskPriority), default=TaskPriority.MEDIUM)
+    status = Column(String(50), default=TaskStatus.PENDING.value)
+    priority = Column(String(50), default=TaskPriority.MEDIUM.value)
     assignee_id = Column(Integer, ForeignKey("users.id"))
     project_id = Column(Integer, ForeignKey("projects.id"))
     due_date = Column(DateTime(timezone=True))
@@ -49,4 +49,4 @@ class Task(Base):
     creator = relationship("User", foreign_keys=[created_by])
     
     def __repr__(self):
-        return f"<Task(id={self.id}, title='{self.title}', status='{self.status.value}')>"
+        return f"<Task(id={self.id}, title='{self.title}', status='{self.status}')>"

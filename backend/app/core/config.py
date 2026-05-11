@@ -14,13 +14,14 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     
-    # CORS配置
-    BACKEND_CORS_ORIGINS: List[str] = [
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "http://localhost:8000",
-    ]
+    # CORS配置（逗号分隔字符串，环境变量可覆盖）
+    BACKEND_CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000"
     ALLOWED_HOSTS: List[str] = ["*"]
+    
+    # 前端代理地址（开发环境）
+    VITE_API_BASE_URL: str = "http://localhost:8000"
+    # WebSocket 地址（开发环境）
+    VITE_WS_URL: str = "ws://localhost:8000"
     
     # 数据库配置
     DATABASE_URL: str = "sqlite:///./project_mgr.db"

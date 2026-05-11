@@ -15,8 +15,14 @@ from app.schemas.gantt import (
     GanttBaselineCreate, GanttBaselineUpdate, GanttBaselineResponse,
     GanttProjectData, GanttTaskMove, GanttBatchUpdate
 )
-from app.crud import crud_gantt
-from app.crud import crud_project
+# 延迟导入避免循环依赖
+def get_crud_gantt():
+    from app.crud import crud_gantt
+    return crud_gantt
+
+def get_crud_project():
+    from app.crud import crud_project
+    return crud_project
 
 
 router = APIRouter()

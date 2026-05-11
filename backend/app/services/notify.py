@@ -223,3 +223,4 @@ class NotificationTemplates:
 
 ---
 > 自动发送
+"""

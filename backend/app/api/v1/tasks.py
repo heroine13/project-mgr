@@ -2,11 +2,11 @@
 Task API endpoints
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, Header
 from sqlalchemy.orm import Session
 from typing import List, Optional
 
-from app.db.database import get_db
+from app.core.database import get_db
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
 from app.crud.task import get_task, get_tasks_by_project, get_tasks_by_assignee, create_task, update_task, delete_task
@@ -14,9 +14,28 @@ from app.auth.jwt_handler import verify_token
 
 router = APIRouter()
 
-def get_current_user(token: str = Depends(verify_token)) -> dict:
-    """Get current user from JWT token"""
-    return token
+def get_current_user(authorization: str = Header(None)) -> dict:
+    """Get current user from JWT token in Authorization header"""
+    if not authorization:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Authorization header missing"
+        )
+    
+    try:
+        # Extract token from "Bearer <token>"
+        scheme, token = authorization.split()
+        if scheme.lower() != "bearer":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid authentication scheme"
+            )
+        return verify_token(token)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authorization header format"
+        )
 
 @router.get("/", response_model=List[TaskResponse])
 async def read_tasks(

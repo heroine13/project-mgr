@@ -16,7 +16,10 @@ export class WebSocketClient {
   lastError = ref<string | null>(null)
   connectionId = ref<string | null>(null)
   
-  // 连接配置
+  // 连接配置（通过环境变量支持不同部署环境）
+  // .env.development → VITE_WS_URL=ws://localhost:8000
+  // .env.production → VITE_WS_URL=wss://your-domain.com
+  // Codespaces  → VITE_WS_URL=wss://8000-yourname-xxxx.github.dev
   private baseUrl = import.meta.env.VITE_WS_URL || 'ws://localhost:8000'
   private reconnectDelay = 5000  // 5秒重连延迟
   private pingIntervalMs = 30000 // 30秒心跳间隔

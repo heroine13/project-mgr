@@ -8,7 +8,7 @@ from typing import Optional, List, Dict, Any
 from datetime import datetime
 import logging
 
-from ..services.report import generate_full_report, ReportDataGenerator
+from app.services.report import generate_full_report, ReportDataGenerator
 
 logger = logging.getLogger(__name__)
 
