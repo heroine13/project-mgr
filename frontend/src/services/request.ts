@@ -5,9 +5,9 @@ function getAPIBaseURL(): string {
   // 检测是否在 Codespace 中
   if (window.location.hostname.includes('github.dev') || 
       window.location.hostname.includes('app.github.dev')) {
-    // Codespace 环境：使用 Codespace 的 8000 端口
-    const codespaceName = window.location.hostname.split('-')[0]
-    return `https://${codespaceName}-8000.app.github.dev/api/v1`
+    // Codespace 环境：直接通过本机公网 IP 访问后端
+    // 这样绕过 GitHub 代理的 CORS 限制
+    return 'http://43.134.11.21:8000/api/v1'
   }
   
   // 本地开发或 Docker 环境
