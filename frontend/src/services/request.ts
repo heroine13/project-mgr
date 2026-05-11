@@ -1,8 +1,20 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
-// 创建axios实例
+// 创建axios实例 - 根据环境自动配置 API 地址
+function getAPIBaseURL(): string {
+  const env = import.meta.env.VITE_API_BASE_URL
+  // 如果是 Codespace 环境，使用 Codespace 的 8000 端口
+  if (env && env.startsWith('https://')) {
+    // 替换占位符为实际的 Codespace 名称
+    const codespaceName = window.location.hostname.split('-')[0]
+    return env.replace('{CODESPACE_NAME}', codespaceName)
+  }
+  // 开发环境或本地使用相对路径
+  return env || '/api/v1'
+}
+
 const request: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  baseURL: getAPIBaseURL(),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
