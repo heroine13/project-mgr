@@ -348,11 +348,11 @@
           </el-form-item>
           
           <el-form-item :label="$t('common.includeCharts')">
-            <el-switch v-model="exportForm.includeCharts" />
+            <el-switch v-model="exportForm.includeCharts" :active-value="true" :inactive-value="false" />
           </el-form-item>
           
           <el-form-item :label="$t('common.includeDetails')">
-            <el-switch v-model="exportForm.includeDetails" />
+            <el-switch v-model="exportForm.includeDetails" :active-value="true" :inactive-value="false" />
           </el-form-item>
         </el-form>
       </div>
@@ -368,7 +368,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'

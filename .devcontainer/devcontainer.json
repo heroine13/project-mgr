@@ -1,0 +1,24 @@
+{
+  "name": "Project Manager",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Vue.volar",
+        "Python.python"
+      ]
+    }
+  },
+  "postCreateCommand": "pip install -q -r backend/requirements.simple.txt && cd frontend && npm install",
+  "postStartCommand": "chmod +x codespaces-start.sh && echo '=== 运行 ./codespaces-start.sh 启动系统 ==='",
+  "portsAttributes": {
+    "5173": {"label": "Frontend - Vue"},
+    "8000": {"label": "Backend - FastAPI"}
+  },
+  "forwardPorts": [5173, 8000]
+}

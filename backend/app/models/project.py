@@ -2,7 +2,7 @@
 Project Model
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Index
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from .user import Base
@@ -11,6 +11,11 @@ class Project(Base):
     """Project model for project management"""
     
     __tablename__ = "projects"
+    __table_args__ = (
+        Index('idx_project_owner_status', 'owner_id', 'status'),
+        Index('idx_project_status', 'status'),
+        Index('idx_project_created_at', 'created_at'),
+    )
     
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(200), nullable=False)
@@ -28,6 +33,7 @@ class Project(Base):
     # Relationships
     owner = relationship("User")
     tasks = relationship("Task", back_populates="project")
+    issues = relationship("Issue", back_populates="project")
     
     def __repr__(self):
         return f"<Project(id={self.id}, name='{self.name}', code='{self.code}')>"

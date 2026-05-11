@@ -6,7 +6,23 @@ from fastapi import APIRouter
 # 导入所有端点模块
 from app.api.v1 import auth, projects, tasks
 from app.api.v1.endpoints import gantt, websocket
-from app.api.v1 import notifications, export
+from app.api.v1 import notifications, export, integration
+from app.api.v1.issues import router as issues_router
+from app.api.v1.resources import router as resources_router
+from app.api.v1.documents import router as documents_router
+from app.api.v1.i18n import router as i18n_router
+from app.api.v1.search import router as search_router
+from app.api.v1.kanban import router as kanban_router
+from app.api.v1.team import router as team_router
+from app.api.v1.backup import router as backup_router
+from app.api.v1.audit import router as audit_router
+from app.api.v1.reports_enhanced import router as reports_router
+from app.api.v1.user_mgmt import router as user_mgmt_router
+from app.api.v1.project_template import router as project_template_router
+from app.api.v1.external import router as external_router
+from app.api.v1.workflow import router as workflow_router
+from app.api.v1.calendar import router as calendar_router
+from app.api.v1.ai import router as ai_router
 
 api_router = APIRouter()
 
@@ -30,3 +46,51 @@ api_router.include_router(notifications.router, prefix="/notifications", tags=["
 
 # 注册导出路由
 api_router.include_router(export.router, tags=["数据导出"])
+
+# 注册Issue路由
+api_router.include_router(issues_router, prefix="/issues", tags=["Issue管理"])
+
+# 注册资源管理路由
+api_router.include_router(resources_router, prefix="/resources", tags=["资源成本管理"])
+
+# 注册文档管理路由
+api_router.include_router(documents_router, prefix="/documents", tags=["文档版本控制"])
+
+# 注册多语言管理路由
+api_router.include_router(i18n_router, prefix="/i18n", tags=["多语言管理"])
+
+# 注册文档搜索路由
+api_router.include_router(search_router, prefix="/documents-search", tags=["文档搜索"])
+
+# 注册看板路由
+api_router.include_router(kanban_router, prefix="/kanban", tags=["看板视图"])
+
+# 注册团队协作路由
+api_router.include_router(team_router, prefix="/team", tags=["团队协作"])
+
+# 注册备份管理路由
+api_router.include_router(backup_router, prefix="/backup", tags=["备份管理"])
+
+# 注册审计日志路由
+api_router.include_router(audit_router, prefix="/audit", tags=["审计日志"])
+
+# 注册增强报表路由
+api_router.include_router(reports_router, prefix="/reports", tags=["报表增强"])
+
+# 注册用户管理路由
+api_router.include_router(user_mgmt_router, prefix="/users", tags=["用户管理"])
+
+# 注册项目模板路由
+api_router.include_router(project_template_router, prefix="/project-templates", tags=["项目模板"])
+
+# 注册外部联系人路由
+api_router.include_router(external_router, prefix="/external-contacts", tags=["外部联系人"])
+
+# 注册工作流路由
+api_router.include_router(workflow_router, prefix="/workflow", tags=["工作流"])
+
+# 注册日历路由
+api_router.include_router(calendar_router, prefix="/calendar", tags=["日历"])
+
+# 注册AI助手路由
+api_router.include_router(ai_router, prefix="/ai", tags=["AI助手"])

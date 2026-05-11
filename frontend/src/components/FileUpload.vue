@@ -127,7 +127,7 @@
       <div class="preview-content">
         <!-- Image Preview -->
         <div v-if="isImage(previewFileInfo)" class="image-preview">
-          <img :src="previewFileInfo.url" :alt="previewFileInfo.name" class="preview-image" />
+          <img :src="previewFileInfo?.url" :alt="previewFileInfo?.name" class="preview-image" />
         </div>
         
         <!-- PDF Preview -->

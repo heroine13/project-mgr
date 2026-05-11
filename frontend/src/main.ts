@@ -9,6 +9,7 @@ import App from './App.vue'
 import router from './router'
 
 import '@/styles/index.scss'
+import '@/styles/dark-theme.css'
 
 // PWA 支持
 if ('serviceWorker' in navigator) {
@@ -22,6 +23,8 @@ if ('serviceWorker' in navigator) {
 // 多语言配置
 import zhCN from './locales/zh-CN.json'
 import enUS from './locales/en-US.json'
+import jaJP from './locales/ja-JP.json'
+import koKR from './locales/ko-KR.json'
 
 const i18n = createI18n({
   legacy: false,
@@ -29,7 +32,9 @@ const i18n = createI18n({
   fallbackLocale: 'en-US',
   messages: {
     'zh-CN': zhCN,
-    'en-US': enUS
+    'en-US': enUS,
+    'ja-JP': jaJP,
+    'ko-KR': koKR
   }
 })
 
@@ -44,5 +49,25 @@ app.use(createPinia())
 app.use(router)
 app.use(i18n)
 app.use(ElementPlus)
+
+// 禁用 Vue 开发模式下的 hydration 警告
+if (import.meta.env.DEV) {
+  const originalWarn = console.warn
+  console.warn = (...args) => {
+    if (args[0] && typeof args[0] === 'string' && args[0].includes('Hydration')) {
+      return // 忽略 hydration 警告
+    }
+    originalWarn.apply(console, args)
+  }
+  
+  // 配置 Vue 忽略 hydration 错误
+  app.config.errorHandler = (err, vm, info) => {
+    if (info && info.includes('Hydration')) {
+      console.log('Hydration warning suppressed')
+      return
+    }
+    throw err
+  }
+}
 
 app.mount('#app')

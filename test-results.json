@@ -1,0 +1,365 @@
+{
+  "timestamp": "2026-05-05T00:09:41.974Z",
+  "pages": [
+    {
+      "page": "login",
+      "status": "loaded",
+      "url": "http://localhost:5173/login"
+    },
+    {
+      "page": "login-success",
+      "status": "redirected",
+      "url": "http://localhost:5173/dashboard"
+    },
+    {
+      "page": "dashboard",
+      "status": "loaded",
+      "url": "http://localhost:5173/dashboard"
+    },
+    {
+      "page": "projects",
+      "status": "loaded",
+      "url": "http://localhost:5173/projects"
+    },
+    {
+      "page": "create-project",
+      "status": "loaded",
+      "url": "http://localhost:5173/projects/new"
+    },
+    {
+      "page": "tasks",
+      "status": "loaded",
+      "url": "http://localhost:5173/tasks"
+    },
+    {
+      "page": "calendar",
+      "status": "loaded",
+      "url": "http://localhost:5173/calendar"
+    },
+    {
+      "page": "kanban",
+      "status": "loaded",
+      "url": "http://localhost:5173/kanban"
+    },
+    {
+      "page": "team",
+      "status": "loaded",
+      "url": "http://localhost:5173/team"
+    },
+    {
+      "page": "documents",
+      "status": "loaded",
+      "url": "http://localhost:5173/documents"
+    },
+    {
+      "page": "statistics",
+      "status": "loaded",
+      "url": "http://localhost:5173/statistics"
+    },
+    {
+      "page": "reports",
+      "status": "loaded",
+      "url": "http://localhost:5173/reports"
+    },
+    {
+      "page": "resources",
+      "status": "loaded",
+      "url": "http://localhost:5173/resources"
+    },
+    {
+      "page": "issues",
+      "status": "loaded",
+      "url": "http://localhost:5173/issues"
+    },
+    {
+      "page": "workflow",
+      "status": "loaded",
+      "url": "http://localhost:5173/workflow"
+    },
+    {
+      "page": "notifications",
+      "status": "loaded",
+      "url": "http://localhost:5173/notifications"
+    },
+    {
+      "page": "users",
+      "status": "loaded",
+      "url": "http://localhost:5173/users"
+    },
+    {
+      "page": "permissions",
+      "status": "loaded",
+      "url": "http://localhost:5173/permissions"
+    },
+    {
+      "page": "ai",
+      "status": "loaded",
+      "url": "http://localhost:5173/ai"
+    },
+    {
+      "page": "backup",
+      "status": "loaded",
+      "url": "http://localhost:5173/backup"
+    },
+    {
+      "page": "audit",
+      "status": "loaded",
+      "url": "http://localhost:5173/audit"
+    },
+    {
+      "page": "i18n",
+      "status": "loaded",
+      "url": "http://localhost:5173/i18n"
+    },
+    {
+      "page": "settings",
+      "status": "loaded",
+      "url": "http://localhost:5173/settings"
+    },
+    {
+      "page": "templates",
+      "status": "loaded",
+      "url": "http://localhost:5173/templates"
+    },
+    {
+      "page": "external",
+      "status": "loaded",
+      "url": "http://localhost:5173/external"
+    }
+  ],
+  "consoleErrors": [
+    "全局错误捕获: TypeError: createElement is not a function\n    at Proxy.render (http://localhost:5173/node_modules/.vite/deps/vue-markdown.js?v=80c56812:16446:24)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8290:46)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8197:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at mountChildren (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7897:7)\n    at mountElement (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7813:7)",
+    "组件: Proxy(Object)",
+    "错误信息: render function",
+    "全局错误捕获: TypeError: createElement is not a function\n    at Proxy.render (http://localhost:5173/node_modules/.vite/deps/vue-markdown.js?v=80c56812:16446:24)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8290:46)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8197:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at mountChildren (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7897:7)\n    at mountElement (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7813:7)",
+    "组件: Proxy(Object)",
+    "错误信息: render function",
+    "全局错误捕获: TypeError: createElement is not a function\n    at Proxy.render (http://localhost:5173/node_modules/.vite/deps/vue-markdown.js?v=80c56812:16446:24)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8290:46)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8197:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at mountChildren (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7897:7)\n    at mountElement (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7813:7)",
+    "组件: Proxy(Object)",
+    "错误信息: render function",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "获取列配置失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchColumns (http://localhost:5173/src/views/kanban/KanbanView.vue:38:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "加载部门失败 AxiosError: Network Error\n    at XMLHttpRequest.handleError (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1717:19)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async loadDepartments (http://localhost:5173/src/views/TeamCollaborationView.vue:196:17)",
+    "Failed to load resource: net::ERR_FAILED",
+    "全局错误捕获: ReferenceError: onUnmounted is not defined\n    at setup (http://localhost:5173/src/views/StatisticsView.vue:415:5)\n    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:2351:19)\n    at setupStatefulComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:10295:25)\n    at setupComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:10257:36)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8183:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8297:11)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)",
+    "组件: Proxy(Object)",
+    "错误信息: setup function",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "获取摘要失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchSummary (http://localhost:5173/src/views/EnhancedReportsView.vue:45:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "获取趋势失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchTrends (http://localhost:5173/src/views/EnhancedReportsView.vue:54:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "获取团队绩效失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchTeamPerformance (http://localhost:5173/src/views/EnhancedReportsView.vue:66:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "获取项目进度失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchProjectProgress (http://localhost:5173/src/views/EnhancedReportsView.vue:78:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "获取逾期任务失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchOverdueTasks (http://localhost:5173/src/views/EnhancedReportsView.vue:90:22)",
+    "全局错误捕获: TypeError: Cannot read properties of undefined (reading 'length')\n    at Proxy._sfc_render (http://localhost:5173/src/views/NotificationsView.vue:250:28)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:8368:26)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:507:19)\n    at ReactiveEffect.runIfDirty (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:545:12)\n    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:2351:33)\n    at flushJobs (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:2559:9)",
+    "组件: Proxy(Object)",
+    "错误信息: render function",
+    "全局错误捕获: TypeError: Cannot read properties of undefined (reading 'length')\n    at loadNotifications (http://localhost:5173/src/views/NotificationsView.vue:55:26)\n    at async http://localhost:5173/src/views/NotificationsView.vue:50:7",
+    "组件: Proxy(Object)",
+    "错误信息: mounted hook",
+    "Failed to load resource: net::ERR_FAILED",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4c6a6861:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4c6a6861:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4c6a6861:2330:41)\n    at async fetchBackups (http://localhost:5173/src/views/BackupManagementView.vue:54:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:2330:41)\n    at async fetchBackups (http://localhost:5173/src/views/BackupManagementView.vue:54:22)",
+    "Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+    "AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:2330:41)\n    at async fetchLogs (http://localhost:5173/src/views/AuditLogView.vue:96:22)",
+    "Failed to load resource: the server responded with a status of 404 (Not Found)",
+    "加载未翻译Key失败 AxiosError: Request failed with status code 404\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:2330:41)\n    at async loadUntranslated (http://localhost:5173/src/views/TranslationManagementView.vue:86:21)"
+  ],
+  "pageErrors": [],
+  "bugs": [
+    {
+      "page": "global",
+      "issue": "Console Error: 全局错误捕获: TypeError: createElement is not a function\n    at Proxy.render (http://localhost:5173/node_modules/.vite/deps/vue-markdown.js?v=80c56812:16446:24)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8290:46)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8197:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at mountChildren (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7897:7)\n    at mountElement (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7813:7)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 组件: Proxy(Object)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 错误信息: render function"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 全局错误捕获: TypeError: createElement is not a function\n    at Proxy.render (http://localhost:5173/node_modules/.vite/deps/vue-markdown.js?v=80c56812:16446:24)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8290:46)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8197:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at mountChildren (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7897:7)\n    at mountElement (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7813:7)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 组件: Proxy(Object)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 错误信息: render function"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 全局错误捕获: TypeError: createElement is not a function\n    at Proxy.render (http://localhost:5173/node_modules/.vite/deps/vue-markdown.js?v=80c56812:16446:24)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8290:46)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8197:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at mountChildren (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7897:7)\n    at mountElement (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7813:7)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 组件: Proxy(Object)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 错误信息: render function"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 获取列配置失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchColumns (http://localhost:5173/src/views/kanban/KanbanView.vue:38:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 加载部门失败 AxiosError: Network Error\n    at XMLHttpRequest.handleError (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1717:19)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async loadDepartments (http://localhost:5173/src/views/TeamCollaborationView.vue:196:17)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 全局错误捕获: ReferenceError: onUnmounted is not defined\n    at setup (http://localhost:5173/src/views/StatisticsView.vue:415:5)\n    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:2351:19)\n    at setupStatefulComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:10295:25)\n    at setupComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:10257:36)\n    at mountComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8183:7)\n    at processComponent (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8149:9)\n    at patch (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:7646:11)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8297:11)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:507:19)\n    at setupRenderEffect (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=80c56812:8425:5)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 组件: Proxy(Object)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 错误信息: setup function"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 获取摘要失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchSummary (http://localhost:5173/src/views/EnhancedReportsView.vue:45:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 获取趋势失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchTrends (http://localhost:5173/src/views/EnhancedReportsView.vue:54:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 获取团队绩效失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchTeamPerformance (http://localhost:5173/src/views/EnhancedReportsView.vue:66:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 获取项目进度失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchProjectProgress (http://localhost:5173/src/views/EnhancedReportsView.vue:78:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 获取逾期任务失败 AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=80c56812:2330:41)\n    at async fetchOverdueTasks (http://localhost:5173/src/views/EnhancedReportsView.vue:90:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 全局错误捕获: TypeError: Cannot read properties of undefined (reading 'length')\n    at Proxy._sfc_render (http://localhost:5173/src/views/NotificationsView.vue:250:28)\n    at renderComponentRoot (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:6722:17)\n    at ReactiveEffect.componentUpdateFn [as fn] (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:8368:26)\n    at ReactiveEffect.run (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:507:19)\n    at ReactiveEffect.runIfDirty (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:545:12)\n    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:2351:33)\n    at flushJobs (http://localhost:5173/node_modules/.vite/deps/chunk-D4VKVKNE.js?v=4c6a6861:2559:9)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 组件: Proxy(Object)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 错误信息: render function"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 全局错误捕获: TypeError: Cannot read properties of undefined (reading 'length')\n    at loadNotifications (http://localhost:5173/src/views/NotificationsView.vue:55:26)\n    at async http://localhost:5173/src/views/NotificationsView.vue:50:7"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 组件: Proxy(Object)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 错误信息: mounted hook"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: net::ERR_FAILED"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4c6a6861:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4c6a6861:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=4c6a6861:2330:41)\n    at async fetchBackups (http://localhost:5173/src/views/BackupManagementView.vue:54:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:2330:41)\n    at async fetchBackups (http://localhost:5173/src/views/BackupManagementView.vue:54:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: AxiosError: Request failed with status code 500\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:2330:41)\n    at async fetchLogs (http://localhost:5173/src/views/AuditLogView.vue:96:22)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: Failed to load resource: the server responded with a status of 404 (Not Found)"
+    },
+    {
+      "page": "global",
+      "issue": "Console Error: 加载未翻译Key失败 AxiosError: Request failed with status code 404\n    at settle (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1319:7)\n    at XMLHttpRequest.onloadend (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:1682:7)\n    at Axios.request (http://localhost:5173/node_modules/.vite/deps/axios.js?v=542fc14a:2330:41)\n    at async loadUntranslated (http://localhost:5173/src/views/TranslationManagementView.vue:86:21)"
+    }
+  ]
+}

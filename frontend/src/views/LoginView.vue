@@ -6,50 +6,48 @@
         <p>{{ $t('login.subtitle') }}</p>
       </div>
       
-      <el-form 
-        ref="loginFormRef" 
-        :model="loginForm" 
-        :rules="loginRules" 
-        class="login-form"
-      >
-        <el-form-item prop="username">
+      <!-- 使用原生表单提交备用方案 -->
+      <form @submit.prevent="handleLoginSubmit" class="login-form">
+        <div class="form-item">
           <el-input
             v-model="loginForm.username"
-            :placeholder="$t('login.username')"
+            placeholder="请输入用户名"
             prefix-icon="User"
             size="large"
+            name="username"
           />
-        </el-form-item>
+        </div>
         
-        <el-form-item prop="password">
+        <div class="form-item">
           <el-input
             v-model="loginForm.password"
             type="password"
-            :placeholder="$t('login.password')"
+            placeholder="请输入密码"
             prefix-icon="Lock"
             size="large"
             show-password
+            name="password"
           />
-        </el-form-item>
+        </div>
         
-        <el-form-item>
+        <div class="form-item">
           <el-checkbox v-model="loginForm.rememberMe">
-            {{ $t('login.rememberMe') }}
+            记住我
           </el-checkbox>
-        </el-form-item>
+        </div>
         
-        <el-form-item>
+        <div class="form-item">
           <el-button 
             type="primary" 
             size="large" 
             class="login-button"
             :loading="loading"
-            @click="handleLogin"
+            native-type="submit"
           >
-            {{ $t('login.button') }}
+            {{ loading ? '登录中...' : '登录' }}
           </el-button>
-        </el-form-item>
-      </el-form>
+        </div>
+      </form>
       
       <div class="login-footer">
         <el-link type="primary" @click="switchToRegister">
@@ -85,6 +83,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'element-plus'
+import { authApi } from '@/services/api'
 
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -101,11 +100,11 @@ const loginForm = reactive({
 const loginRules = {
   username: [
     { required: true, message: t('login.usernameRequired'), trigger: 'blur' },
-    { min: 3, message: t('login.usernameMinLength'), trigger: 'blur' }
+    { min: 1, message: t('login.usernameMinLength'), trigger: 'blur' }
   ],
   password: [
     { required: true, message: t('login.passwordRequired'), trigger: 'blur' },
-    { min: 8, message: t('login.passwordMinLength'), trigger: 'blur' }
+    { min: 1, message: t('login.passwordMinLength'), trigger: 'blur' }
   ]
 }
 
@@ -117,25 +116,46 @@ const languages = [
 ]
 
 const handleLogin = async () => {
-  if (!loginFormRef.value) return
-  
+  await doLogin()
+}
+
+const handleLoginSubmit = async () => {
+  await doLogin()
+}
+
+const doLogin = async () => {
   try {
-    await loginFormRef.value.validate()
+    // 简化验证 - 只检查必填字段
+    if (!loginForm.username || !loginForm.password) {
+      ElMessage.error('请输入用户名和密码')
+      return
+    }
+    
     loading.value = true
     
-    // TODO: Call actual login API
-    // const response = await api.auth.login(loginForm)
+    console.log('Attempting login with:', loginForm)
     
-    // Mock successful login
-    setTimeout(() => {
-      ElMessage.success(t('login.success'))
-      router.push('/dashboard')
-      loading.value = false
-    }, 1000)
+    // 调用实际登录API
+    const response = await authApi.login(loginForm)
+    
+    console.log('Login response:', response)
+    
+    // 保存token到localStorage
+    localStorage.setItem('access_token', response.access_token)
+    localStorage.setItem('refresh_token', response.refresh_token)
+    localStorage.setItem('user_id', response.user_id)
+    localStorage.setItem('username', response.username)
+    
+    console.log('Token saved, navigating to dashboard')
+    ElMessage.success('登录成功')
+    
+    // 使用 window.location 强制跳转
+    window.location.href = '/dashboard'
+    loading.value = false
     
   } catch (error) {
     console.error('Login failed:', error)
-    ElMessage.error(t('login.error'))
+    ElMessage.error(error?.response?.data?.detail || '登录失败，请检查用户名和密码')
     loading.value = false
   }
 }

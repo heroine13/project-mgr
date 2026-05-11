@@ -227,7 +227,7 @@
             </div>
             <div class="team-actions">
               <el-button type="primary" size="small" @click="addTeamMember" plain>
-                <el-icon><UserAdd /></el-icon>
+                <el-icon><UserFilled /></el-icon>
                 {{ $t('common.addMember') }}
               </el-button>
             </div>
@@ -307,9 +307,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   Edit, Download, More, Plus, Search, 
-  Clock, Setting, UserAdd, Upload, 
+  Clock, Setting, UserFilled, Upload, 
   View, Delete 
 } from '@element-plus/icons-vue'
 
@@ -475,16 +476,30 @@ const exportProject = () => {
   console.log('Export project')
 }
 
-const handleProjectCommand = (command: string) => {
+const handleProjectCommand = async (command: string) => {
   if (command === 'archive') {
     // TODO: Archive project
   } else if (command === 'delete') {
-    // TODO: Delete project with confirmation
+    try {
+      await ElMessageBox.confirm('确定要删除此项目吗？此操作不可恢复。', '删除项目', {
+        confirmButtonText: '删除',
+        cancelButtonText: '取消',
+        type: 'warning',
+      })
+      await api.delete(`/projects/${project.value.id}`)
+      ElMessage.success('项目已删除')
+      router.push('/projects')
+    } catch (e) {
+      if (e !== 'cancel') {
+        console.error('删除项目失败', e)
+        ElMessage.error(e?.detail || '删除失败')
+      }
+    }
   }
 }
 
 const createTask = () => {
-  router.push(`/projects/${project.value.id}/tasks/new`)
+  router.push('/tasks/new')
 }
 
 const viewTask = (task: any) => {

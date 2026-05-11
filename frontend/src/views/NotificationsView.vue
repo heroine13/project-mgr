@@ -22,7 +22,7 @@
     
     <!-- 通知列表 -->
     <div class="notification-list" v-loading="isLoading">
-      <template v-if="notifications.length > 0">
+      <template v-if="notifications && notifications.length > 0">
         <el-card
           v-for="notification in notifications"
           :key="notification.id"
@@ -170,7 +170,7 @@ onMounted(async () => {
 async function loadNotifications() {
   const unreadOnly = filterType.value === 'unread'
   const data = await notificationStore.fetchNotifications(unreadOnly)
-  total.value = data.length
+  total.value = data?.length || 0
 }
 
 // 筛选变化

@@ -575,7 +575,7 @@ const extractMentions = (text: string): number[] => {
 
 const parseMentions = (mentions: string): number[] => {
   if (!mentions) return []
-  return mentions.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
+  return (mentions || '').split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id))
 }
 
 const insertMention = (user: User) => {
@@ -642,7 +642,7 @@ const formatTime = (time: string): string => {
 const formatTypingUsers = (users: TypingStatus[]): string => {
   if (users.length === 0) return ''
   if (users.length === 1) return users[0].user_name || `用户${users[0].user_id}`
-  if (users.length === 2) return users.map(u => u.user_name || `用户${u.user_id}`).join('和')
+  if (users && users.length === 2) return users.map(u => u.user_name || `用户${u.user_id}`).join('和')
   return `${users[0].user_name || `用户${users[0].user_id}`}等${users.length}人`
 }
 

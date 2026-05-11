@@ -1,0 +1,54 @@
+# ========================================
+# 测试环境 Docker Compose 配置
+# ========================================
+# 用途: 本地开发测试
+# 特点: 轻量级，使用SQLite，无需外部数据库
+# 启动命令: docker-compose -f docker-compose.test.yml up -d
+
+version: '3.8'
+
+services:
+  # 测试环境后端 (使用SQLite)
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.simple
+    container_name: project-mgr-backend-test
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - ./test_db:/app/test_db:ro
+    environment:
+      # SQLite数据库 - 使用容器内路径
+      DATABASE_URL: sqlite:////app/test_db/project_mgr.db
+      DATABASE_TYPE: sqlite
+      SECRET_KEY: test-secret-key-do-not-use-in-production
+      DEBUG: "true"
+      ENVIRONMENT: test
+      CORS_ORIGINS: "http://localhost:5173,http://frontend-test:3000"
+    command: >
+      sh -c "
+        echo '🧪 启动测试环境后端...' &&
+        python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+
+  # 测试环境前端
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: project-mgr-frontend-test
+    ports:
+      - "5173:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      VITE_API_BASE_URL: /api/v1
+      VITE_ENV: test
+    command: npm run dev -- --host 0.0.0.0
+
+networks:
+  default:
+    name: project-mgr-test-network

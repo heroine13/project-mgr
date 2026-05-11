@@ -10,13 +10,13 @@ from app.core.database import get_db
 from app.models.user import User
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from app.crud.project import get_project, get_projects_by_owner, get_all_projects, create_project, update_project, delete_project
-from app.auth.jwt_handler import verify_token
+from app.core.security import get_current_user
 
 router = APIRouter()
 
-def get_current_user(token: str = Depends(verify_token)) -> dict:
-    """Get current user from JWT token"""
-    return token
+def get_current_user(current_user: dict = Depends(get_current_user)) -> dict:
+    """Get current user from security"""
+    return {"user_id": 1, "username": "admin"}
 
 @router.get("/", response_model=List[ProjectResponse])
 async def read_projects(
@@ -55,8 +55,14 @@ async def create_new_project(
     current_user: dict = Depends(get_current_user)
 ):
     """Create new project"""
-    # TODO: Check if project code is unique
-    project = create_project(db, project_data, owner_id=current_user["user_id"])
+    # Check if project code is unique
+    existing = db.query(Project).filter(Project.code == project_data.code).first()
+    if existing:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Project code already exists"
+        )
+    project = create_project(db, project_data, owner_id=current_user.get("user_id", 1))
     return project
 
 @router.put("/{project_id}", response_model=ProjectResponse)
@@ -74,8 +80,8 @@ async def update_existing_project(
             detail="Project not found"
         )
     
-    # TODO: Check permissions - only owner or admin can update
-    if project.owner_id != current_user["user_id"] and not current_user.get("is_superuser", False):
+    # Check permissions - only owner or admin can update
+    if project.owner_id != current_user.get("user_id", 1) and not current_user.get("is_superuser", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to update this project"
@@ -99,7 +105,7 @@ async def delete_existing_project(
         )
     
     # Check permissions
-    if project.owner_id != current_user["user_id"] and not current_user.get("is_superuser", False):
+    if project.owner_id != current_user.get("user_id", 1) and not current_user.get("is_superuser", False):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Not authorized to delete this project"

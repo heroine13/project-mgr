@@ -281,3 +281,85 @@ def create_notification(
     db.commit()
     db.refresh(notification)
     return notification
+
+# === 增强通知 API ===
+
+@router.get("/summary")
+async def get_notification_summary(
+    days: int = Query(7, ge=1, le=30),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """获取通知摘要"""
+    from app.services.notification_enhanced import EnhancedNotificationService
+    
+    summary = EnhancedNotificationService.get_notification_summary(
+        db, current_user.id, days
+    )
+    return summary
+
+
+@router.post("/mark-all-read")
+async def mark_all_notifications_read(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """标记所有通知为已读"""
+    from app.services.notification_enhanced import EnhancedNotificationService
+    
+    result = EnhancedNotificationService.mark_all_as_read(db, current_user.id)
+    return result
+
+
+@router.get("/grouped-by-type")
+async def get_notifications_grouped(
+    notification_type: Optional[str] = Query(None),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """按类型分组获取未读通知"""
+    from app.services.notification_enhanced import EnhancedNotificationService
+    
+    grouped = EnhancedNotificationService.get_unread_by_type(
+        db, current_user.id, notification_type
+    )
+    return {"grouped": grouped}
+
+
+@router.delete("/cleanup")
+async def cleanup_old_notifications(
+    days: int = Query(30, ge=7, le=90),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """清理旧的已读通知"""
+    from app.services.notification_enhanced import EnhancedNotificationService
+    
+    result = EnhancedNotificationService.delete_old_notifications(
+        db, current_user.id, days
+    )
+    return result
+
+
+@router.get("/types")
+async def get_notification_types(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """获取可用的通知类型"""
+    return {
+        "types": [
+            {"id": "task_created", "name": "任务创建", "icon": "Plus"},
+            {"id": "task_updated", "name": "任务更新", "icon": "Edit"},
+            {"id": "task_assigned", "name": "任务分配", "icon": "User"},
+            {"id": "task_completed", "name": "任务完成", "icon": "CircleCheck"},
+            {"id": "comment_mentioned", "name": "评论提及", "icon": "At"},
+            {"id": "comment_replied", "name": "评论回复", "icon": "ChatLineRound"},
+            {"id": "project_updated", "name": "项目更新", "icon": "Folder"},
+            {"id": "issue_created", "name": "Issue创建", "icon": "Warning"},
+            {"id": "issue_assigned", "name": "Issue分配", "icon": "UserFilled"},
+            {"id": "approval_required", "name": "需要审批", "icon": "CircleCheckFilled"},
+            {"id": "approval_completed", "name": "审批完成", "icon": "Checked"},
+            {"id": "system", "name": "系统通知", "icon": "Setting"},
+        ]
+    }
