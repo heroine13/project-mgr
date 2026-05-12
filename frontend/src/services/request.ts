@@ -5,9 +5,12 @@ function getAPIBaseURL(): string {
   // 检测是否在 Codespace 中
   if (window.location.hostname.includes('github.dev') || 
       window.location.hostname.includes('app.github.dev')) {
-    // Codespace 环境：直接使用相对路径
-    // 让浏览器直接请求后端（不通过 GitHub 代理）
-    return '/api/v1'
+    // Codespace 环境：直接使用后端完整 URL（端口 8000）
+    // 从当前域名推断 Codespace 名称
+    const hostname = window.location.hostname
+    // 例如: xxx-5173.app.github.dev -> xxx-8000.app.github.dev
+    const codespaceName = hostname.replace(/-(\d+)\.app\.github\.dev$/, '')
+    return `https://${codespaceName}-8000.app.github.dev/api/v1`
   }
   
   // 本地开发或 Docker 环境
