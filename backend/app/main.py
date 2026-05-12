@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
 import os
@@ -81,14 +80,16 @@ if codespace_cors_origin:
 
 print(f"📝 CORS 允许的来源: {cors_origins}")
 
-# 使用 FastAPI 内置的 CORS 中间件（移除自定义中间件，避免冲突）
+# 使用 Starlette 原生 CORS 中间件（更可靠）
+from starlette.middleware.cors import CORSMiddleware as StarletteCORSMiddleware
+
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
+    StarletteCORSMiddleware,
+    allow_origins=["*"],  # 允许所有来源（开发环境）
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_origin_regex=".*\\.app\\.github\\.dev$",  # 允许所有 github.dev 域名
+    expose_headers=["*"],
 )
 
 @app.get("/")
