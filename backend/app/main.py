@@ -80,17 +80,27 @@ if codespace_cors_origin:
 
 print(f"📝 CORS 允许的来源: {cors_origins}")
 
-# 使用 Starlette 原生 CORS 中间件（更可靠）
+# 使用 Starlette 原生 CORS 中间件
 from starlette.middleware.cors import CORSMiddleware as StarletteCORSMiddleware
 
+# 先添加 CORS 中间件
 app.add_middleware(
     StarletteCORSMiddleware,
-    allow_origins=["*"],  # 允许所有来源（开发环境）
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"],
 )
+
+# 添加一个简单的 CORS 响应头中间件（确保错误响应也有 CORS 头）
+@app.middleware("http")
+async def add_cors_headers(request, call_next):
+    response = await call_next(request)
+    origin = request.headers.get("origin", "")
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 @app.get("/")
 async def root():
