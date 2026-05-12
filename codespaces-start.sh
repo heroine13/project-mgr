@@ -17,14 +17,13 @@ pkill -f "uvicorn app.main:app" 2>/dev/null || true
 pkill -f "vite" 2>/dev/null || true
 sleep 1
 
-# 1. 检查并初始化数据库
+# 1. 检查数据库
 echo -e "${YELLOW}[1/5] 检查数据库...${NC}"
-# 后端使用相对路径 ./project_mgr.db（相对于 backend 目录）
-if [ ! -f "backend/project_mgr.db" ]; then
-    echo "数据库不存在，正在初始化..."
-    python3 init_db.py
+# 数据库文件已包含在代码库中，跳过初始化
+if [ -f "backend/project_mgr.db" ]; then
+    echo "数据库已存在: backend/project_mgr.db"
 else
-    echo "数据库已存在于 backend/project_mgr.db"
+    echo "警告: 数据库文件不存在!"
 fi
 
 # 2. 检测环境并配置
