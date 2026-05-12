@@ -12,7 +12,7 @@ from app.models.user import User
 from app.models.user_mgmt import Role, Department
 from app.core.database import Base
 
-db_path = os.path.join(os.path.dirname(__file__), 'test_db', 'project_mgr.db')
+db_path = os.path.join(os.path.dirname(__file__), 'backend', 'project_mgr.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
 engine = create_engine(f'sqlite:///{db_path}', connect_args={'check_same_thread': False})

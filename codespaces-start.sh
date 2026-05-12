@@ -19,11 +19,12 @@ sleep 1
 
 # 1. 检查并初始化数据库
 echo -e "${YELLOW}[1/5] 检查数据库...${NC}"
-if [ ! -f "test_db/project_mgr.db" ]; then
+# 后端使用相对路径 ./project_mgr.db（相对于 backend 目录）
+if [ ! -f "backend/project_mgr.db" ]; then
     echo "数据库不存在，正在初始化..."
     python3 init_db.py
 else
-    echo "数据库已存在"
+    echo "数据库已存在于 backend/project_mgr.db"
 fi
 
 # 2. 检测环境并配置
