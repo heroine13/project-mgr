@@ -69,7 +69,7 @@ cd backend
 
 # 使用环境变量传入 CORS 配置（直接在命令前设置）
 if [ -n "$CORS_ORIGINS" ]; then
-    CORS_ORIGINS="$CORS_ORIGINS" nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
+    CORS_ORIGINS="$CORS_ORIGINS" CODESPACE_ORIGIN="$BACKEND_ORIGIN" nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 else
     nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 fi

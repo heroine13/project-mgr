@@ -70,42 +70,25 @@ def get_cors_origins():
     return origins
 
 cors_origins = get_cors_origins()
+
+# 动态添加所有 .app.github.dev 域名到 CORS 允许列表
+codespace_cors_origin = os.environ.get("CODESPACE_ORIGIN", "")
+if codespace_cors_origin:
+    cors_origins.append(codespace_cors_origin)
+    # 同时添加前端域名
+    frontend_origin = codespace_cors_origin.replace("-8000", "-5173")
+    cors_origins.append(frontend_origin)
+
 print(f"📝 CORS 允许的来源: {cors_origins}")
 
-# 自定义 CORS 中间件，允许所有 .app.github.dev 域名
-@app.middleware("http")
-async def cors_middleware(request: Request, call_next):
-    origin = request.headers.get("origin", "")
-    
-    # 检查是否是允许的来源
-    allowed = False
-    
-    # 1. 检查是否在显式允许列表中
-    if origin in cors_origins:
-        allowed = True
-    
-    # 2. 检查是否是 GitHub Codespace 环境
-    if ".app.github.dev" in origin or "github.dev" in origin:
-        allowed = True
-    
-    # 3. 检查是否是本地开发
-    if "localhost" in origin or "127.0.0.1" in origin:
-        allowed = True
-    
-    response = await call_next(request)
-    response.headers["Access-Control-Allow-Origin"] = origin
-    response.headers["Access-Control-Allow-Credentials"] = "true"
-    response.headers["Access-Control-Allow-Methods"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "*"
-    return response
-
-# 保留原有的 CORS 中间件作为备用
+# 使用 FastAPI 内置的 CORS 中间件（移除自定义中间件，避免冲突）
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_origin_regex=".*\\.app\\.github\\.dev$",  # 允许所有 github.dev 域名
 )
 
 @app.get("/")
