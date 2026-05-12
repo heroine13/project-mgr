@@ -61,8 +61,10 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://project-mgr-backend-test:8000',
-        changeOrigin: true
+        // 本地开发用 localhost，Codespaces 用环境变量
+        target: process.env.VITE_CODESPACES_BACKEND_URL || 'http://localhost:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },

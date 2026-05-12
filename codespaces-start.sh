@@ -58,8 +58,10 @@ fi
 cat > frontend/.env.local << EOF
 VITE_API_BASE_URL=$API_BASE_URL
 VITE_WS_URL=$WS_URL
+VITE_CODESPACES_BACKEND_URL=$BACKEND_ORIGIN
 EOF
 echo "已写入 frontend/.env.local"
+echo "  VITE_API_BASE_URL=$API_BASE_URL"
 
 # 3. 启动后端
 echo -e "${YELLOW}[3/5] 启动后端服务 (端口 8000)...${NC}"
