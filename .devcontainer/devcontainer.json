@@ -14,7 +14,7 @@
       ]
     }
   },
-  "postCreateCommand": "pip install -q -r backend/requirements.simple.txt && cd frontend && npm install && chmod +x codespaces-start.sh",
+  "postCreateCommand": "chmod +x codespaces-start.sh && pip install -q -r backend/requirements.simple.txt && cd frontend && npm install",
   "portsAttributes": {
     "5173": {"label": "Frontend - Vue"},
     "8000": {"label": "Backend - FastAPI"}
