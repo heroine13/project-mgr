@@ -95,8 +95,23 @@ app.add_middleware(
 # 添加一个简单的 CORS 响应头中间件（确保错误响应也有 CORS 头）
 @app.middleware("http")
 async def add_cors_headers(request, call_next):
-    response = await call_next(request)
     origin = request.headers.get("origin", "")
+    
+    # 处理 OPTIONS 预检请求
+    if request.method == "OPTIONS" and origin:
+        from starlette.responses import Response
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Max-Age": "3600",
+            }
+        )
+    
+    response = await call_next(request)
     if origin:
         response.headers["Access-Control-Allow-Origin"] = origin
         response.headers["Access-Control-Allow-Credentials"] = "true"
