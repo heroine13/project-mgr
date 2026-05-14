@@ -370,8 +370,8 @@ const aiSelectedModelName = computed(() => {
 })
 const aiKeyDisplay = computed(() => {
   // This is computed from saved config; we'll use a separate ref
-  if (!aiKeyHidden) return '未配置'
-  return aiKeyHidden.substring(0, 8) + '...' + aiKeyHidden.substring(aiKeyHidden.length - 4)
+  if (!aiKeyHidden.value) return '未配置'
+  return aiKeyHidden.value.substring(0, 8) + '...' + aiKeyHidden.value.substring(aiKeyHidden.value.length - 4)
 })
 const aiKeyHidden = ref('')
 
