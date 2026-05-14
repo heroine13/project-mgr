@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
 import os
@@ -70,46 +69,53 @@ def get_cors_origins():
     return origins
 
 cors_origins = get_cors_origins()
+
+# 动态添加所有 .app.github.dev 域名到 CORS 允许列表
+codespace_cors_origin = os.environ.get("CODESPACE_ORIGIN", "")
+if codespace_cors_origin:
+    cors_origins.append(codespace_cors_origin)
+    # 同时添加前端域名
+    frontend_origin = codespace_cors_origin.replace("-8000", "-5173")
+    cors_origins.append(frontend_origin)
+
 print(f"📝 CORS 允许的来源: {cors_origins}")
 
-# 自定义 CORS 中间件，允许所有 .app.github.dev 域名
-@app.middleware("http")
-async def cors_middleware(request: Request, call_next):
-    origin = request.headers.get("origin", "")
-    
-    # 检查是否是允许的来源
-    allowed = False
-    
-    # 1. 检查是否在显式允许列表中
-    if origin in cors_origins:
-        allowed = True
-    
-    # 2. 检查是否是 GitHub Codespace 环境
-    if ".app.github.dev" in origin or "github.dev" in origin:
-        allowed = True
-    
-    # 3. 检查是否是本地开发
-    if "localhost" in origin or "127.0.0.1" in origin:
-        allowed = True
-    
-    if allowed:
-        response = await call_next(request)
-        response.headers["Access-Control-Allow-Origin"] = origin
-        response.headers["Access-Control-Allow-Credentials"] = "true"
-        response.headers["Access-Control-Allow-Methods"] = "*"
-        response.headers["Access-Control-Allow-Headers"] = "*"
-        return response
-    
-    return await call_next(request)
+# 使用 Starlette 原生 CORS 中间件
+from starlette.middleware.cors import CORSMiddleware as StarletteCORSMiddleware
 
-# 保留原有的 CORS 中间件作为备用
+# 先添加 CORS 中间件
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=cors_origins,
+    StarletteCORSMiddleware,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# 添加一个简单的 CORS 响应头中间件（确保错误响应也有 CORS 头）
+@app.middleware("http")
+async def add_cors_headers(request, call_next):
+    origin = request.headers.get("origin", "")
+    
+    # 处理 OPTIONS 预检请求
+    if request.method == "OPTIONS" and origin:
+        from starlette.responses import Response
+        return Response(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": origin,
+                "Access-Control-Allow-Credentials": "true",
+                "Access-Control-Allow-Methods": "*",
+                "Access-Control-Allow-Headers": "*",
+                "Access-Control-Max-Age": "3600",
+            }
+        )
+    
+    response = await call_next(request)
+    if origin:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = "true"
+    return response
 
 @app.get("/")
 async def root():

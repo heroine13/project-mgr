@@ -8,11 +8,20 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.core.security import get_password_hash
+
+# 导入所有模型，确保 SQLAlchemy 知道关系
 from app.models.user import User
 from app.models.user_mgmt import Role, Department
+from app.models.project import Project
+from app.models.task import Task
+from app.models.notification import Notification
+from app.models.document import Document
 from app.core.database import Base
 
-db_path = os.path.join(os.path.dirname(__file__), 'test_db', 'project_mgr.db')
+# 导入所有模型的 __init__ 文件
+import app.models
+
+db_path = os.path.join(os.path.dirname(__file__), 'backend', 'project_mgr.db')
 os.makedirs(os.path.dirname(db_path), exist_ok=True)
 
 engine = create_engine(f'sqlite:///{db_path}', connect_args={'check_same_thread': False})

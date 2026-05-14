@@ -17,13 +17,13 @@ pkill -f "uvicorn app.main:app" 2>/dev/null || true
 pkill -f "vite" 2>/dev/null || true
 sleep 1
 
-# 1. 检查并初始化数据库
+# 1. 检查数据库
 echo -e "${YELLOW}[1/5] 检查数据库...${NC}"
-if [ ! -f "test_db/project_mgr.db" ]; then
-    echo "数据库不存在，正在初始化..."
-    python3 init_db.py
+# 数据库文件已包含在代码库中，跳过初始化
+if [ -f "backend/project_mgr.db" ]; then
+    echo "数据库已存在: backend/project_mgr.db"
 else
-    echo "数据库已存在"
+    echo "警告: 数据库文件不存在!"
 fi
 
 # 2. 检测环境并配置
@@ -69,7 +69,7 @@ cd backend
 
 # 使用环境变量传入 CORS 配置（直接在命令前设置）
 if [ -n "$CORS_ORIGINS" ]; then
-    CORS_ORIGINS="$CORS_ORIGINS" nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
+    CORS_ORIGINS="$CORS_ORIGINS" CODESPACE_ORIGIN="$BACKEND_ORIGIN" nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 else
     nohup python3 -m uvicorn app.main:app --host 0.0.0.0 --port 8000 > ../backend.log 2>&1 &
 fi

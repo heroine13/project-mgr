@@ -31,7 +31,7 @@ class Project(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
     
     # Relationships
-    owner = relationship("User", foreign_keys=[owner_id])
+    owner = relationship("User")
     tasks = relationship("Task", back_populates="project")
     issues = relationship("Issue", back_populates="project")
     

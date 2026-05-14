@@ -1,8 +1,10 @@
 """
 API v1 endpoints
 """
-# Only import working modules
-from app.api.v1 import auth, projects, tasks, scheduler, reports, notifications, export, integration
-from app.api.v1.issues import router as issues_router
+# 直接从 v1 目录导入模块
+from app.api.v1 import auth, projects, tasks
+from app.api.v1.endpoints import gantt
+from app.api.v1.endpoints import websocket
+from app.api.v1 import scheduler, reports
 
-__all__ = ["auth", "projects", "tasks", "scheduler", "reports", "notifications", "export", "integration", "issues_router"]
+__all__ = ["auth", "projects", "tasks", "gantt", "websocket", "scheduler", "reports"]

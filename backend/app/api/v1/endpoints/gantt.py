@@ -5,7 +5,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Query, BackgroundTasks
 from sqlalchemy.orm import Session
 
-from app.core.database import get_db
+from app.api import deps
 from app.models import User, Project
 from app.models.gantt import GanttTask, GanttDependency, GanttView, GanttBaseline
 from app.schemas.gantt import (
@@ -15,10 +15,14 @@ from app.schemas.gantt import (
     GanttBaselineCreate, GanttBaselineUpdate, GanttBaselineResponse,
     GanttProjectData, GanttTaskMove, GanttBatchUpdate
 )
-from app.crud import crud_gantt
-from app.crud import crud_project
-from app.core.database import get_db
-from app.auth import verify_token
+# 延迟导入避免循环依赖
+def get_crud_gantt():
+    from app.crud import crud_gantt
+    return crud_gantt
+
+def get_crud_project():
+    from app.crud import crud_project
+    return crud_project
 
 
 router = APIRouter()
@@ -29,8 +33,8 @@ router = APIRouter()
 @router.post("/tasks", response_model=GanttTaskResponse)
 def create_gantt_task(
     task_in: GanttTaskCreate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """创建甘特图任务"""
     # 检查项目访问权限
@@ -57,8 +61,8 @@ def get_gantt_tasks(
     status_filter: str = Query(None, description="状态过滤器"),
     priority_filter: str = Query(None, description="优先级过滤器"),
     resource_filter: str = Query(None, description="资源过滤器"),
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取项目的甘特图任务列表"""
     # 检查项目访问权限
@@ -81,8 +85,8 @@ def get_gantt_tasks(
 @router.get("/tasks/{task_id}", response_model=GanttTaskResponse)
 def get_gantt_task(
     task_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取甘特图任务详情"""
     task = crud_gantt.get_gantt_task(db, task_id=task_id)
@@ -99,8 +103,8 @@ def get_gantt_task(
 def update_gantt_task(
     task_id: int,
     task_in: GanttTaskUpdate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """更新甘特图任务"""
     task = crud_gantt.get_gantt_task(db, task_id=task_id)
@@ -119,8 +123,8 @@ def update_gantt_task(
 @router.delete("/tasks/{task_id}")
 def delete_gantt_task(
     task_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """删除甘特图任务"""
     task = crud_gantt.get_gantt_task(db, task_id=task_id)
@@ -140,8 +144,8 @@ def delete_gantt_task(
 def move_gantt_task(
     task_id: int,
     move_data: GanttTaskMove,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """移动甘特图任务（更新时间和位置）"""
     try:
@@ -156,8 +160,8 @@ def move_gantt_task(
 @router.post("/tasks/batch-move", response_model=List[GanttTaskResponse])
 def batch_move_gantt_tasks(
     batch_update: GanttBatchUpdate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """批量移动甘特图任务"""
     try:
@@ -172,8 +176,8 @@ def batch_move_gantt_tasks(
 @router.post("/dependencies", response_model=GanttDependencyResponse)
 def create_gantt_dependency(
     dependency_in: GanttDependencyCreate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """创建甘特图依赖关系"""
     # 检查任务是否存在
@@ -201,8 +205,8 @@ def create_gantt_dependency(
 @router.get("/dependencies", response_model=List[GanttDependencyResponse])
 def get_gantt_dependencies(
     project_id: int = Query(..., description="项目ID"),
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取项目的甘特图依赖关系列表"""
     # 检查项目访问权限
@@ -217,8 +221,8 @@ def get_gantt_dependencies(
 @router.delete("/dependencies/{dependency_id}")
 def delete_gantt_dependency(
     dependency_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """删除甘特图依赖关系"""
     dependency = crud_gantt.get_gantt_dependency(db, dependency_id=dependency_id)
@@ -239,8 +243,8 @@ def delete_gantt_dependency(
 @router.post("/views", response_model=GanttViewResponse)
 def create_gantt_view(
     view_in: GanttViewCreate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """创建甘特图视图"""
     # 检查项目访问权限
@@ -258,8 +262,8 @@ def create_gantt_view(
 @router.get("/views", response_model=List[GanttViewResponse])
 def get_gantt_views(
     project_id: int = Query(..., description="项目ID"),
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取用户对项目的甘特图视图列表"""
     # 检查项目访问权限
@@ -276,8 +280,8 @@ def get_gantt_views(
 @router.get("/views/default", response_model=GanttViewResponse)
 def get_default_gantt_view(
     project_id: int = Query(..., description="项目ID"),
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取用户的默认甘特图视图"""
     # 检查项目访问权限
@@ -315,8 +319,8 @@ def get_default_gantt_view(
 @router.get("/views/{view_id}", response_model=GanttViewResponse)
 def get_gantt_view(
     view_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取甘特图视图详情"""
     view = crud_gantt.get_gantt_view(db, view_id=view_id)
@@ -334,8 +338,8 @@ def get_gantt_view(
 def update_gantt_view(
     view_id: int,
     view_in: GanttViewUpdate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """更新甘特图视图"""
     view = crud_gantt.get_gantt_view(db, view_id=view_id)
@@ -356,8 +360,8 @@ def update_gantt_view(
 @router.delete("/views/{view_id}")
 def delete_gantt_view(
     view_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """删除甘特图视图"""
     view = crud_gantt.get_gantt_view(db, view_id=view_id)
@@ -380,8 +384,8 @@ def delete_gantt_view(
 @router.post("/baselines", response_model=GanttBaselineResponse)
 def create_gantt_baseline(
     baseline_in: GanttBaselineCreate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """创建甘特图基线"""
     # 检查项目和任务是否存在
@@ -405,8 +409,8 @@ def create_gantt_baseline(
 @router.get("/baselines", response_model=List[GanttBaselineResponse])
 def get_gantt_baselines(
     project_id: int = Query(..., description="项目ID"),
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取项目的甘特图基线列表"""
     # 检查项目访问权限
@@ -422,8 +426,8 @@ def get_gantt_baselines(
 def update_gantt_baseline(
     baseline_id: int,
     baseline_in: GanttBaselineUpdate,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """更新甘特图基线（主要更新实际值）"""
     baseline = crud_gantt.get_gantt_baseline(db, baseline_id=baseline_id)
@@ -444,8 +448,8 @@ def update_gantt_baseline(
 @router.delete("/baselines/{baseline_id}")
 def delete_gantt_baseline(
     baseline_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """删除甘特图基线"""
     baseline = crud_gantt.get_gantt_baseline(db, baseline_id=baseline_id)
@@ -464,8 +468,8 @@ def delete_gantt_baseline(
 @router.get("/project/{project_id}/full-data", response_model=GanttProjectData)
 def get_gantt_project_full_data(
     project_id: int,
-    db: Session = Depends(get_db),
-    current_user: dict = Depends(verify_token),
+    db: Session = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
 ):
     """获取项目的完整甘特图数据"""
     # 检查项目访问权限

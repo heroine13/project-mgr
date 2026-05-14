@@ -11,6 +11,9 @@ from fastapi.testclient import TestClient
 from app.core.database import Base, get_db
 from app.main import app
 
+# 导入所有模型，确保它们被注册到 Base.metadata
+from app.models import User, Task, Project, Notification, NotificationPreference, EmailQueue, Comment, GanttTask
+
 
 # 测试数据库引擎 (SQLite 内存数据库)
 TEST_DATABASE_URL = "sqlite:///:memory:"
@@ -23,53 +26,74 @@ engine = create_engine(
 TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
+# 全局变量存储当前测试会话
+_test_db_session = None
+
+
 def override_get_db():
-    """覆盖数据库依赖"""
-    try:
+    """覆盖数据库依赖 - 返回测试会话"""
+    global _test_db_session
+    if _test_db_session is not None:
+        try:
+            yield _test_db_session
+        finally:
+            pass
+    else:
+        # 如果没有测试会话，创建新的
         db = TestingSessionLocal()
-        yield db
-    finally:
-        db.close()
+        try:
+            yield db
+        finally:
+            db.close()
 
 
-@pytest.fixture(scope="function")
-def db_session():
-    """创建测试数据库会话"""
+@pytest.fixture(scope="function", autouse=True)
+def setup_test_db():
+    """自动设置测试数据库"""
+    global _test_db_session
+    
     # 创建所有表
     Base.metadata.create_all(bind=engine)
     
-    session = TestingSessionLocal()
-    try:
-        yield session
-    finally:
-        session.close()
-        # 清理所有表
-        Base.metadata.drop_all(bind=engine)
+    # 创建会话
+    _test_db_session = TestingSessionLocal()
+    
+    yield
+    
+    # 清理
+    _test_db_session.close()
+    _test_db_session = None
+    Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture(scope="function")
-def client(db_session):
-    """创建测试客户端"""
-    # 覆盖数据库依赖
+def client():
+    """创建测试客户端 - 必须在 setup_test_db 之后"""
     app.dependency_overrides[get_db] = override_get_db
     
     with TestClient(app) as test_client:
         yield test_client
     
-    # 清除依赖覆盖
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def db_session():
+    """提供测试数据库会话"""
+    return _test_db_session
 
 
 @pytest.fixture
 def sample_user(db_session):
     """创建示例用户"""
-    from app.models.user import User
-    from app.core.security import get_password_hash
+    import bcrypt
+    
+    hashed_password = bcrypt.hashpw(b"testpass123", bcrypt.gensalt()).decode()
     
     user = User(
         username="testuser",
         email="test@example.com",
-        hashed_password=get_password_hash("testpass123"),
+        hashed_password=hashed_password,
         full_name="Test User",
         is_active=True
     )
@@ -82,14 +106,11 @@ def sample_user(db_session):
 @pytest.fixture
 def sample_project(db_session, sample_user):
     """创建示例项目"""
-    from app.models.project import Project
-    
     project = Project(
         name="Test Project",
         description="A test project",
         owner_id=sample_user.id,
-        status="active",
-        progress=0
+        status="active"
     )
     db_session.add(project)
     db_session.commit()
@@ -100,16 +121,16 @@ def sample_project(db_session, sample_user):
 @pytest.fixture
 def sample_task(db_session, sample_project, sample_user):
     """创建示例任务"""
-    from app.models.task import Task
+    from app.models.task import TaskStatus, TaskPriority
     
     task = Task(
         title="Test Task",
         description="A test task",
         project_id=sample_project.id,
         assignee_id=sample_user.id,
-        status="todo",
-        priority="medium",
-        progress=0
+        status=TaskStatus.PENDING.value,
+        priority=TaskPriority.MEDIUM.value,
+        created_by=sample_user.id
     )
     db_session.add(task)
     db_session.commit()

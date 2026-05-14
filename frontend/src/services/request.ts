@@ -1,8 +1,25 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 
-// 创建axios实例
+// 创建axios实例 - 根据环境自动配置 API 地址
+function getAPIBaseURL(): string {
+  // 检测是否在 Codespace 中
+  if (window.location.hostname.includes('github.dev') || 
+      window.location.hostname.includes('app.github.dev')) {
+    // Codespace 环境：直接使用后端完整 URL（端口 8000）
+    // 从当前域名推断 Codespace 名称
+    const hostname = window.location.hostname
+    // 例如: xxx-5173.app.github.dev -> xxx-8000.app.github.dev
+    const codespaceName = hostname.replace(/-(\d+)\.app\.github\.dev$/, '')
+    return `https://${codespaceName}-8000.app.github.dev/api/v1`
+  }
+  
+  // 本地开发或 Docker 环境
+  const env = import.meta.env.VITE_API_BASE_URL
+  return env || '/api/v1'
+}
+
 const request: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api/v1',
+  baseURL: getAPIBaseURL(),
   timeout: 30000,
   headers: {
     'Content-Type': 'application/json'
@@ -36,7 +53,6 @@ request.interceptors.response.use(
       
       switch (status) {
         case 401:
-          // 未授权，清除token并跳转到登录页
           localStorage.removeItem('access_token')
           localStorage.removeItem('refresh_token')
           window.location.href = '/login'
