@@ -212,18 +212,6 @@ const routes = [
     ]
   },
   {
-    path: '/permissions',
-    name: 'permissions',
-    component: MainLayout,
-    children: [
-      {
-        path: '',
-        name: 'permissions-page',
-        component: () => import('@/views/PermissionsView.vue')
-      }
-    ]
-  },
-  {
     path: '/settings',
     name: 'settings',
     component: MainLayout,

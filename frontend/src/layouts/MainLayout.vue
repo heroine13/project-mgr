@@ -116,12 +116,7 @@
           <template #title>用户管理</template>
         </el-menu-item>
         
-        <!-- Permissions -->
-        <el-menu-item index="/permissions">
-          <el-icon><Key /></el-icon>
-          <template #title>权限管理</template>
-        </el-menu-item>
-        
+
         <!-- Settings -->
         <el-menu-item index="/settings">
           <el-icon><Setting /></el-icon>
@@ -331,7 +326,7 @@ import {
   DataAnalysis, Setting, Expand, Fold,
   Moon, Sunny, More, Plus, FolderAdd,
   Search, Bell, ArrowDown, CircleCheck,
-  Warning, Key
+  Warning
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
