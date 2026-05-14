@@ -212,6 +212,30 @@ const routes = [
     ]
   },
   {
+    path: '/user-mgmt',
+    name: 'user-mgmt',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        name: 'user-mgmt-page',
+        component: () => import('@/views/UserManagementView.vue')
+      }
+    ]
+  },
+  {
+    path: '/permissions',
+    name: 'permissions',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        name: 'permissions-page',
+        component: () => import('@/views/PermissionsView.vue')
+      }
+    ]
+  },
+  {
     path: '/settings',
     name: 'settings',
     component: MainLayout,

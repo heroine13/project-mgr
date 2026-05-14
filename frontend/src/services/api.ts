@@ -68,6 +68,27 @@ export const resourceApi = {
   allocate: (id: number, data: any) => request.post(`/resources/${id}/allocate`, data)
 }
 
+// 部门相关API
+export const departmentApi = {
+  list: (params?: any) => request.get('/departments/', { params }),
+  get: (id: number) => request.get(`/departments/${id}`),
+  create: (data: any) => request.post('/departments/', data),
+  update: (id: number, data: any) => request.put(`/departments/${id}`, data),
+  delete: (id: number) => request.delete(`/departments/${id}`),
+  getTree: () => request.get('/departments/tree')
+}
+
+// 角色相关API
+export const roleApi = {
+  list: (params?: any) => request.get('/roles/', { params }),
+  get: (id: number) => request.get(`/roles/${id}`),
+  create: (data: any) => request.post('/roles/', data),
+  update: (id: number, data: any) => request.put(`/roles/${id}`, data),
+  delete: (id: number) => request.delete(`/roles/${id}`),
+  getPermissions: (id: number) => request.get(`/roles/${id}/permissions`),
+  updatePermissions: (id: number, data: any) => request.put(`/roles/${id}/permissions`, data)
+}
+
 // 问题跟踪API
 export const issueApi = {
   list: (params?: any) => request.get('/issues/', { params }),
@@ -87,7 +108,9 @@ export const api = {
   notification: notificationApi,
   document: documentApi,
   resource: resourceApi,
-  issue: issueApi
+  issue: issueApi,
+  department: departmentApi,
+  role: roleApi
 }
 
 export default api

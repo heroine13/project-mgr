@@ -116,6 +116,18 @@
           <template #title>{{ $t('navigation.users') }}</template>
         </el-menu-item>
         
+        <!-- User & Department Management -->
+        <el-menu-item index="/user-mgmt">
+          <el-icon><User /></el-icon>
+          <template #title>用户与部门</template>
+        </el-menu-item>
+        
+        <!-- Permissions -->
+        <el-menu-item index="/permissions">
+          <el-icon><Key /></el-icon>
+          <template #title>权限管理</template>
+        </el-menu-item>
+        
         <!-- Settings -->
         <el-menu-item index="/settings">
           <el-icon><Setting /></el-icon>
@@ -307,7 +319,7 @@ import {
   DataAnalysis, Setting, Expand, Fold,
   Moon, Sunny, More, Plus, FolderAdd,
   Search, Bell, ArrowDown, CircleCheck,
-  Warning
+  Warning, Key
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
