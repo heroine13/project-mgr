@@ -11,9 +11,17 @@ def get_database_url():
     db_type = settings.DATABASE_TYPE.lower()
     
     if db_type == "mysql":
-        if not all([settings.MYSQL_HOST, settings.MYSQL_USER, settings.MYSQL_PASSWORD, settings.MYSQL_DATABASE]):
-            raise ValueError("MySQL配置不完整")
-        return f"mysql+mysqlconnector://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}"
+        # 优先使用单独的MySQL配置变量
+        if all([settings.MYSQL_HOST, settings.MYSQL_USER, settings.MYSQL_PASSWORD, settings.MYSQL_DATABASE]):
+            return f"mysql+mysqlconnector://{settings.MYSQL_USER}:{settings.MYSQL_PASSWORD}@{settings.MYSQL_HOST}:{settings.MYSQL_PORT}/{settings.MYSQL_DATABASE}"
+        # 否则从DATABASE_URL解析mysql+mysqlconnector连接字符串
+        db_url = settings.DATABASE_URL or ""
+        if db_url:
+            if db_url.startswith("mysql://"):
+                return db_url.replace("mysql://", "mysql+mysqlconnector://", 1)
+            if db_url.startswith("mysql+pymysql://"):
+                return db_url.replace("mysql+pymysql://", "mysql+mysqlconnector://", 1)
+        raise ValueError("MySQL配置不完整")
     
     elif db_type == "sqlserver":
         if not all([settings.SQLSERVER_HOST, settings.SQLSERVER_USER, settings.SQLSERVER_PASSWORD, settings.SQLSERVER_DATABASE]):
