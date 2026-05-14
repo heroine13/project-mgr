@@ -12,6 +12,7 @@ from app.api.v1 import calendar, team, external, documents, resources
 from app.api.v1 import notifications
 from app.api.v1 import project_template
 from app.api.v1 import user_mgmt, i18n
+from app.api.v1.settings import router as settings_router
 from app.api.v1.issues import router as issues_router
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
@@ -170,6 +171,6 @@ app.include_router(external.router, prefix="/api/v1", tags=["external"])
 app.include_router(notifications.router, prefix="/api/v1", tags=["notifications"])
 app.include_router(user_mgmt.router, prefix="/api/v1/users", tags=["users"])
 app.include_router(i18n.router, prefix="/api/v1/i18n", tags=["国际化"])
-
+app.include_router(settings_router, prefix="/api/v1", tags=["系统设置"])
 if __name__ == "__main__":
     uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

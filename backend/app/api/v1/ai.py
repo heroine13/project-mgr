@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Optional
 from pydantic import BaseModel
+from datetime import datetime
 
 from app.core.database import get_db
 from app.core.security import get_current_user
@@ -361,6 +362,3 @@ async def get_ai_status():
         "message": "AI服务已就绪" if AI_API_KEY else "演示模式，请配置API密钥"
     }
 
-
-# 导入datetime
-from datetime import datetime

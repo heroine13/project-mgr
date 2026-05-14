@@ -114,6 +114,60 @@
           </el-form>
         </el-tab-pane>
         
+        <!-- AI智能助手设置 -->
+        <el-tab-pane label="AI智能助手" name="ai">
+          <el-form :model="aiSettings" label-width="140px">
+            <el-alert title="AI配置说明" type="info" :closable="false" style="margin-bottom:20px">
+              <template #default>
+                配置AI API密钥后，"AI智能助手"功能将可以正常对话。支持 OpenAI、Anthropic Claude 及兼容 OpenAI 格式的任意API。
+              </template>
+            </el-alert>
+
+            <el-form-item label="AI Provider">
+              <el-select v-model="aiSettings.ai_provider" style="width:100%">
+                <el-option label="OpenAI" value="openai" />
+                <el-option label="Anthropic Claude" value="anthropic" />
+                <el-option label="Azure OpenAI" value="azure" />
+              </el-select>
+            </el-form-item>
+
+            <el-form-item label="AI API Key">
+              <el-input
+                v-model="aiSettings.ai_api_key"
+                type="password"
+                show-password
+                placeholder="输入AI API密钥（不填则使用默认配置）"
+              />
+            </el-form-item>
+
+            <el-form-item label="AI 模型">
+              <el-input v-model="aiSettings.ai_model" placeholder="例：gpt-4, gpt-4o, claude-3-sonnet-20240229" />
+            </el-form-item>
+
+            <el-form-item label="API Base URL">
+              <el-input v-model="aiSettings.ai_base_url" placeholder="留空则使用官方地址（代理/本地模型请填写地址）" />
+            </el-form-item>
+
+            <el-form-item>
+              <el-button type="primary" @click="saveAiSettings" :loading="aiSaving">保存配置</el-button>
+              <el-button @click="testAiConnection" :loading="aiTesting">测试连接</el-button>
+              <el-button @click="resetAiSettings">重置默认</el-button>
+            </el-form-item>
+
+            <el-divider />
+
+            <el-descriptions :column="1" border>
+              <el-descriptions-item label="当前配置状态">
+                <el-tag v-if="aiConfigured" type="success">已配置</el-tag>
+                <el-tag v-else type="info">未配置</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item label="当前 Provider">{{ aiProviderLabel }}</el-descriptions-item>
+              <el-descriptions-item label="当前模型">{{ aiSettings.ai_model || '(默认)' }}</el-descriptions-item>
+              <el-descriptions-item label="API Key">{{ aiKeyDisplay }}</el-descriptions-item>
+            </el-descriptions>
+          </el-form>
+        </el-tab-pane>
+
         <!-- 系统信息 -->
         <el-tab-pane label="系统信息" name="system">
           <el-descriptions :column="2" border>
@@ -131,8 +185,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import api from '@/utils/api'
 
 const activeTab = ref('general')
 
@@ -181,9 +236,92 @@ const saveSecuritySettings = () => {
   ElMessage.success('安全设置已保存')
 }
 
+
+// AI设置
+const aiSettings = reactive({
+  ai_api_key: '',
+  ai_provider: 'openai',
+  ai_model: 'gpt-4',
+  ai_base_url: ''
+})
+const aiSaving = ref(false)
+const aiTesting = ref(false)
+const aiConfigured = ref(false)
+const aiProviderLabel = computed(() => {
+  const map: Record<string, string> = { openai: 'OpenAI', anthropic: 'Anthropic Claude', azure: 'Azure OpenAI' }
+  return map[aiSettings.ai_provider] || 'OpenAI'
+})
+const aiKeyDisplay = computed(() => {
+  if (!aiSettings.ai_api_key) return '未配置'
+  return aiSettings.ai_api_key.substring(0, 8) + '...' + aiSettings.ai_api_key.substring(aiSettings.ai_api_key.length - 4)
+})
+
+const loadAiSettings = async () => {
+  try {
+    const res = await api.get('/settings/ai')
+    if (res.data) {
+      aiSettings.ai_api_key = '' // 不暴露真实Key
+      aiSettings.ai_provider = res.data.ai_provider || 'openai'
+      aiSettings.ai_model = res.data.ai_model || 'gpt-4'
+      aiSettings.ai_base_url = res.data.ai_base_url || ''
+      aiConfigured.value = res.data.configured || false
+    }
+  } catch (e) {
+    console.error('LoadAI settings:', e)
+  }
+}
+
+const saveAiSettings = async () => {
+  if (!aiSettings.ai_provider || !aiSettings.ai_model) {
+    ElMessage.warning('请至少填写Provider和模型')
+    return
+  }
+  aiSaving.value = true
+  try {
+    const res = await api.post('/settings/ai', {
+      ai_api_key: aiSettings.ai_api_key,
+      ai_provider: aiSettings.ai_provider,
+      ai_model: aiSettings.ai_model,
+      ai_base_url: aiSettings.ai_base_url
+    })
+    ElMessage.success(res.data.message || 'AI配置已保存')
+    aiConfigured.value = !!aiSettings.ai_api_key
+  } catch (e: any) {
+    ElMessage.error(e.response?.data?.detail || '保存失败')
+  } finally {
+    aiSaving.value = false
+  }
+}
+
+const testAiConnection = async () => {
+  aiTesting.value = true
+  try {
+    const res = await api.get('/ai/status')
+    if (res.data) {
+      ElMessage.success(`AI状态: ${res.data.message}`)
+    }
+  } catch (e: any) {
+    ElMessage.error('测试连接失败: ' + (e.response?.data?.detail || e.message))
+  } finally {
+    aiTesting.value = false
+  }
+}
+
+const resetAiSettings = () => {
+  aiSettings.ai_api_key = ''
+  aiSettings.ai_provider = 'openai'
+  aiSettings.ai_model = 'gpt-4'
+  aiSettings.ai_base_url = ''
+  aiConfigured.value = false
+  ElMessage.success('已重置为默认值')
+}
 const saveThemeSettings = () => {
   ElMessage.success('主题设置已保存')
 }
+
+onMounted(() => {
+  loadAiSettings()
+})
 </script>
 
 <style scoped lang="scss">
