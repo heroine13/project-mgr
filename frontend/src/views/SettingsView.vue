@@ -119,33 +119,90 @@
           <el-form :model="aiSettings" label-width="140px">
             <el-alert title="AI配置说明" type="info" :closable="false" style="margin-bottom:20px">
               <template #default>
-                配置AI API密钥后，"AI智能助手"功能将可以正常对话。支持 OpenAI、Anthropic Claude 及兼容 OpenAI 格式的任意API。
+                配置AI API密钥后，"AI智能助手"功能将可以正常对话。支持 OpenAI、Anthropic、Azure 及兼容 OpenAI 格式的任意API（如中国移动MaaS、NVIDIA等）。
               </template>
             </el-alert>
 
+            <!-- AI Provider -->
             <el-form-item label="AI Provider">
-              <el-select v-model="aiSettings.ai_provider" style="width:100%">
-                <el-option label="OpenAI" value="openai" />
-                <el-option label="Anthropic Claude" value="anthropic" />
-                <el-option label="Azure OpenAI" value="azure" />
-              </el-select>
+              <div style="display:flex; gap:8px; width:100%">
+                <el-select v-model="aiSettings.ai_provider" style="flex:1" @change="onProviderChange">
+                  <el-option
+                    v-for="p in presetProviders"
+                    :key="p.value"
+                    :label="p.label"
+                    :value="p.value"
+                  />
+                  <el-option label="自定义" value="__custom__" />
+                </el-select>
+                <el-button v-if="aiSettings.ai_provider === '__custom__'" type="primary" size="small" @click="showAddProvider = true">添加</el-button>
+                <el-popconfirm
+                  v-if="showDeleteCustom && aiSettings.ai_provider !== '__custom__'"
+                  title="删除此Provider将同时删除其所有模型，是否确认？"
+                  confirm-button-text="确认"
+                  cancel-button-text="取消"
+                  @confirm="deleteProvider"
+                >
+                  <template #reference>
+                    <el-button type="danger" size="small">删除</el-button>
+                  </template>
+                </el-popconfirm>
+              </div>
             </el-form-item>
 
-            <el-form-item label="AI API Key">
+            <!-- 自定义Provider名称 -->
+            <el-form-item v-if="aiSettings.ai_provider === '__custom__'" label="Provider名称">
+              <el-input v-model="aiSettings.ai_provider_name" placeholder="输入自定义Provider名称" />
+            </el-form-item>
+
+            <!-- API密钥 -->
+            <el-form-item label="API Key">
               <el-input
                 v-model="aiSettings.ai_api_key"
                 type="password"
                 show-password
-                placeholder="输入AI API密钥（不填则使用默认配置）"
+                placeholder="输入AI API密钥"
               />
             </el-form-item>
 
-            <el-form-item label="AI 模型">
-              <el-input v-model="aiSettings.ai_model" placeholder="例：gpt-4, gpt-4o, claude-3-sonnet-20240229" />
+            <!-- 接入协议 -->
+            <el-form-item label="接入协议">
+              <el-select v-model="aiSettings.ai_api" style="width:100%">
+                <el-option label="OpenAI Completions" value="openai-completions" />
+                <el-option label="Anthropic Messages" value="anthropic-messages" />
+                <el-option label="其他（兼容OpenAI）" value="openai-completions" />
+              </el-select>
             </el-form-item>
 
-            <el-form-item label="API Base URL">
-              <el-input v-model="aiSettings.ai_base_url" placeholder="留空则使用官方地址（代理/本地模型请填写地址）" />
+            <!-- Base URL -->
+            <el-form-item label="Base URL">
+              <el-input v-model="aiSettings.ai_base_url" placeholder="留空则使用协议默认地址" />
+            </el-form-item>
+
+            <!-- 模型管理 -->
+            <el-form-item label="AI 模型">
+              <div style="width:100%">
+                <el-select v-model="aiSettings.ai_model" placeholder="请选择模型" clearable filterable style="width:100%;margin-bottom:8px">
+                  <el-option
+                    v-for="m in aiModels"
+                    :key="m.id"
+                    :label="m.name"
+                    :value="m.id"
+                  />
+                </el-select>
+                <el-button type="primary" size="small" @click="showAddModel = true">添加模型</el-button>
+                <div v-if="aiModels.length > 0" style="margin-top:8px">
+                  <el-tag
+                    v-for="(m, idx) in aiModels"
+                    :key="m.id || idx"
+                    closable
+                    style="margin-right:4px;margin-bottom:4px"
+                    @close="removeModel(idx)"
+                  >
+                    {{ m.name }} ({{ m.id }})
+                  </el-tag>
+                </div>
+              </div>
             </el-form-item>
 
             <el-form-item>
@@ -156,18 +213,52 @@
 
             <el-divider />
 
-            <el-descriptions :column="1" border>
-              <el-descriptions-item label="当前配置状态">
+            <el-descriptions :column="2" border>
+              <el-descriptions-item label="配置状态">
                 <el-tag v-if="aiConfigured" type="success">已配置</el-tag>
                 <el-tag v-else type="info">未配置</el-tag>
               </el-descriptions-item>
-              <el-descriptions-item label="当前 Provider">{{ aiProviderLabel }}</el-descriptions-item>
-              <el-descriptions-item label="当前模型">{{ aiSettings.ai_model || '(默认)' }}</el-descriptions-item>
+              <el-descriptions-item label="当前 Provider">{{ aiProviderDisplay }}</el-descriptions-item>
+              <el-descriptions-item label="当前模型">{{ aiSelectedModelName }}</el-descriptions-item>
+              <el-descriptions-item label="接入协议">{{ aiApiDisplay }}</el-descriptions-item>
+              <el-descriptions-item label="模型数量">{{ aiModels.length }}</el-descriptions-item>
               <el-descriptions-item label="API Key">{{ aiKeyDisplay }}</el-descriptions-item>
             </el-descriptions>
           </el-form>
-        </el-tab-pane>
 
+          <!-- 添加模型弹窗 -->
+          <el-dialog v-model="showAddModel" title="添加模型" width="500px">
+            <el-form label-width="80px">
+              <el-form-item label="模型ID">
+                <el-input v-model="newModel.id" placeholder="例：minimax-m25" />
+              </el-form-item>
+              <el-form-item label="模型名称">
+                <el-input v-model="newModel.name" placeholder="例：MiniMax M2.5" />
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <el-button @click="showAddModel = false">取消</el-button>
+              <el-button type="primary" @click="addModel">确定</el-button>
+            </template>
+          </el-dialog>
+
+          <!-- 添加Provider弹窗 -->
+          <el-dialog v-model="showAddProvider" title="添加Provider" width="500px">
+            <el-alert title="添加自定义Provider，可绑定到模型列表" type="info" :closable="false" style="margin-bottom:16px" />
+            <el-form label-width="100px">
+              <el-form-item label="Provider名称">
+                <el-input v-model="newProviderName" placeholder="例：中国移动MaaS" />
+              </el-form-item>
+              <el-form-item label="Base URL">
+                <el-input v-model="newProviderBaseUrl" placeholder="API地址" />
+              </el-form-item>
+            </el-form>
+            <template #footer>
+              <el-button @click="showAddProvider = false">取消</el-button>
+              <el-button type="primary" @click="addProvider">确定</el-button>
+            </template>
+          </el-dialog>
+        </el-tab-pane>
         <!-- 系统信息 -->
         <el-tab-pane label="系统信息" name="system">
           <el-descriptions :column="2" border>
@@ -241,30 +332,85 @@ const saveSecuritySettings = () => {
 const aiSettings = reactive({
   ai_api_key: '',
   ai_provider: 'openai',
-  ai_model: 'gpt-4',
-  ai_base_url: ''
+  ai_provider_name: '',
+  ai_model: '',
+  ai_base_url: '',
+  ai_api: 'openai-completions'
 })
+const aiModels = ref<{id: string; name: string}[]>([])
 const aiSaving = ref(false)
 const aiTesting = ref(false)
 const aiConfigured = ref(false)
-const aiProviderLabel = computed(() => {
-  const map: Record<string, string> = { openai: 'OpenAI', anthropic: 'Anthropic Claude', azure: 'Azure OpenAI' }
-  return map[aiSettings.ai_provider] || 'OpenAI'
+const presetProviders = ref<Array<{value: string; label: string; base_url: string; api: string}>>([])
+const showAddModel = ref(false)
+const showAddProvider = ref(false)
+const newModel = reactive({ id: '', name: '' })
+const newProviderName = ref('')
+const newProviderBaseUrl = ref('')
+const showDeleteCustom = ref(false)
+
+// Computed
+const aiProviderDisplay = computed(() => {
+  if (!aiSettings.ai_provider) return '-'
+  if (aiSettings.ai_provider === '__custom__') return aiSettings.ai_provider_name || '自定义'
+  const p = presetProviders.value.find(pp => pp.value === aiSettings.ai_provider)
+  return p ? p.label : aiSettings.ai_provider
+})
+const aiApiDisplay = computed(() => {
+  const map: Record<string, string> = {
+    'openai-completions': 'OpenAI Completions',
+    'anthropic-messages': 'Anthropic Messages'
+  }
+  return map[aiSettings.ai_api] || aiSettings.ai_api
+})
+const aiSelectedModelName = computed(() => {
+  if (!aiSettings.ai_model) return '(未选择)'
+  const m = aiModels.value.find(m => m.id === aiSettings.ai_model)
+  return m ? `${m.name} (${m.id})` : aiSettings.ai_model
 })
 const aiKeyDisplay = computed(() => {
-  if (!aiSettings.ai_api_key) return '未配置'
-  return aiSettings.ai_api_key.substring(0, 8) + '...' + aiSettings.ai_api_key.substring(aiSettings.ai_api_key.length - 4)
+  // This is computed from saved config; we'll use a separate ref
+  if (!aiKeyHidden) return '未配置'
+  return aiKeyHidden.substring(0, 8) + '...' + aiKeyHidden.substring(aiKeyHidden.length - 4)
 })
+const aiKeyHidden = ref('')
+
+// Methods
+const onProviderChange = () => {
+  if (aiSettings.ai_provider === '__custom__') {
+    aiSettings.ai_provider = 'openai' // reset to something valid
+    showDeleteCustom.value = false
+  } else if (aiSettings.ai_provider === 'custom') {
+    showDeleteCustom.value = true
+  } else {
+    showDeleteCustom.value = false
+    // Fill defaults from preset
+    const p = presetProviders.value.find(pp => pp.value === aiSettings.ai_provider)
+    if (p) {
+      aiSettings.ai_base_url = p.base_url || ''
+      aiSettings.ai_api = p.api || 'openai-completions'
+    }
+  }
+}
 
 const loadAiSettings = async () => {
   try {
     const res = await api.get('/settings/ai')
     if (res.data) {
-      aiSettings.ai_api_key = '' // 不暴露真实Key
+      aiKeyHidden.value = res.data.configured ? 'sk-******' : ''
+      aiSettings.ai_api_key = ''
       aiSettings.ai_provider = res.data.ai_provider || 'openai'
-      aiSettings.ai_model = res.data.ai_model || 'gpt-4'
-      aiSettings.ai_base_url = res.data.ai_base_url || ''
+      aiSettings.ai_provider_name = res.data.ai_provider_name || ''
+      aiSettings.ai_model = res.data.ai_model || ''
+      aiSettings.ai_base_url = res.data.ai_provider_base_url || ''
+      aiSettings.ai_api = res.data.ai_api || 'openai-completions'
+      aiModels.value = (res.data.ai_models || []).map((m: any) => ({ id: m.id, name: m.name }))
       aiConfigured.value = res.data.configured || false
+      presetProviders.value = res.data.preset_providers || []
+      
+      // Determine if custom provider
+      const isCustom = !presetProviders.value.some(p => p.value === aiSettings.ai_provider)
+      showDeleteCustom.value = isCustom
     }
   } catch (e) {
     console.error('LoadAI settings:', e)
@@ -272,8 +418,12 @@ const loadAiSettings = async () => {
 }
 
 const saveAiSettings = async () => {
-  if (!aiSettings.ai_provider || !aiSettings.ai_model) {
-    ElMessage.warning('请至少填写Provider和模型')
+  if (!aiSettings.ai_api_key) {
+    ElMessage.warning('请填写AI API密钥')
+    return
+  }
+  if (!aiSettings.ai_model) {
+    ElMessage.warning('请选择一个AI模型')
     return
   }
   aiSaving.value = true
@@ -281,15 +431,62 @@ const saveAiSettings = async () => {
     const res = await api.post('/settings/ai', {
       ai_api_key: aiSettings.ai_api_key,
       ai_provider: aiSettings.ai_provider,
+      ai_provider_name: aiSettings.ai_provider_name,
       ai_model: aiSettings.ai_model,
-      ai_base_url: aiSettings.ai_base_url
+      ai_base_url: aiSettings.ai_base_url,
+      ai_api: aiSettings.ai_api,
+      ai_models: aiModels.value
     })
     ElMessage.success(res.data.message || 'AI配置已保存')
-    aiConfigured.value = !!aiSettings.ai_api_key
+    aiConfigured.value = true
   } catch (e: any) {
     ElMessage.error(e.response?.data?.detail || '保存失败')
   } finally {
     aiSaving.value = false
+  }
+}
+
+const addModel = () => {
+  if (!newModel.id || !newModel.name) {
+    ElMessage.warning('请填写模型ID和名称')
+    return
+  }
+  aiModels.value.push({ id: newModel.id, name: newModel.name })
+  newModel.id = ''
+  newModel.name = ''
+  showAddModel.value = false
+}
+
+const removeModel = (idx: number) => {
+  aiModels.value.splice(idx, 1)
+  if (aiSettings.ai_model === aiModels.value[idx]?.id || aiModels.value.length === 0) {
+    aiSettings.ai_model = ''
+  }
+}
+
+const addProvider = () => {
+  if (!newProviderName.value) {
+    ElMessage.warning('请填写Provider名称')
+    return
+  }
+  aiSettings.ai_provider = '__custom__'
+  aiSettings.ai_provider_name = newProviderName.value
+  aiSettings.ai_base_url = newProviderBaseUrl.value || ''
+  showAddProvider.value = false
+  showDeleteCustom.value = true
+}
+
+const deleteProvider = async () => {
+  try {
+    await api.delete('/settings/ai/provider')
+    aiSettings.ai_provider = 'openai'
+    aiSettings.ai_provider_name = ''
+    aiSettings.ai_model = ''
+    aiModels.value = []
+    showDeleteCustom.value = false
+    ElMessage.success('Provider已删除')
+  } catch (e: any) {
+    ElMessage.error('删除失败')
   }
 }
 
@@ -310,9 +507,14 @@ const testAiConnection = async () => {
 const resetAiSettings = () => {
   aiSettings.ai_api_key = ''
   aiSettings.ai_provider = 'openai'
-  aiSettings.ai_model = 'gpt-4'
+  aiSettings.ai_provider_name = ''
+  aiSettings.ai_model = ''
   aiSettings.ai_base_url = ''
+  aiSettings.ai_api = 'openai-completions'
+  aiModels.value = []
   aiConfigured.value = false
+  aiKeyHidden.value = ''
+  showDeleteCustom.value = false
   ElMessage.success('已重置为默认值')
 }
 const saveThemeSettings = () => {
