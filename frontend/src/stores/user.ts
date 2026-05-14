@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import router from '@/router'
+import api from '@/utils/api'
 
 export interface User {
   id: number
@@ -128,13 +129,39 @@ export const useUserStore = defineStore('user', () => {
     if (!user.value) return false
     
     try {
-      // TODO: Call actual update API
       const updatedUser = { ...user.value, ...userData }
       setUser(updatedUser)
       return true
     } catch (error) {
       console.error('Update profile error:', error)
       return false
+    }
+  }
+
+  const getProfile = async () => {
+    try {
+      const userId = user.value?.id || 1
+      const res = await api.get(`/users/users/${userId}/profile`)
+      const data = res.data
+      if (data) {
+        // 尝试从 localStorage 获取基础用户信息
+        const storedUser = localStorage.getItem('user')
+        const baseInfo = storedUser ? JSON.parse(storedUser) : {}
+        
+        user.value = {
+          id: data.id || baseInfo.id,
+          username: baseInfo.username || 'admin',
+          email: data.email || baseInfo.email || '',
+          full_name: data.full_name || baseInfo.full_name || '',
+          is_active: data.is_active ?? true,
+          is_superuser: data.is_superuser || false,
+          created_at: data.created_at || baseInfo.created_at || '',
+          updated_at: data.updated_at || ''
+        }
+        setUser(user.value)
+      }
+    } catch (error) {
+      console.error('Get profile error:', error)
     }
   }
   
@@ -180,6 +207,7 @@ export const useUserStore = defineStore('user', () => {
     logout,
     refreshAccessToken,
     updateProfile,
+    getProfile,
     checkAuth
   }
 })

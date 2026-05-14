@@ -110,16 +110,10 @@
           <template #title>{{ $t('navigation.statistics') }}</template>
         </el-menu-item>
         
-        <!-- Users -->
-        <el-menu-item index="/users">
-          <el-icon><UserFilled /></el-icon>
-          <template #title>{{ $t('navigation.users') }}</template>
-        </el-menu-item>
-        
         <!-- User & Department Management -->
         <el-menu-item index="/user-mgmt">
-          <el-icon><User /></el-icon>
-          <template #title>用户与部门</template>
+          <el-icon><UserFilled /></el-icon>
+          <template #title>用户管理</template>
         </el-menu-item>
         
         <!-- Permissions -->
@@ -243,7 +237,7 @@
           </el-dropdown>
           
           <!-- User Menu -->
-          <el-dropdown class="user-dropdown">
+          <el-dropdown class="user-dropdown" @command="handleUserCommand">
             <div class="user-avatar">
               <el-avatar :size="32" :src="userAvatar">
                 {{ userInitials }}
@@ -303,6 +297,24 @@
       </div>
     </div>
   </div>
+
+  <!-- Profile Dialog -->
+  <el-dialog v-model="showProfileDialog" title="个人资料" width="500px">
+    <el-descriptions :column="1" border v-if="user">
+      <el-descriptions-item label="用户名">{{ user.username }}</el-descriptions-item>
+      <el-descriptions-item label="邮箱">{{ user.email }}</el-descriptions-item>
+      <el-descriptions-item label="姓名">{{ user.full_name || '未设置' }}</el-descriptions-item>
+      <el-descriptions-item label="状态">{{ user.is_active ? '启用' : '禁用' }}</el-descriptions-item>
+      <el-descriptions-item label="超级管理员">{{ user.is_superuser ? '是' : '否' }}</el-descriptions-item>
+      <el-descriptions-item label="创建时间">{{ user.created_at }}</el-descriptions-item>
+    </el-descriptions>
+    <el-descriptions :column="1" border v-else>
+      <el-descriptions-item label="加载中..."></el-descriptions-item>
+    </el-descriptions>
+    <template #footer>
+      <el-button @click="showProfileDialog = false">关闭</el-button>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
@@ -358,6 +370,8 @@ const languages = [
   { value: 'en-US', label: 'English' }
 ]
 
+const showProfileDialog = ref(false)
+
 // Computed
 const userInitials = computed(() => {
   if (!user.value) return 'U'
@@ -381,7 +395,8 @@ const toggleTheme = () => {
 const handleUserCommand = (command: string) => {
   switch (command) {
     case 'profile':
-      router.push('/profile')
+      userStore.getProfile()
+      showProfileDialog.value = true
       break
     case 'settings':
       router.push('/settings')

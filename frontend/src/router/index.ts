@@ -200,18 +200,6 @@ const routes = [
     ]
   },
   {
-    path: '/users',
-    name: 'users',
-    component: MainLayout,
-    children: [
-      {
-        path: '',
-        name: 'users-page',
-        component: () => import('@/views/UsersView.vue')
-      }
-    ]
-  },
-  {
     path: '/user-mgmt',
     name: 'user-mgmt',
     component: MainLayout,

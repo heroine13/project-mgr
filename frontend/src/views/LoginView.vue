@@ -84,9 +84,11 @@ import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import type { FormInstance } from 'element-plus'
 import { authApi } from '@/services/api'
+import { useUserStore } from '@/stores/user'
 
 const router = useRouter()
 const { t, locale } = useI18n()
+const userStore = useUserStore()
 
 const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
@@ -145,6 +147,22 @@ const doLogin = async () => {
     localStorage.setItem('refresh_token', response.refresh_token)
     localStorage.setItem('user_id', response.user_id)
     localStorage.setItem('username', response.username)
+    
+    // 构建用户对象并保存到localStorage，供userStore使用
+    const mockUser = {
+      id: response.user_id,
+      username: response.username,
+      email: response.username + '@goldfon.cn',
+      full_name: response.username === 'admin' ? 'Administrator' : response.username,
+      is_active: true,
+      is_superuser: response.username === 'admin',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    }
+    localStorage.setItem('user', JSON.stringify(mockUser))
+    userStore.setUser(mockUser)
+    userStore.setToken(response.access_token)
+    userStore.setRefreshToken(response.refresh_token)
     
     console.log('Token saved, navigating to dashboard')
     ElMessage.success('登录成功')
