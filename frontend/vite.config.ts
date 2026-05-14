@@ -113,10 +113,9 @@ export default defineConfig({
     host: '0.0.0.0',
     proxy: {
       '/api': {
-        // 本地开发用 localhost，Codespaces 用环境变量
-        target: process.env.VITE_CODESPACES_BACKEND_URL || 'http://localhost:8000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '')
+        // Docker环境用backend容器名project-mgr-backend，本地开发用localhost
+        target: process.env.VITE_CODESPACES_BACKEND_URL || 'http://project-mgr-backend:8000',
+        changeOrigin: true
       }
     }
   },

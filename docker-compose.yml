@@ -78,6 +78,7 @@ services:
       - /app/node_modules
     environment:
       VITE_API_BASE_URL: /api/v1
+      VITE_CODESPACES_BACKEND_URL: http://project-mgr-backend:8000
     networks:
       - project-network
     command: npm run dev
