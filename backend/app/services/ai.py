@@ -403,3 +403,44 @@ class AIServiceSync:
     def suggest_task_dependencies(task_title: str, existing_tasks: List[Dict]) -> List[Dict]:
         """同步版本"""
         return []
+
+def reload_config():
+    """重新加载AI配置（动态更新）"""
+    global AI_PROVIDER, AI_API_KEY, AI_MODEL, AI_BASE_URL
+    global openai_client, anthropic_client
+    import os as _os
+    
+    AI_PROVIDER = _os.environ.get("AI_PROVIDER", "openai")
+    AI_API_KEY = _os.environ.get("AI_API_KEY", "")
+    AI_MODEL = _os.environ.get("AI_MODEL", "gpt-4")
+    AI_BASE_URL = _os.environ.get("AI_BASE_URL", "")
+    
+    # Reset clients
+    openai_client = None
+    anthropic_client = None
+    
+    if AI_API_KEY:
+        try:
+            import openai as _openai_pkg
+            _openai_pkg.base_url = AI_BASE_URL if AI_BASE_URL else "https://api.openai.com/v1"
+            _openai_pkg.api_key = AI_API_KEY
+            openai_client = _openai_pkg.OpenAI(
+                api_key=AI_API_KEY,
+                base_url=AI_BASE_URL if AI_BASE_URL else None,
+                timeout=60.0,
+                max_retries=2
+            )
+            logger.info(f"AI client reinitialized: provider={AI_PROVIDER}, model={AI_MODEL}")
+        except Exception as e:
+            logger.error(f"Failed to reinitialize AI client: {e}")
+    
+    if AI_PROVIDER == "anthropic" and AI_API_KEY:
+        try:
+            import anthropic as _anthropic
+            anthropic_client = _anthropic.Anthropic(
+                api_key=AI_API_KEY,
+                timeout=60.0
+            )
+            logger.info("Anthropic client reinitialized")
+        except Exception as e:
+            logger.error(f"Failed to reinitialize Anthropic client: {e}")

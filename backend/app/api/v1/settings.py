@@ -9,6 +9,7 @@ from app.core.database import get_db
 from app.core.security import get_current_user
 from app.models.user import User
 from app.services.system_settings import SystemSettingsService
+from app.services.ai import reload_config
 
 router = APIRouter(prefix="/settings", tags=["系统设置"])
 
@@ -84,6 +85,7 @@ async def update_ai_config(
         import app.services.ai as ai_module
         import importlib
         importlib.reload(ai_module)
+        reload_config()
 
         status = "active" if ai_module.AI_API_KEY else "demo_mode"
         message = "AI服务已重新配置" if ai_module.AI_API_KEY else "AI服务未配置API密钥"
