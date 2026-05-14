@@ -93,7 +93,7 @@
         </el-menu-item>
         
         <!-- AI Assistant -->
-        <el-menu-item index="/ai-assistant">
+        <el-menu-item index="/ai">
           <el-icon><ChatDotRound /></el-icon>
           <template #title>{{ $t('navigation.aiAssistant') }}</template>
         </el-menu-item>
