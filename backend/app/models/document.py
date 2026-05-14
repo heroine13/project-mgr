@@ -6,6 +6,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Bool
 from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 from .user import Base
+from .search import DocumentCategory
 
 
 class Document(Base):
@@ -37,7 +38,7 @@ class Document(Base):
     
     # Relationships
     project = relationship("Project")
-    category = relationship("DocumentCategory", back_populates="documents")
+    category = relationship(DocumentCategory, back_populates="documents")
     creator = relationship("User", foreign_keys=[created_by])
     versions = relationship("DocumentVersion", back_populates="document", cascade="all, delete-orphan")
     
