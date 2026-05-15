@@ -104,7 +104,8 @@ async def get_calendar_events(
         events.append(CalendarEvent(
             id=task.id,
             title=f"[任务] {task.title}",
-            start=task.due_date.isoformat(),
+            start=task.due_date.isoformat() if task.due_date else None,
+            end=(task.due_date + __import__('datetime').timedelta(days=1)).isoformat() if task.due_date else None,
             allDay=True,
             color=status_color,
             type="task",
@@ -130,9 +131,10 @@ async def get_calendar_events(
     for project in projects:
         if project.start_date:
             events.append(CalendarEvent(
-                id=project.id + 100000,  # Offset to avoid ID conflicts
+                id=project.id + 100000,
                 title=f"[项目开始] {project.name}",
                 start=project.start_date.isoformat(),
+                end=project.end_date.isoformat() if project.end_date else (project.start_date + __import__('datetime').timedelta(days=30)).isoformat(),
                 allDay=True,
                 color=TYPE_COLORS["project"],
                 type="project",
@@ -146,6 +148,7 @@ async def get_calendar_events(
                 id=project.id + 200000,
                 title=f"[项目截止] {project.name}",
                 start=project.end_date.isoformat(),
+                end=(project.end_date + __import__('datetime').timedelta(days=1)).isoformat(),
                 allDay=True,
                 color=TYPE_COLORS["project"],
                 type="project",
@@ -171,6 +174,7 @@ async def get_calendar_events(
                 id=issue.id + 500000,
                 title=f"[Issue] {issue.title}",
                 start=issue.created_at.isoformat(),
+                end=(issue.created_at + __import__('datetime').timedelta(days=1)).isoformat(),
                 allDay=True,
                 color=TYPE_COLORS["issue"],
                 type="issue",
@@ -230,13 +234,13 @@ async def get_upcoming_events(
     query = db.query(Task).filter(
         Task.due_date >= now,
         Task.due_date <= end_date,
-        Task.status.notin_([TaskStatus.COMPLETED])
+        Task.status.notin_(['completed'])
     )
     
     if project_id:
         query = query.filter(Task.project_id == project_id)
     
-    if not current_user.is_superuser:
+    if current_user and not current_user.is_superuser:
         query = query.filter(
             (Task.assignee_id == current_user.id) |
             (Task.created_by == current_user.id)
@@ -247,14 +251,16 @@ async def get_upcoming_events(
     upcoming = []
     for task in tasks:
         days_until = (task.due_date - now).days
+        status_val = task.status.value if hasattr(task.status, 'value') else (str(task.status) if task.status else '')
+        priority_val = task.priority.value if hasattr(task.priority, 'value') else (str(task.priority) if task.priority else '')
         upcoming.append({
             "id": task.id,
             "type": "task",
             "title": task.title,
-            "due_date": task.due_date.isoformat(),
+            "due_date": task.due_date.isoformat() if task.due_date else '',
             "days_until": days_until,
-            "status": task.status.value if hasattr(task.status, 'value') else str(task.status),
-            "priority": task.priority.value if hasattr(task.priority, 'value') else str(task.priority)
+            "status": status_val,
+            "priority": priority_val
         })
     
     return {
