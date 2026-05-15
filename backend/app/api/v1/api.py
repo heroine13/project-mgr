@@ -23,6 +23,7 @@ from app.api.v1.external import router as external_router
 from app.api.v1.workflow import router as workflow_router
 from app.api.v1.calendar import router as calendar_router
 from app.api.v1.ai import router as ai_router
+from app.api.v1.project_overview import router as overview_router
 
 api_router = APIRouter()
 
@@ -97,3 +98,6 @@ api_router.include_router(ai_router, prefix="/ai", tags=["AI助手"])
 
 # 注册系统设置路由
 api_router.include_router(settings_api.router, prefix="/settings", tags=["系统设置"])
+
+# 注册项目总览路由
+api_router.include_router(overview_router, prefix="/projects/overview", tags=["项目总览"])

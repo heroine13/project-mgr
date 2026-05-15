@@ -114,7 +114,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         // Docker环境用backend容器名project-mgr-backend，本地开发用localhost
-        target: process.env.VITE_CODESPACES_BACKEND_URL || 'http://project-mgr-backend:8000',
+        target: process.env.VITE_CODESPACES_BACKEND_URL || 'http://localhost:8000',
         changeOrigin: true
       }
     }

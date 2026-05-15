@@ -14,6 +14,7 @@ from app.api.v1 import project_template
 from app.api.v1 import user_mgmt, i18n
 from app.api.v1.settings import router as settings_router
 from app.api.v1.issues import router as issues_router
+from app.api.v1.project_overview import router as overview_router
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
 from app.core.config import settings
@@ -151,6 +152,7 @@ async def test_endpoint():
 # 注册路由
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(projects.router, prefix="/api/v1/projects", tags=["projects"])
+app.include_router(overview_router, prefix="/api/v1/projects/overview", tags=["项目总览"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])
 app.include_router(issues_router, prefix="/api/v1/issues", tags=["issues"])
 app.include_router(scheduler.router)

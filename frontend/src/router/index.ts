@@ -39,6 +39,11 @@ const routes = [
       {
         path: '',
         name: 'projects-page',
+        component: () => import('@/views/ProjectListView.vue')
+      },
+      {
+        path: ':id',
+        name: 'project-detail',
         component: () => import('@/views/ProjectDetailView.vue')
       }
     ]
