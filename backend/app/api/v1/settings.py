@@ -108,7 +108,7 @@ async def get_ai_config(
     
     # 从所有setting里提取custom provider配置
     custom_names = []
-    current_config = None
+    custom_configs = {}  # 保存所有provider配置，按updated_at排序
     
     for key, value in all_settings.items():
         if key.startswith("provider_"):
@@ -116,32 +116,37 @@ async def get_ai_config(
             try:
                 config = json.loads(value)
                 custom_names.append(p_name)
-                if p_name == current_user.username:
-                    current_config = config
+                # 获取更新时间，用于排序
+                from app.models.system_setting import SystemSetting
+                setting = db.query(SystemSetting).filter(
+                    SystemSetting.key == key,
+                    SystemSetting.category == "ai"
+                ).first()
+                update_time = setting.updated_at if setting else None
+                custom_configs[p_name] = (update_time, config)
             except:
                 continue
     
-    # 如果没有当前用户的配置，尝试加载第一个custom provider
-    if not current_config and custom_names:
-        try:
-            current_config = json.loads(all_settings.get(f"provider_{custom_names[0]}", "{}"))
-        except:
-            current_config = {}
+    # 按更新时间排序，取最新的provider配置
+    current_config = None
+    if custom_configs:
+        latest_name = max(custom_configs.keys(), 
+                         key=lambda x: custom_configs[x][0] or __import__('datetime').datetime.min)
+        current_config = custom_configs[latest_name][1]
     
     if not current_config:
         current_config = {"name": "openai", "baseUrl": "", "api": "openai-completions", "apiKey": "", "models": [], "defaultModelId": ""}
     
     # 隐藏API Key
     current_config_hidden = dict(current_config)
-    current_config_hidden["apiKey"] = ""
-    configured = bool(current_config.get("apiKey", ""))
+    has_api_key = bool(current_config.get("apiKey", ""))
     
     return AIConfigResponse(
         current=current_config_hidden,
-        current_api_key="",
+        current_api_key="***" if has_api_key else "",
         customProviderNames=custom_names,
         preset_providers=PRESET_PROVIDERS,
-        configured=configured
+        configured=has_api_key
     )
 
 
