@@ -352,13 +352,13 @@ async def get_ai_status():
     
     返回当前AI服务配置状态
     """
-    from app.services.ai import AI_PROVIDER, AI_MODEL, AI_API_KEY
+    import app.services.ai as ai_svc
     
     return {
-        "provider": AI_PROVIDER,
-        "model": AI_MODEL,
-        "configured": bool(AI_API_KEY),
-        "status": "active" if AI_API_KEY else "demo_mode",
-        "message": "AI服务已就绪" if AI_API_KEY else "演示模式，请配置API密钥"
+        "provider": ai_svc.AI_PROVIDER,
+        "model": ai_svc.AI_MODEL,
+        "configured": bool(ai_svc.AI_API_KEY),
+        "status": "active" if ai_svc.AI_API_KEY else "demo_mode",
+        "message": "AI服务已就绪" if ai_svc.AI_API_KEY else "演示模式，请配置API密钥"
     }
 
