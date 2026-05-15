@@ -8,6 +8,7 @@ from typing import List, Optional
 
 from app.core.database import get_db
 from app.models.user import User
+from app.models.project import Project
 from app.schemas.project import ProjectCreate, ProjectUpdate, ProjectResponse
 from app.crud.project import get_project, get_projects_by_owner, get_all_projects, create_project, update_project, delete_project
 from app.core.security import get_current_user
