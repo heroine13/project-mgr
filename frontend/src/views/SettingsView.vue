@@ -134,7 +134,13 @@
                     :label="p.label"
                     :value="p.value"
                   />
-                  <el-option label="自定义" value="__custom__" />
+                  <el-option
+                    v-for="cp in customProviderNames"
+                    :key="'cp_' + cp"
+                    :label="cp"
+                    :value="cp"
+                  />
+                  <el-option label="添加新 Provider..." value="__custom__" />
                 </el-select>
                 <el-button type="primary" size="small" @click="showAddProvider = true">添加</el-button>
                 <el-popconfirm
@@ -400,6 +406,11 @@ const isCurrentCustom = computed(() => {
 })
 
 const onProviderChange = () => {
+  if (aiSettings.current.name === '__custom__') {
+    showAddProvider.value = true
+    aiSettings.current.name = ''
+    return
+  }
   const p = presetProviders.value.find(pp => pp.value === aiSettings.current.name)
   if (p) {
     // 预定义provider
@@ -410,7 +421,6 @@ const onProviderChange = () => {
     aiSettings.current.defaultModelId = ''
   }
   // 自定义provider切换时，模板里已经绑定到 current，不需要额外操作
-  // 因为 loadProviderConfig 会在 loadAiSettings 时调用
 }
 
 const loadAiSettings = async () => {

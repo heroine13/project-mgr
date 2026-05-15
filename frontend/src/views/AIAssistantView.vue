@@ -103,9 +103,7 @@
 <script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
-import axios from 'axios'
-
-const API_BASE = '/api/v1/ai'
+import api from '@/utils/api'
 
 const userInput = ref('')
 const loading = ref(false)
@@ -160,7 +158,7 @@ const sendMessage = async () => {
   scrollToBottom()
 
   try {
-    const response = await axios.post(`${API_BASE}/chat`, {
+    const response = await api.post('/ai/chat', {
       message: userMessage,
       project_id: selectedProject.value
     })
@@ -201,7 +199,7 @@ const executeQuickAction = async (action) => {
 
 const fetchProjects = async () => {
   try {
-    const response = await axios.get('/api/v1/projects/')
+    const response = await api.get('/projects/')
     projects.value = response.data
   } catch (error) {
     console.error('获取项目失败', error)
