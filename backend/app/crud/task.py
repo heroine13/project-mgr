@@ -72,6 +72,10 @@ def update_task(db: Session, task_id: int, task_data: TaskUpdate) -> Optional[Ta
         db.refresh(db_task)
     return db_task
 
+def get_all_tasks(db: Session, skip: int = 0, limit: int = 100) -> List[Task]:
+    """Get all tasks"""
+    return db.query(Task).offset(skip).limit(limit).all()
+
 def delete_task(db: Session, task_id: int) -> bool:
     """Delete task"""
     db_task = get_task(db, task_id)

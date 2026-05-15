@@ -9,7 +9,7 @@ from typing import List, Optional
 from app.core.database import get_db
 from app.models.user import User
 from app.schemas.task import TaskCreate, TaskUpdate, TaskResponse
-from app.crud.task import get_task, get_tasks_by_project, get_tasks_by_assignee, create_task, update_task, delete_task
+from app.crud.task import get_task, get_tasks_by_project, get_tasks_by_assignee, get_all_tasks, create_task, update_task, delete_task
 from app.auth.jwt_handler import verify_token
 
 router = APIRouter()
@@ -56,8 +56,8 @@ async def read_tasks(
     elif assignee_id:
         return get_tasks_by_assignee(db, assignee_id, skip, limit)
     else:
-        # Return empty list for now
-        return []
+        # Return all tasks if no filter
+        return get_all_tasks(db, skip, limit)
 
 @router.get("/{task_id}", response_model=TaskResponse)
 async def read_task(
