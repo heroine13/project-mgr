@@ -76,8 +76,8 @@ class AIService:
             return "⚠️ AI服务未配置。请设置 AI_API_KEY 环境变量。"
         
         try:
-            if AI_PROVIDER == "openai" and openai_client:
-                # OpenAI 调用
+            if openai_client:
+                # OpenAI兼容调用（包括自定义OpenAI兼容API）
                 full_messages = [{"role": "system", "content": system_prompt or AIService.PROJECT_MANAGER_PROMPT}]
                 full_messages.extend(messages)
                 
@@ -103,8 +103,8 @@ class AIService:
                 return response.content[0].text
                 
             else:
-                # 本地/自定义模型
-                return await AIService._local_ai_response(messages, system_prompt)
+                # 未配置API客户端
+                return "⚠️ AI服务未配置。请设置 AI_API_KEY 并保存配置。"
                 
         except Exception as e:
             logger.error(f"AI API call failed: {e}")
@@ -405,24 +405,55 @@ class AIServiceSync:
         return []
 
 def reload_config():
-    """重新加载AI配置（动态更新）"""
+    """重新加载AI配置（优先从数据库加载，兼容环境变量）"""
     global AI_PROVIDER, AI_API_KEY, AI_MODEL, AI_BASE_URL
     global openai_client, anthropic_client
     import os as _os
     
-    AI_PROVIDER = _os.environ.get("AI_PROVIDER", "openai")
-    AI_API_KEY = _os.environ.get("AI_API_KEY", "")
-    AI_MODEL = _os.environ.get("AI_MODEL", "gpt-4")
-    AI_BASE_URL = _os.environ.get("AI_BASE_URL", "")
+    # 1. 加载配置
+    db_path = os.environ.get('DATABASE_URL', '')
+    if db_path and 'mysql' in db_path:
+        try:
+            from sqlalchemy import create_engine
+            from sqlalchemy.orm import Session
+            engine = create_engine(db_path.replace('mysql://', 'mysql+mysqlconnector://'))
+            with Session(engine) as db:
+                from app.models.system_setting import SystemSetting
+                setting = db.query(SystemSetting).filter(
+                    SystemSetting.key.like('provider_%'),
+                    SystemSetting.category == 'ai'
+                ).order_by(SystemSetting.updated_at.desc()).first()
+                if setting:
+                    import json
+                    config = json.loads(setting.value)
+                    AI_PROVIDER = config.get('name', 'openai')
+                    AI_API_KEY = config.get('apiKey', '')
+                    AI_MODEL = config.get('defaultModelId', 'gpt-4')
+                    AI_BASE_URL = config.get('baseUrl', '')
+                    _os.environ['AI_API_KEY'] = AI_API_KEY
+                    _os.environ['AI_PROVIDER'] = AI_PROVIDER
+                    _os.environ['AI_MODEL'] = AI_MODEL
+                    _os.environ['AI_BASE_URL'] = AI_BASE_URL
+                    logger.info(f"AI配置从数据库加载成功: {AI_PROVIDER}")
+        except Exception as e:
+            logger.warning(f"从数据库加载AI配置失败: {e}")
+            AI_PROVIDER = _os.environ.get("AI_PROVIDER", "openai")
+            AI_API_KEY = _os.environ.get("AI_API_KEY", "")
+            AI_MODEL = _os.environ.get("AI_MODEL", "gpt-4")
+            AI_BASE_URL = _os.environ.get("AI_BASE_URL", "")
+    else:
+        AI_PROVIDER = _os.environ.get("AI_PROVIDER", "openai")
+        AI_API_KEY = _os.environ.get("AI_API_KEY", "")
+        AI_MODEL = _os.environ.get("AI_MODEL", "gpt-4")
+        AI_BASE_URL = _os.environ.get("AI_BASE_URL", "")
     
-    # Reset clients
+    # 2. 初始化客户端
     openai_client = None
     anthropic_client = None
     
-    if AI_API_KEY:
+    if AI_API_KEY and AI_PROVIDER != "anthropic":
         try:
             import openai as _openai_pkg
-            _openai_pkg.base_url = AI_BASE_URL if AI_BASE_URL else "https://api.openai.com/v1"
             _openai_pkg.api_key = AI_API_KEY
             openai_client = _openai_pkg.OpenAI(
                 api_key=AI_API_KEY,
@@ -430,17 +461,26 @@ def reload_config():
                 timeout=60.0,
                 max_retries=2
             )
-            logger.info(f"AI client reinitialized: provider={AI_PROVIDER}, model={AI_MODEL}")
+            logger.info(f"AI client initialized: provider={AI_PROVIDER}, model={AI_MODEL}")
         except Exception as e:
-            logger.error(f"Failed to reinitialize AI client: {e}")
-    
-    if AI_PROVIDER == "anthropic" and AI_API_KEY:
+            logger.error(f"Failed to initialize AI client: {e}")
+    elif AI_PROVIDER == "anthropic" and AI_API_KEY:
         try:
-            import anthropic as _anthropic
-            anthropic_client = _anthropic.Anthropic(
+            import anthropic
+            anthropic_client = anthropic.Anthropic(
                 api_key=AI_API_KEY,
                 timeout=60.0
             )
-            logger.info("Anthropic client reinitialized")
+            logger.info("Anthropic client initialized")
         except Exception as e:
-            logger.error(f"Failed to reinitialize Anthropic client: {e}")
+            logger.error(f"Failed to initialize Anthropic client: {e}")
+
+
+
+# 模块加载时自动从数据库加载AI配置
+if os.environ.get("DATABASE_URL", "") and "mysql" in os.environ.get("DATABASE_URL", "").lower():
+    try:
+        reload_config()
+    except Exception as e:
+        logger.warning(f"自动加载AI配置失败: {e}")
+
