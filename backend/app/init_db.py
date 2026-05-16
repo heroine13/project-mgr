@@ -2,7 +2,8 @@
 数据库初始化脚本 - 创建表并添加测试数据
 """
 import sys
-sys.path.insert(0, '/app')
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.core.database import engine, Base, SessionLocal
 # 导入所有模型以确保关系正确配置

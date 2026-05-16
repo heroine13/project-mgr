@@ -1,5 +1,8 @@
 <template>
   <div class="project-detail">
+    <!-- Loading -->
+    <el-skeleton v-if="loading" :rows="10" animated />
+
     <!-- Project Header -->
     <div class="project-header">
       <div class="header-left">
@@ -14,7 +17,7 @@
           </span>
         </div>
       </div>
-      
+
       <div class="header-right">
         <el-button-group>
           <el-button type="primary" @click="editProject">
@@ -39,7 +42,7 @@
         </el-button-group>
       </div>
     </div>
-    
+
     <!-- Main Content -->
     <div class="project-content">
       <el-row :gutter="20">
@@ -54,7 +57,7 @@
               <p>{{ project.description || $t('common.noDescription') }}</p>
             </div>
           </el-card>
-          
+
           <!-- Project Tasks -->
           <el-card class="section-card">
             <template #header>
@@ -66,7 +69,7 @@
                 </el-button>
               </div>
             </template>
-            
+
             <div class="tasks-section">
               <!-- Task Filters -->
               <div class="task-filters">
@@ -104,7 +107,7 @@
                   />
                 </el-select>
               </div>
-              
+
               <!-- Task List -->
               <div class="task-list">
                 <div v-for="task in filteredTasks" :key="task.id" class="task-item">
@@ -131,7 +134,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <!-- Empty State -->
               <div v-if="filteredTasks.length === 0" class="empty-tasks">
                 <el-empty :description="$t('dashboard.noTasks')" />
@@ -141,7 +144,7 @@
               </div>
             </div>
           </el-card>
-          
+
           <!-- Project Timeline -->
           <el-card class="section-card">
             <template #header>
@@ -169,7 +172,7 @@
             </div>
           </el-card>
         </el-col>
-        
+
         <!-- Right Column -->
         <el-col :xs="24" :md="8">
           <!-- Project Stats -->
@@ -200,7 +203,7 @@
               </div>
             </div>
           </el-card>
-          
+
           <!-- Team Members -->
           <el-card class="section-card team-card">
             <template #header>
@@ -232,13 +235,13 @@
               </el-button>
             </div>
           </el-card>
-          
+
           <!-- Attachments -->
           <el-card class="section-card attachments-card">
             <template #header>
               <div class="section-header">
                 <h3>{{ $t('common.attachments') }}</h3>
-                <el-upload
+              <el-upload
                   action="#"
                   :show-file-list="false"
                   :before-upload="beforeUpload"
@@ -284,7 +287,7 @@
         </el-col>
       </el-row>
     </div>
-    
+
     <!-- Edit Project Dialog -->
     <el-dialog
       v-model="editDialogVisible"
@@ -293,7 +296,7 @@
     >
       <!-- Edit form would go here -->
       <span>Edit project form</span>
-      <template #footer>
+            <template #footer>
         <el-button @click="editDialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="saveProject">
           {{ $t('common.save') }}
@@ -308,61 +311,27 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { 
-  Edit, Download, More, Plus, Search, 
-  Clock, Setting, UserFilled, Upload, 
-  View, Delete 
+import {
+  Edit, Download, More, Plus, Search,
+  Clock, Setting, UserFilled, Upload,
+  View, Delete, Document, Picture, Folder
 } from '@element-plus/icons-vue'
+import request from '@/services/request'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
 
-// Mock data - TODO: Replace with API calls
-const project = ref({
-  id: 1,
-  name: 'Website Redesign',
-  code: 'WEB-001',
-  description: 'Redesign company website with modern UI/UX',
-  status: 'active',
-  start_date: '2026-04-01',
-  end_date: '2026-06-30',
-  budget: 50000,
-  actual_cost: 12000,
-  owner_id: 1
-})
+const projectId = computed(() => Number(route.params.id))
 
-const tasks = ref([
-  { id: 1, title: 'Homepage Layout Design', status: 'in_progress', priority: 'high', assignee_name: 'John Doe', due_date: '2026-04-10', completed: false },
-  { id: 2, title: 'API Integration', status: 'pending', priority: 'urgent', assignee_name: 'Jane Smith', due_date: '2026-04-05', completed: false },
-  { id: 3, title: 'Content Strategy', status: 'completed', priority: 'medium', assignee_name: 'Mike Johnson', due_date: '2026-04-15', completed: true }
-])
-
-const teamMembers = ref([
-  { id: 1, name: 'John Doe', role: 'Frontend Developer', avatar: '', initials: 'JD', taskCount: 5 },
-  { id: 2, name: 'Jane Smith', role: 'Backend Developer', avatar: '', initials: 'JS', taskCount: 3 },
-  { id: 3, name: 'Mike Johnson', role: 'Project Manager', avatar: '', initials: 'MJ', taskCount: 2 }
-])
-
-const attachments = ref([
-  { id: 1, name: 'Design Specifications.pdf', type: 'pdf', size: 2048000, uploaded_at: '2026-04-04T10:30:00Z' },
-  { id: 2, name: 'Wireframe.sketch', type: 'sketch', size: 5120000, uploaded_at: '2026-04-04T14:15:00Z' },
-  { id: 3, name: 'Project Timeline.xlsx', type: 'excel', size: 1024000, uploaded_at: '2026-04-04T16:45:00Z' }
-])
-
-const timelineEvents = ref([
-  { id: 1, user_name: 'John Doe', user_initials: 'JD', content: 'Created the project', created_at: '2026-04-01T09:00:00Z' },
-  { id: 2, user_name: 'Jane Smith', user_initials: 'JS', content: 'Added API integration task', created_at: '2026-04-02T14:30:00Z' },
-  { id: 3, user_name: 'Mike Johnson', user_initials: 'MJ', content: 'Updated project timeline', created_at: '2026-04-03T11:15:00Z' }
-])
-
-const stats = ref({
-  totalTasks: 15,
-  overdueTasks: 3,
-  completionRate: 65,
-  budget: 50000,
-  actualCost: 12000
-})
+// 加载状态
+const loading = ref(false)
+const project = ref<any>(null)
+const tasks = ref<any[]>([])
+const stats = ref<any>({})
+const teamMembers = ref<any[]>([])
+const timelineEvents = ref<any[]>([])
+const attachments = ref<any[]>([])
 
 // State
 const editDialogVisible = ref(false)
@@ -389,13 +358,13 @@ const taskPriorities = [
 // Computed
 const filteredTasks = computed(() => {
   return tasks.value.filter(task => {
-    const matchesSearch = !taskSearch.value || 
+    const matchesSearch = !taskSearch.value ||
       task.title.toLowerCase().includes(taskSearch.value.toLowerCase())
-    const matchesStatus = !taskStatusFilter.value || 
+    const matchesStatus = !taskStatusFilter.value ||
       task.status === taskStatusFilter.value
-    const matchesPriority = !taskPriorityFilter.value || 
+    const matchesPriority = !taskPriorityFilter.value ||
       task.priority === taskPriorityFilter.value
-    
+
     return matchesSearch && matchesStatus && matchesPriority
   })
 })
@@ -461,24 +430,63 @@ const getFileIcon = (fileType: string) => {
   return iconMap[fileType] || 'Document'
 }
 
-// Event Handlers
-const editProject = () => {
-  editDialogVisible.value = true
+// API 加载
+async function loadProjectDetail() {
+  loading.value = true
+  try {
+    const res: any = await request.get(`/projects/${projectId.value}/detail`)
+    project.value = res.project
+    tasks.value = res.tasks
+    stats.value = res.stats
+    teamMembers.value = res.teamMembers
+    timelineEvents.value = res.timelineEvents
+    attachments.value = res.attachments
+  } catch (err: any) {
+    console.error('加载项目详情失败:', err)
+    ElMessage.error(err?.response?.data?.detail || '加载项目详情失败')
+  } finally {
+    loading.value = false
+  }
 }
 
-const saveProject = () => {
-  editDialogVisible.value = false
-  // TODO: Save project data
+// 更新任务状态
+async function updateTaskStatus(task: any) {
+  const newStatus = task.completed ? 'completed' : 'pending'
+  try {
+    await request.put(`/tasks/${task.id}`, { status: newStatus })
+    task.status = newStatus
+    ElMessage.success('任务状态已更新')
+    await loadProjectDetail()
+  } catch (err: any) {
+    console.error('更新任务状态失败:', err)
+    ElMessage.error(err?.response?.data?.detail || '更新失败')
+    task.completed = !task.completed // 回滚
+  }
 }
 
-const exportProject = () => {
-  // TODO: Export project data
-  console.log('Export project')
+// 编辑项目
+async function saveProject() {
+  try {
+    await request.put(`/projects/${project.value.id}`, project.value)
+    ElMessage.success('项目已更新')
+    editDialogVisible.value = false
+    await loadProjectDetail()
+  } catch (err: any) {
+    console.error('保存项目失败:', err)
+    ElMessage.error(err?.response?.data?.detail || '保存失败')
+  }
 }
 
+// 删除项目
 const handleProjectCommand = async (command: string) => {
   if (command === 'archive') {
-    // TODO: Archive project
+    try {
+      await request.put(`/projects/${project.value.id}`, { status: 'archived' })
+      ElMessage.success('项目已归档')
+      await loadProjectDetail()
+    } catch (err: any) {
+      ElMessage.error(err?.response?.data?.detail || '归档失败')
+    }
   } else if (command === 'delete') {
     try {
       await ElMessageBox.confirm('确定要删除此项目吗？此操作不可恢复。', '删除项目', {
@@ -486,78 +494,59 @@ const handleProjectCommand = async (command: string) => {
         cancelButtonText: '取消',
         type: 'warning',
       })
-      await api.delete(`/projects/${project.value.id}`)
+      await request.delete(`/projects/${project.value.id}`)
       ElMessage.success('项目已删除')
       router.push('/projects')
-    } catch (e) {
+    } catch (e: any) {
       if (e !== 'cancel') {
         console.error('删除项目失败', e)
-        ElMessage.error(e?.detail || '删除失败')
+        ElMessage.error(e?.response?.data?.detail || '删除失败')
       }
     }
   }
 }
 
-const createTask = () => {
-  router.push('/tasks/new')
-}
-
-const viewTask = (task: any) => {
-  router.push(`/tasks/${task.id}`)
-}
-
-const editTask = (task: any) => {
-  router.push(`/tasks/${task.id}/edit`)
-}
-
-const updateTaskStatus = (task: any) => {
-  // TODO: Update task status via API
-  console.log('Update task status:', task.id, task.completed)
-}
-
-const manageTeam = () => {
-  router.push(`/projects/${project.value.id}/team`)
-}
-
-const addTeamMember = () => {
-  // TODO: Add team member dialog
-  console.log('Add team member')
-}
-
-const beforeUpload = (file: File) => {
-  const isLt10M = file.size / 1024 / 1024 < 10
-  if (!isLt10M) {
-    ElMessage.error('File size cannot exceed 10MB')
-    return false
+// 文件操作
+async function handleUpload(file: any) {
+  const formData = new FormData()
+  formData.append('file', file.file)
+  try {
+    await request.post(`/projects/${projectId.value}/attachments`, formData)
+    ElMessage.success('文件上传成功')
+    await loadProjectDetail()
+  } catch (err: any) {
+    ElMessage.error(err?.response?.data?.detail || '上传失败')
   }
-  return true
 }
 
-const handleUpload = () => {
-  // TODO: Handle file upload
-  console.log('Upload file')
+async function downloadFile(file: any) {
+  window.open(`/projects/${projectId.value}/attachments/${file.id}/download`, '_blank')
 }
 
-const downloadFile = (file: any) => {
-  // TODO: Download file
-  console.log('Download file:', file.name)
+async function previewFile(file: any) {
+  window.open(`/projects/${projectId.value}/attachments/${file.id}/preview`, '_blank')
 }
 
-const previewFile = (file: any) => {
-  // TODO: Preview file
-  console.log('Preview file:', file.name)
-}
-
-const deleteFile = (file: any) => {
-  // TODO: Delete file with confirmation
-  console.log('Delete file:', file.name)
+async function deleteFile(file: any) {
+  try {
+    await ElMessageBox.confirm('确定要删除此文件吗？', '删除文件', {
+      confirmButtonText: '删除',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+    await request.delete(`/projects/${projectId.value}/attachments/${file.id}`)
+    ElMessage.success('文件已删除')
+    await loadProjectDetail()
+  } catch (e: any) {
+    if (e !== 'cancel') {
+      ElMessage.error('删除失败')
+    }
+  }
 }
 
 // Lifecycle
 onMounted(() => {
-  // TODO: Load project data from API
-  const projectId = route.params.id
-  console.log('Loading project:', projectId)
+  loadProjectDetail()
 })
 </script>
 
@@ -863,30 +852,30 @@ onMounted(() => {
     flex-direction: column;
     gap: 20px;
   }
-  
+
   .header-right {
     width: 100%;
     justify-content: flex-start;
   }
-  
+
   .task-filters {
     flex-direction: column;
   }
-  
+
   .task-search, .status-filter, .priority-filter {
     width: 100%;
   }
-  
+
   .team-member {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .attachment-item {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .attachment-actions {
     margin-top: 10px;
   }

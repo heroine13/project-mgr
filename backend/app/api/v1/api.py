@@ -24,11 +24,15 @@ from app.api.v1.workflow import router as workflow_router
 from app.api.v1.calendar import router as calendar_router
 from app.api.v1.ai import router as ai_router
 from app.api.v1.project_overview import router as overview_router
+from app.api.v1.project_detail import router as project_detail_router
 
 api_router = APIRouter()
 
 # 注册认证路由
 api_router.include_router(auth.router, prefix="/auth", tags=["认证"])
+
+# 注册项目详情路由（必须在 projects 路由之前注册，否则 /projects/{project_id}/detail 会被 projects 路由拦截）
+api_router.include_router(project_detail_router, prefix="/projects", tags=["项目详情"])
 
 # 注册项目路由
 api_router.include_router(projects.router, prefix="/projects", tags=["项目管理"])
@@ -101,3 +105,5 @@ api_router.include_router(settings_api.router, prefix="/settings", tags=["系统
 
 # 注册项目总览路由
 api_router.include_router(overview_router, prefix="/projects/overview", tags=["项目总览"])
+
+

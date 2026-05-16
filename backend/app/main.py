@@ -15,6 +15,7 @@ from app.api.v1 import user_mgmt, i18n
 from app.api.v1.settings import router as settings_router
 from app.api.v1.issues import router as issues_router
 from app.api.v1.project_overview import router as overview_router
+from app.api.v1.project_detail import router as project_detail_router
 from app.services.scheduler import scheduler as task_scheduler
 from app.core.performance import cache_manager
 from app.core.config import settings
@@ -151,6 +152,8 @@ async def test_endpoint():
 
 # 注册路由
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
+# 注册项目详情路由（必须在 projects 路由之前注册，否则 /projects/{project_id}/detail 会被 projects 路由拦截）
+app.include_router(project_detail_router, prefix="/api/v1/projects", tags=["项目详情"])
 app.include_router(projects.router, prefix="/api/v1/projects", tags=["projects"])
 app.include_router(overview_router, prefix="/api/v1/projects/overview", tags=["项目总览"])
 app.include_router(tasks.router, prefix="/api/v1/tasks", tags=["tasks"])

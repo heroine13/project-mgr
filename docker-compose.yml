@@ -72,13 +72,14 @@ services:
       dockerfile: Dockerfile.dev
     container_name: project-mgr-frontend
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
     environment:
       VITE_API_BASE_URL: /api/v1
       VITE_CODESPACES_BACKEND_URL: http://project-mgr-backend:8000
+      VITE_PORT: "5173"
     networks:
       - project-network
     command: npm run dev
