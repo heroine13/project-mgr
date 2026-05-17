@@ -61,7 +61,7 @@ const loadTasks = async () => {
   loading.value = true
   try {
     const res = await api.get('/reports/tasks/overdue')
-    tasks.value = (res.tasks || res.data?.tasks || []) as any[]
+    tasks.value = (res.tasks || []) as any[]
   } catch (e) {
     console.error('加载逾期任务失败:', e)
     tasks.value = []

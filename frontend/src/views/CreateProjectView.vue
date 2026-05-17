@@ -10,6 +10,10 @@
           <el-input v-model="projectForm.name" :placeholder="$t('project.namePlaceholder')" />
         </el-form-item>
         
+        <el-form-item label="项目编号" prop="code">
+          <el-input v-model="projectForm.code" placeholder="如：PRJ-2026-001" />
+        </el-form-item>
+        
         <el-form-item :label="$t('project.description')" prop="description">
           <el-input v-model="projectForm.description" type="textarea" :rows="4" />
         </el-form-item>
@@ -49,12 +53,14 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import api from '@/utils/api'
 
 const router = useRouter()
 const formRef = ref()
 const submitting = ref(false)
 
 const projectForm = ref({
+  code: '',
   name: '',
   description: '',
   status: 'planning',
@@ -64,7 +70,8 @@ const projectForm = ref({
 })
 
 const rules = {
-  name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }]
+  name: [{ required: true, message: '请输入项目名称', trigger: 'blur' }],
+  code: [{ required: true, message: '请输入项目编号', trigger: 'blur' }]
 }
 
 const handleSubmit = async () => {
@@ -72,13 +79,31 @@ const handleSubmit = async () => {
     await formRef.value.validate()
     submitting.value = true
     
-    // 模拟API调用
-    setTimeout(() => {
-      ElMessage.success('项目创建成功！')
-      router.push('/projects')
-    }, 1000)
-  } catch (e) {
-    console.error('验证失败', e)
+    // 构建请求数据
+    const data: any = {
+      code: projectForm.value.code || `PRJ-${Date.now()}`,
+      name: projectForm.value.name,
+      description: projectForm.value.description,
+      status: projectForm.value.status,
+      budget: projectForm.value.budget
+    }
+    
+    // 转换日期格式
+    if (projectForm.value.start_date) {
+      data.start_date = new Date(projectForm.value.start_date).toISOString()
+    }
+    if (projectForm.value.end_date) {
+      data.end_date = new Date(projectForm.value.end_date).toISOString()
+    }
+    
+    // 调用真实 API 创建项目
+    await api.post('/projects/', data)
+    ElMessage.success('项目创建成功！')
+    router.push('/projects')
+  } catch (error: any) {
+    console.error('创建项目失败:', error)
+    const msg = error?.response?.data?.detail || error?.response?.data?.message || '项目创建失败，请稍后重试'
+    ElMessage.error(msg)
   } finally {
     submitting.value = false
   }

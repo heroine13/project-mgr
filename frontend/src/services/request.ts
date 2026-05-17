@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import { router } from '@/router'
 
 // 创建axios实例 - 根据环境自动配置 API 地址
 function getAPIBaseURL(): string {
@@ -59,9 +60,16 @@ request.interceptors.response.use(
       
       switch (status) {
         case 401:
+          // Token过期，清除并跳转登录（使用router.push避免全页面刷新导致SPA状态丢失）
           localStorage.removeItem('access_token')
           localStorage.removeItem('refresh_token')
-          window.location.href = '/login'
+          if (router) {
+            router.push('/login').catch(() => {
+              window.location.href = '/login'
+            })
+          } else {
+            window.location.href = '/login'
+          }
           break
         case 403:
           console.error('没有权限访问该资源')

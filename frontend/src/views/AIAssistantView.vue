@@ -200,7 +200,7 @@ const executeQuickAction = async (action) => {
 const fetchProjects = async () => {
   try {
     const response = await api.get('/projects/overview/summary')
-    projects.value = response.projects || response.data?.projects || []
+    projects.value = response.projects || []
   } catch (error) {
     console.error('获取项目失败', error)
     projects.value = []

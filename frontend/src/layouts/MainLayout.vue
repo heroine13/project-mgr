@@ -116,6 +116,12 @@
           <template #title>用户管理</template>
         </el-menu-item>
         
+        <!-- Audit Logs -->
+        <el-menu-item index="/audit-logs">
+          <el-icon><Document /></el-icon>
+          <template #title>审计日志</template>
+        </el-menu-item>
+
 
         <!-- Settings -->
         <el-menu-item index="/settings">

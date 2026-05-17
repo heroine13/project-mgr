@@ -41,7 +41,8 @@
     "newProject": "新建项目",
     "createTask": "创建任务",
     "refresh": "刷新",
-    "view": "查看"
+    "view": "查看",
+    "noTasks": "暂无任务"
   },
   "project": {
     "name": "项目名称",
@@ -62,7 +63,9 @@
     "create": "创建项目",
     "edit": "编辑项目",
     "delete": "删除项目",
-    "export": "导出项目"
+    "export": "导出项目",
+    "code": "项目编号",
+    "owner": "负责人"
   },
   "task": {
     "title": "任务标题",
@@ -157,7 +160,42 @@
     "endDate": "结束日期",
     "apply": "应用",
     "project": "项目",
-    "user": "用户"
+    "user": "用户",
+    "addComment": "添加评论",
+    "addDescription": "添加描述",
+    "addSubtask": "添加子任务",
+    "addTags": "添加标签",
+    "attachments": "附件",
+    "clear": "清除",
+    "comment": "评论",
+    "comments": "评论",
+    "completed": "已完成",
+    "copy": "复制",
+    "createdAt": "创建时间",
+    "exportReport": "导出报告",
+    "fileTypeNotSupported": "不支持的文件类型",
+    "format": "格式",
+    "includeCharts": "包含图表",
+    "includeDetails": "包含详情",
+    "login": "登录",
+    "markAllRead": "全部标为已读",
+    "move": "移动",
+    "name": "名称",
+    "noAttachments": "无附件",
+    "noComments": "无评论",
+    "noDescription": "暂无描述",
+    "notifications": "通知",
+    "pdfPreview": "PDF预览",
+    "remaining": "剩余",
+    "role": "角色",
+    "selectAssignee": "选择负责人",
+    "selectDate": "选择日期",
+    "subtasks": "子任务",
+    "timeTracking": "时间追踪",
+    "unassigned": "未分配",
+    "updatedAt": "更新时间",
+    "uploading": "上传中",
+    "viewAll": "查看全部"
   },
   "login": {
     "title": "登录到项目管理系通",
@@ -173,7 +211,8 @@
     "passwordRequired": "请输入密码",
     "passwordMinLength": "密码至少8个字符",
     "success": "登录成功！",
-    "error": "用户名或密码错误"
+    "error": "用户名或密码错误",
+    "haveAccount": "已有账号"
   },
   "register": {
     "title": "注册账号",
@@ -305,5 +344,16 @@
     "export": "导出",
     "import": "导入",
     "admin": "管理员"
+  },
+  "statistics": {
+    "avgCompletionTime": "平均完成时间",
+    "budgetUtilization": "预算利用率",
+    "detailedReports": "详细报告",
+    "productivityScore": "生产力评分",
+    "projectProgress": "项目进度",
+    "taskCompletionTrend": "任务完成趋势",
+    "taskStatusDistribution": "任务状态分布",
+    "teamPerformance": "团队绩效",
+    "timeVariance": "时间偏差"
   }
 }

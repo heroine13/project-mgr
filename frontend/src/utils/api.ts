@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { router } from '@/router'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1'
 
@@ -37,10 +38,17 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token过期，清除并跳转登录
+      // Token过期，清除并跳转登录（使用router.push避免全页面刷新导致SPA状态丢失）
       localStorage.removeItem('access_token')
       localStorage.removeItem('refresh_token')
-      window.location.href = '/login'
+      if (router) {
+        router.push('/login').catch(() => {
+          // 如果路由跳转失败，降级为全页面跳转
+          window.location.href = '/login'
+        })
+      } else {
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }

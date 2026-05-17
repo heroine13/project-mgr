@@ -372,11 +372,13 @@ import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
 import * as echarts from 'echarts'
 import type { ECharts } from 'echarts'
+import { ElMessage } from 'element-plus'
 import {
   Download, Refresh, More,
   Folder, Tickets, User, Timer,
   TrendCharts, ArrowUp, ArrowDown
 } from '@element-plus/icons-vue'
+import api from '@/utils/api'
 
 const { t } = useI18n()
 
@@ -397,31 +399,36 @@ const availableUsers = ref<any[]>([])
 const loadStatisticsData = async () => {
   try {
     // Load dashboard summary for overview stats
-    const summaryRes = await api.get('/reports/dashboard/summary')
+    // Load dashboard summary for overview stats
+    const summaryRes = await api.get('/reports/dashboard')
     const summary = summaryRes || {}
     overviewStats.value[0].value = String(summary.projects?.total || 0)
-    overviewStats.value[1].value = String(summary.tasks?.total || 0)
-    overviewStats.value[3].value = String((summary.tasks?.completion_rate || 0) + '%')
+    overviewStats.value[1].value = String(summary.total_tasks || summary.summary?.total_tasks || 0)
+    overviewStats.value[3].value = String((summary.summary?.completion_rate || 0) + '%')
     
     // Load projects progress for projects report
     const projRes = await api.get('/projects/overview/summary')
-    const projData = (projRes.projects || projRes.data?.projects || [])
-    projectsReport.value = projData.map((p: any) => ({
-      id: p.id,
-      name: p.name,
-      code: p.code,
-      status: p.status,
-      total_tasks: p.task_count || 0,
-      completed_tasks: p.completed_tasks || 0,
-      completion_rate: p.completion_rate || 0,
-      budget_utilization: p.budget ? Math.min(Math.round((p.actual_cost || 0) / p.budget * 100), 100) : 0,
-      owner: p.owner_id || ''
-    }))
-    availableProjects.value = projData
+    const projData = projRes || []
+    if (!Array.isArray(projData)) {
+      // it's a summary object with projects array
+      const pList = projData.projects || projData.project_list || []
+      projectsReport.value = pList.map((p) => ({
+        id: p.id,
+        name: p.name,
+        code: p.code,
+        status: p.status,
+        total_tasks: p.task_count || 0,
+        completed_tasks: p.completed_tasks || 0,
+        completion_rate: p.completion_rate || 0,
+        budget_utilization: p.budget ? Math.min(Math.round(((p.actual_cost || 0) / p.budget) * 100), 100) : 0,
+        owner: p.owner_id || ''
+      }))
+      availableProjects.value = pList
+    }
     
     // Load tasks by assignee for users report
     const assigneeRes = await api.get('/reports/tasks/by-assignee')
-    usersReport.value = (assigneeRes.assignees || []).map((a: any) => ({
+    usersReport.value = (assigneeRes.assignees || []).map((a) => ({
       name: a.assignee_id,
       role: '',
       total_tasks: a.task_count || 0,
@@ -436,9 +443,9 @@ const loadStatisticsData = async () => {
     const overdueRes = await api.get('/reports/tasks/overdue')
     overviewStats.value[2].value = String(overdueRes.count || 0)
     
-    // Load projects for tasks report
+    // Load tasks for tasks report
     const taskRes = await api.get('/tasks/')
-    tasksReport.value = (taskRes || []).slice(0, 50)
+    tasksReport.value = (taskRes.items || taskRes || []).slice(0, 50)
   } catch (error) {
     console.error('加载统计数据失败:', error)
   }
@@ -814,12 +821,13 @@ const handleResize = () => {
 }
 
 // Lifecycle
-onMounted(() => {
-  loadStatisticsData()
-  nextTick(() => {
+onMounted(async () => {
+  await loadStatisticsData()
+  // 使用 setTimeout 确保 DOM 已完全渲染
+  setTimeout(() => {
     initCharts()
     window.addEventListener('resize', handleResize)
-  })
+  }, 300)
 })
 
 // Cleanup
@@ -952,6 +960,15 @@ onUnmounted(() => {
 
 .chart-container {
   width: 100%;
+  height: 300px;
+}
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+.chart-container {
+  width: 100%;
+  height: 300px;
 }
 
 .reports-section {

@@ -103,8 +103,6 @@ import { ElMessage } from 'element-plus'
 import { Refresh, Calendar } from '@element-plus/icons-vue'
 import api from '@/utils/api'
 
-const API_BASE = '/api/v1'
-
 const loading = ref(false)
 const tasks = ref({})
 const columns = ref([])
@@ -121,8 +119,9 @@ const getColumnTasks = (status) => {
 
 const fetchColumns = async () => {
   try {
-    const response = await api.get(`${API_BASE}/kanban/columns`)
-    columns.value = response.data
+    const response = await api.get('/kanban/columns')
+    // Backend returns array directly, not wrapped in {columns: [...]}
+    columns.value = Array.isArray(response) ? response : (response?.columns || response?.data || [])
   } catch (error) {
     console.error('获取列配置失败', error)
     columns.value = [
@@ -142,12 +141,13 @@ const fetchTasks = async () => {
     if (selectedProject.value) {
       params.project_id = selectedProject.value
     }
-    const data = await api.get(`${API_BASE}/kanban/tasks`, { params })
-    tasks.value = data?.tasks || data?.data?.tasks || {}
+    const data = await api.get('/kanban/tasks', { params })
+    // Backend returns {columns: [...], tasks: {status: [tasks...]}}
+    tasks.value = data?.tasks || {}
     
     // Also fetch stats
-    const statsResponse = await api.get(`${API_BASE}/kanban/stats`, { params })
-    stats.value = statsResponse?.data || statsResponse
+    const statsResponse = await api.get('/kanban/stats', { params })
+    stats.value = statsResponse || {}
   } catch (error) {
     console.warn('获取任务失败', error)
     tasks.value = {}
@@ -158,8 +158,8 @@ const fetchTasks = async () => {
 
 const fetchProjects = async () => {
   try {
-    const response = await api.get(`${API_BASE}/projects/`)
-    projects.value = response || []
+    const response = await api.get('/projects/')
+    projects.value = response?.items || response?.data || response || []
   } catch (error) {
     console.warn('获取项目失败', error)
     projects.value = []
@@ -196,7 +196,7 @@ const handleDrop = async (event, targetStatus) => {
   
   // API call to update status
   try {
-    await api.put(`${API_BASE}/kanban/tasks/${taskId}/move`, {
+    await api.put(`/kanban/tasks/${taskId}/move`, {
       status: targetStatus
     })
     ElMessage.success(`已移动到 ${getStatusText(targetStatus)}`)

@@ -68,7 +68,7 @@ const loadTasks = async () => {
     const res = await api.get('/tasks/', {
       params: { assignee_id: 1 }
     })
-    tasks.value = Array.isArray(res) ? res : (res.data || res.items || [])
+    tasks.value = Array.isArray(res) ? res : (res.items || res || [])
   } catch (e) {
     console.error('加载我的任务失败:', e)
     tasks.value = []

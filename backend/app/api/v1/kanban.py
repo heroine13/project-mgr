@@ -215,7 +215,7 @@ async def get_kanban_stats(
     stats = {}
     for col in DEFAULT_COLUMNS:
         status = col["status"]
-        count = query.filter(Task.status == TaskStatus(status)).count()
+        count = query.filter(Task.status == TaskStatus(status).value).count()
         stats[status] = {
             "count": count,
             "title": col["title"],

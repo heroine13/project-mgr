@@ -213,6 +213,18 @@ const routes = [
     ]
   },
   {
+    path: '/audit-logs',
+    name: 'audit-logs',
+    component: MainLayout,
+    children: [
+      {
+        path: '',
+        name: 'audit-logs-page',
+        component: () => import('@/views/AuditLogView.vue')
+      }
+    ]
+  },
+  {
     path: '/user-mgmt',
     name: 'user-mgmt',
     component: MainLayout,
@@ -243,4 +255,6 @@ const router = createRouter({
   routes
 })
 
+// 导出 router 实例，供 API 拦截器等非组件场景使用
+export { router }
 export default router
