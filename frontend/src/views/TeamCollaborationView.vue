@@ -174,10 +174,10 @@
 </template>
 
 <script setup>
-import api from '@/utils/api'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
+import api from '@/utils/api'
 
 const API_BASE = '/team'
 
@@ -235,8 +235,8 @@ const fetchMembers = async () => {
   loading.value = true
   try {
     const response = await api.get(`${API_BASE}/members`)
-    if (response.data.members && response.data.members.length > 0) {
-      members.value = response.data.members
+    if (response.members && response.members.length > 0) {
+      members.value = response || response.members || response.data?.members || []
     } else {
       members.value = sampleMembers
     }
@@ -251,8 +251,8 @@ const fetchMembers = async () => {
 const fetchActivities = async () => {
   try {
     const response = await api.get(`${API_BASE}/activity`)
-    if (response.data.activities && response.data.activities.length > 0) {
-      activities.value = response.data.activities
+    if (response.activities && response.activities.length > 0) {
+      activities.value = response.activities
     } else {
       activities.value = [
         { id: 1, username: '张三', type: 'task_completed', description: '完成了任务 "用户登录模块"', created_at: '2026-05-02T10:00:00' },
@@ -268,8 +268,8 @@ const fetchActivities = async () => {
 const fetchWorkload = async () => {
   try {
     const response = await api.get(`${API_BASE}/workload`)
-    if (response.data.workload && response.data.workload.length > 0) {
-      workload.value = response.data.workload
+    if (response.workload && response.workload.length > 0) {
+      workload.value = response.workload
     } else {
       workload.value = [
         { user_id: 1, username: '张三', assigned: 5, in_progress: 3, completed: 12, capacity: 75 },
@@ -285,9 +285,9 @@ const fetchWorkload = async () => {
 const fetchStats = async () => {
   try {
     const response = await api.get(`${API_BASE}/stats`)
-    if (response.data && response.data.total_members > 0) {
-      teamStats.value = response.data
-      const byDept = response.data.by_department || {}
+    if (response && response.total_members > 0) {
+      teamStats.value = response
+      const byDept = response.by_department || {}
       departmentStats.value = Object.entries(byDept).map(([dept, data]) => ({
         department: dept,
         members: data.members,
@@ -343,7 +343,7 @@ const inviteMember = async () => {
 const loadDepartments = async () => {
   try {
     const res = await api.get('/users/departments', { params: { page_size: 100 } })
-    departments.value = res.data.items || []
+    departments.value = res.items || []
   } catch (e) {
     console.error('加载部门失败', e)
   }

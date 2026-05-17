@@ -47,7 +47,7 @@
         <el-table-column prop="code" label="编号" width="100" />
         <el-table-column prop="name" label="项目名称" min-width="180">
           <template #default="{ row }">
-            <el-link type="primary" @click="goToDetail(row.id)">{{ row.name }}</el-link>
+            <el-link type="primary" @click="showProjectDetail(row)">{{ row.name }}</el-link>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
@@ -85,19 +85,106 @@
             {{ row.budget ? '¥' + row.budget.toLocaleString() : '-' }}
           </template>
         </el-table-column>
+        <el-table-column prop="start_date" label="开始日期" width="110" align="center">
+          <template #default="{ row }">
+            {{ row.start_date ? new Date(row.start_date).toLocaleDateString('zh-CN') : '-' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="end_date" label="结束日期" width="110" align="center">
+          <template #default="{ row }">
+            {{ row.end_date ? new Date(row.end_date).toLocaleDateString('zh-CN') : '-' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="created_at" label="创建时间" width="160" />
+        <el-table-column label="操作" width="150" align="center">
+          <template #default="{ row }">
+            <el-button size="small" type="primary" @click="editProject(row)">编辑</el-button>
+            <el-button
+              size="small"
+              type="danger"
+              :disabled="row.status !== 'planning'"
+              @click="deleteProject(row)"
+            >
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <el-empty v-if="!loading && projects.length === 0" description="暂无项目">
         <el-button type="primary" @click="goToNewProject">创建第一个项目</el-button>
       </el-empty>
     </el-card>
+
+    <!-- 项目详情弹窗 -->
+    <el-dialog v-model="detailDialogVisible" title="项目详情" width="700px">
+      <el-descriptions v-if="currentProject" :column="2" border>
+        <el-descriptions-item label="项目编号">{{ currentProject.code }}</el-descriptions-item>
+        <el-descriptions-item label="项目名称">{{ currentProject.name }}</el-descriptions-item>
+        <el-descriptions-item label="状态">
+          <el-tag :type="getStatusType(currentProject.status)">
+            {{ getStatusLabel(currentProject.status) }}
+          </el-tag>
+        </el-descriptions-item>
+        <el-descriptions-item label="预算">¥{{ currentProject.budget || 0 }}</el-descriptions-item>
+        <el-descriptions-item label="开始日期">{{ currentProject.start_date ? new Date(currentProject.start_date).toLocaleDateString('zh-CN') : '-' }}</el-descriptions-item>
+        <el-descriptions-item label="结束日期">{{ currentProject.end_date ? new Date(currentProject.end_date).toLocaleDateString('zh-CN') : '-' }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ currentProject.created_at }}</el-descriptions-item>
+        <el-descriptions-item label="描述" :span="2">{{ currentProject.description || '暂无描述' }}</el-descriptions-item>
+        <el-descriptions-item label="任务统计">
+          总计 {{ currentProject.task_count || 0 }} · 完成 {{ currentProject.completed_tasks || 0 }} · 进行中 {{ currentProject.in_progress_tasks || 0 }}
+        </el-descriptions-item>
+        <el-descriptions-item label="问题统计">
+          总计 {{ currentProject.issue_count || 0 }} · 开放 {{ currentProject.open_issues || 0 }} · 已解决 {{ currentProject.resolved_issues || 0 }}
+        </el-descriptions-item>
+        <el-descriptions-item label="完成率">
+          {{ currentProject.completion_rate || 0 }}%
+        </el-descriptions-item>
+      </el-descriptions>
+    </el-dialog>
+
+    <!-- 编辑项目弹窗 -->
+    <el-dialog v-model="editDialogVisible" :title="editDialogTitle" width="600px">
+      <el-form :model="editForm" label-width="100px">
+        <el-form-item label="项目编号">
+          <el-input v-model="editForm.code" />
+        </el-form-item>
+        <el-form-item label="项目名称">
+          <el-input v-model="editForm.name" />
+        </el-form-item>
+        <el-form-item label="状态">
+          <el-select v-model="editForm.status" style="width: 100%">
+            <el-option label="进行中" value="active" />
+            <el-option label="计划中" value="planning" />
+            <el-option label="已完成" value="completed" />
+            <el-option label="已归档" value="archived" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="开始日期">
+          <el-date-picker v-model="editForm.start_date" type="date" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="结束日期">
+          <el-date-picker v-model="editForm.end_date" type="date" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="预算">
+          <el-input-number v-model="editForm.budget" :min="0" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="editForm.description" type="textarea" :rows="4" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="editDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="saveProject">保存</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import api from '@/utils/api'
 
 const router = useRouter()
@@ -105,6 +192,24 @@ const loading = ref(false)
 const projects = ref<any[]>([])
 const searchKeyword = ref('')
 const statusFilter = ref('')
+
+// 详情弹窗
+const detailDialogVisible = ref(false)
+const currentProject = ref<any>(null)
+
+// 编辑弹窗
+const editDialogVisible = ref(false)
+const editDialogTitle = ref('')
+const editForm = ref<any>({
+  id: null,
+  code: '',
+  name: '',
+  status: 'active',
+  budget: 0,
+  description: '',
+  start_date: '',
+  end_date: ''
+})
 
 const getStatusType = (status: string) => {
   const map: Record<string, string> = {
@@ -145,7 +250,7 @@ const loadProjects = async () => {
     }
 
     const res = await api.get('/projects/overview/summary', { params })
-    projects.value = res.data.projects || []
+    projects.value = res.projects || []
   } catch (error) {
     console.error('加载项目列表失败:', error)
   } finally {
@@ -157,8 +262,71 @@ const goToNewProject = () => {
   router.push('/projects/new')
 }
 
-const goToDetail = (id: number) => {
-  router.push(`/projects/${id}`)
+// 显示项目详情
+const showProjectDetail = (project: any) => {
+  currentProject.value = project
+  detailDialogVisible.value = true
+}
+
+// 编辑项目
+const editProject = (project: any) => {
+  editDialogTitle.value = '编辑项目'
+  editForm.value = {
+    id: project.id,
+    code: project.code,
+    name: project.name,
+    status: project.status,
+    budget: project.budget || 0,
+    description: project.description || '',
+    start_date: project.start_date ? new Date(project.start_date).toISOString().split('T')[0] : '',
+    end_date: project.end_date ? new Date(project.end_date).toISOString().split('T')[0] : ''
+  }
+  editDialogVisible.value = true
+}
+
+// 保存项目
+const saveProject = async () => {
+  try {
+    const data = { ...editForm.value }
+    // 转换日期格式
+    if (data.start_date) {
+      data.start_date = new Date(data.start_date).toISOString()
+    }
+    if (data.end_date) {
+      data.end_date = new Date(data.end_date).toISOString()
+    }
+    await api.put(`/projects/${data.id}`, data)
+    ElMessage.success('项目更新成功')
+    editDialogVisible.value = false
+    loadProjects()
+  } catch (error) {
+    console.error('更新项目失败:', error)
+    ElMessage.error('更新项目失败')
+  }
+}
+
+// 删除项目
+const deleteProject = async (project: any) => {
+  if (project.status !== 'planning') {
+    ElMessage.warning('只有计划中的项目才能删除')
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(`确定要删除项目"${project.name}"吗？此操作不可恢复。`, '确认删除', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    })
+    await api.delete(`/projects/${project.id}`)
+    ElMessage.success('项目删除成功')
+    loadProjects()
+  } catch (error: any) {
+    if (error !== 'cancel') {
+      console.error('删除项目失败:', error)
+      ElMessage.error('删除项目失败')
+    }
+  }
 }
 
 const goToIssues = (projectId: number) => {
@@ -198,7 +366,7 @@ onMounted(() => {
 
 .small-text {
   font-size: 12px;
-  color: #909399;
+  color: #90999;
   margin-top: 2px;
 }
 </style>

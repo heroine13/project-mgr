@@ -151,7 +151,7 @@ const fetchBackups = async () => {
   loading.value = true
   try {
     const response = await api.get(`${API_BASE}/list`)
-    const data = response.data || response
+    const data = response
     backups.value = data.backups || data.items || []
   } catch (error) {
     ElMessage.error('获取备份列表失败')

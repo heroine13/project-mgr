@@ -165,7 +165,7 @@ const sendMessage = async () => {
 
     messages.value.push({
       role: 'assistant',
-      content: response.data.message,
+      content: response.message,
       timestamp: new Date()
     })
   } catch (error) {
@@ -199,10 +199,11 @@ const executeQuickAction = async (action) => {
 
 const fetchProjects = async () => {
   try {
-    const response = await api.get('/projects/')
-    projects.value = response.data
+    const response = await api.get('/projects/overview/summary')
+    projects.value = response.projects || response.data?.projects || []
   } catch (error) {
     console.error('获取项目失败', error)
+    projects.value = []
   }
 }
 

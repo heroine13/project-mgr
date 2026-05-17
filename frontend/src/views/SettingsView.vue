@@ -428,10 +428,12 @@ const loadAiSettings = async () => {
     const res = await api.get('/settings/ai')
     if (res.data) {
       // 当前配置
-      const c = res.data.current || {}
+      const c = res.current || {}
       aiSettings.current.name = c.name || 'openai'
       aiSettings.current.baseUrl = c.baseUrl || ''
       aiSettings.current.api = c.api || 'openai-completions'
+      // 保留已有的apiKey，避免保存时清空
+      const existingKey = aiSettings.current.apiKey
       aiSettings.current.apiKey = ''
       aiSettings.current.models = (c.models || []).map(m => ({
         id: m.id, name: m.name, isDefault: m.isDefault || false
@@ -443,9 +445,13 @@ const loadAiSettings = async () => {
         // 如果没有defaultModelId但有模型，默认选第一个
         aiSettings.current.defaultModelId = aiSettings.current.models[0].id
       }
-      aiConfigured.value = res.data.configured || false
-      presetProviders.value = res.data.preset_providers || []
-      customProviderNames.value = res.data.customProviderNames || []
+      aiConfigured.value = res.configured || false
+      presetProviders.value = res.preset_providers || []
+      customProviderNames.value = res.customProviderNames || []
+      // 如果有现有配置，恢复apiKey
+      if (res.configured && existingKey) {
+        aiSettings.current.apiKey = existingKey
+      }
     }
   } catch (e) {
     console.error('LoadAI settings:', e)
@@ -453,7 +459,8 @@ const loadAiSettings = async () => {
 }
 
 const saveAiSettings = async () => {
-  if (!aiSettings.current.apiKey) {
+  // 如果已有配置且未修改key，允许保存（只更新模型等配置）
+  if (!aiSettings.current.apiKey && !aiConfigured.value) {
     ElMessage.warning('请填写AI API密钥')
     return
   }
@@ -474,7 +481,7 @@ const saveAiSettings = async () => {
       },
       customProviderNames: customProviderNames.value
     })
-    ElMessage.success(res.data.message || 'AI配置已保存')
+    ElMessage.success(res.message || 'AI配置已保存')
     aiConfigured.value = true
   } catch (e) {
     console.error('Save error:', e)
@@ -565,7 +572,7 @@ const testAiConnection = async () => {
   try {
     const res = await api.get('/ai/status')
     if (res.data) {
-      ElMessage.success(`AI状态: ${res.data.message}`)
+      ElMessage.success(`AI状态: ${res.message}`)
     }
   } catch (e) {
     ElMessage.error('测试连接失败')

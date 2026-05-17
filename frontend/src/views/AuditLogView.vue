@@ -232,11 +232,11 @@ const fetchLogs = async () => {
     }
     
     const response = await api.get(`${API_BASE}/logs`, { params })
-    logs.value = response.data
+    logs.value = Array.isArray(response) ? response : (response.logs || response.items || [])
     
     // Fetch stats
     const statsResponse = await api.get(`${API_BASE}/stats`)
-    stats.value = statsResponse.data
+    stats.value = statsResponse || {}.data
     
     pagination.value.total = stats.value.total
   } catch (error) {
@@ -265,7 +265,7 @@ const exportLogs = async (format) => {
     const response = await api.get(`${API_BASE}/export`, { params })
     
     if (format === 'json') {
-      const blob = new Blob([JSON.stringify(response.data, null, 2)], { type: 'application/json' })
+      const blob = new Blob([JSON.stringify(response, null, 2)], { type: 'application/json' })
       downloadFile(blob, `audit_logs_${Date.now()}.json`)
     } else {
       const blob = new Blob([response.data], { type: 'text/csv' })

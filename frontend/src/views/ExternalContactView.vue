@@ -183,7 +183,7 @@ const fetchContacts = async () => {
   loading.value = true
   try {
     const response = await axios.get(`${API_BASE}/contacts`)
-    contacts.value = response.data.contacts || []
+    contacts.value = response.contacts || []
   } catch (error) {
     ElMessage.error('获取联系人列表失败')
   } finally {

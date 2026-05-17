@@ -39,23 +39,20 @@ export interface NotificationPreference {
 }
 
 export const useNotificationStore = defineStore('notification', () => {
-  // 状态
   const notifications = ref<Notification[]>([])
   const unreadCount = ref(0)
   const isLoading = ref(false)
   const preference = ref<NotificationPreference | null>(null)
   
-  // 计算属性
   const hasUnread = computed(() => unreadCount.value > 0)
   
-  // 获取通知列表
   async function fetchNotifications(unreadOnly = false) {
     isLoading.value = true
     try {
       const params = unreadOnly ? { unread_only: 'true' } : {}
       const res = await request.get('/notifications/', { params })
-      notifications.value = res.data
-      return res.data
+      notifications.value = res || []
+      return res || []
     } catch (error) {
       console.error('获取通知列表失败:', error)
       return []
@@ -64,19 +61,17 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
   
-  // 获取未读数量
   async function fetchUnreadCount() {
     try {
       const res = await request.get('/notifications/unread-count')
-      unreadCount.value = res.data.unread_count
-      return res.data.unread_count
+      unreadCount.value = res.unread_count || 0
+      return res.unread_count || 0
     } catch (error) {
       console.error('获取未读数量失败:', error)
       return 0
     }
   }
   
-  // 标记单条通知为已读
   async function markAsRead(notificationId: number) {
     try {
       await request.post(`/notifications/${notificationId}/read`)
@@ -90,7 +85,6 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
   
-  // 标记所有通知为已读
   async function markAllAsRead() {
     try {
       await request.post('/notifications/read-all')
@@ -104,7 +98,6 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
   
-  // 删除通知
   async function deleteNotification(notificationId: number) {
     try {
       await request.delete(`/notifications/${notificationId}`)
@@ -120,31 +113,28 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   }
   
-  // 获取通知偏好设置
   async function fetchPreferences() {
     try {
       const res = await request.get('/notifications/preferences')
-      preference.value = res.data
-      return res.data
+      preference.value = res
+      return res
     } catch (error) {
       console.error('获取通知偏好失败:', error)
       return null
     }
   }
   
-  // 更新通知偏好设置
   async function updatePreferences(prefs: Partial<NotificationPreference>) {
     try {
       const res = await request.put('/notifications/preferences', prefs)
-      preference.value = res.data
-      return res.data
+      preference.value = res
+      return res
     } catch (error) {
       console.error('更新通知偏好失败:', error)
       return null
     }
   }
   
-  // 获取通知类型图标
   function getNotificationIcon(type: string): string {
     const iconMap: Record<string, string> = {
       'task_created': '📋',
@@ -159,7 +149,6 @@ export const useNotificationStore = defineStore('notification', () => {
     return iconMap[type] || '🔔'
   }
   
-  // 格式化通知时间
   function formatTime(dateString: string): string {
     const date = new Date(dateString)
     const now = new Date()
@@ -178,14 +167,11 @@ export const useNotificationStore = defineStore('notification', () => {
   }
   
   return {
-    // 状态
     notifications,
     unreadCount,
     isLoading,
     preference,
-    // 计算属性
     hasUnread,
-    // 方法
     fetchNotifications,
     fetchUnreadCount,
     markAsRead,

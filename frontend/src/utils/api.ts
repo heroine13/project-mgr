@@ -27,7 +27,13 @@ api.interceptors.request.use(
 // 响应拦截器 - 处理错误
 api.interceptors.response.use(
   (response) => {
-    return response
+    const res = response.data
+    // 后端统一格式: {code: 0, msg: 'success', data: {...}}
+    // 直接返回 data 字段，方便业务代码使用
+    if (res && typeof res === 'object' && 'data' in res) {
+      return res.data
+    }
+    return res
   },
   (error) => {
     if (error.response?.status === 401) {

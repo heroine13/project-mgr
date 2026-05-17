@@ -79,8 +79,8 @@ export const useGanttStore = defineStore('gantt', () => {
         }
       })
       
-      tasks.value = response.data
-      return response.data
+      tasks.value = response
+      return response
     } catch (err: any) {
       error.value = err.message || '加载任务数据失败'
       throw err
@@ -101,12 +101,12 @@ export const useGanttStore = defineStore('gantt', () => {
     try {
       const response = await api.get(`/gantt/project/${targetProjectId}/full-data`)
       
-      tasks.value = response.data.tasks || []
-      dependencies.value = response.data.dependencies || []
-      views.value = response.data.views || []
-      baselines.value = response.data.baselines || []
+      tasks.value = response.tasks || []
+      dependencies.value = response.dependencies || []
+      views.value = response.views || []
+      baselines.value = response.baselines || []
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '加载完整项目数据失败'
       throw err
@@ -129,8 +129,8 @@ export const useGanttStore = defineStore('gantt', () => {
         project_id: currentProjectId.value
       })
       
-      tasks.value.push(response.data)
-      return response.data
+      tasks.value.push(response)
+      return response
     } catch (err: any) {
       error.value = err.message || '创建任务失败'
       throw err
@@ -148,10 +148,10 @@ export const useGanttStore = defineStore('gantt', () => {
       
       const index = tasks.value.findIndex(t => t.id === taskData.id)
       if (index !== -1) {
-        tasks.value[index] = response.data
+        tasks.value[index] = response
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '更新任务失败'
       throw err
@@ -195,10 +195,10 @@ export const useGanttStore = defineStore('gantt', () => {
       
       const index = tasks.value.findIndex(t => t.id === moveData.task_id)
       if (index !== -1) {
-        tasks.value[index] = response.data
+        tasks.value[index] = response
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '移动任务失败'
       throw err
@@ -215,14 +215,14 @@ export const useGanttStore = defineStore('gantt', () => {
       const response = await api.post('/gantt/tasks/batch-move', batchUpdate)
       
       // 更新本地任务列表
-      response.data.forEach((updatedTask: GanttTask) => {
+      response.forEach((updatedTask: GanttTask) => {
         const index = tasks.value.findIndex(t => t.id === updatedTask.id)
         if (index !== -1) {
           tasks.value[index] = updatedTask
         }
       })
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '批量移动任务失败'
       throw err
@@ -243,8 +243,8 @@ export const useGanttStore = defineStore('gantt', () => {
         params: { project_id: targetProjectId }
       })
       
-      dependencies.value = response.data
-      return response.data
+      dependencies.value = response
+      return response
     } catch (err: any) {
       error.value = err.message || '加载依赖关系失败'
       throw err
@@ -255,8 +255,8 @@ export const useGanttStore = defineStore('gantt', () => {
     try {
       const response = await api.post('/gantt/dependencies', dependencyData)
       
-      dependencies.value.push(response.data)
-      return response.data
+      dependencies.value.push(response)
+      return response
     } catch (err: any) {
       error.value = err.message || '创建依赖关系失败'
       throw err
@@ -291,7 +291,7 @@ export const useGanttStore = defineStore('gantt', () => {
         params: { project_id: targetProjectId }
       })
       
-      views.value = response.data
+      views.value = response
       
       // 如果没有选中视图，选中默认视图
       if (!selectedViewId.value && views.value.length > 0) {
@@ -299,7 +299,7 @@ export const useGanttStore = defineStore('gantt', () => {
         selectedViewId.value = defaultView.id
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '加载视图失败'
       throw err
@@ -318,15 +318,15 @@ export const useGanttStore = defineStore('gantt', () => {
       })
       
       // 更新或添加视图
-      const index = views.value.findIndex(v => v.id === response.data.id)
+      const index = views.value.findIndex(v => v.id === response.id)
       if (index !== -1) {
-        views.value[index] = response.data
+        views.value[index] = response
       } else {
-        views.value.push(response.data)
+        views.value.push(response)
       }
       
-      selectedViewId.value = response.data.id
-      return response.data
+      selectedViewId.value = response.id
+      return response
     } catch (err: any) {
       error.value = err.message || '加载默认视图失败'
       throw err
@@ -344,9 +344,9 @@ export const useGanttStore = defineStore('gantt', () => {
         project_id: currentProjectId.value
       })
       
-      views.value.push(response.data)
-      selectedViewId.value = response.data.id
-      return response.data
+      views.value.push(response)
+      selectedViewId.value = response.id
+      return response
     } catch (err: any) {
       error.value = err.message || '创建视图失败'
       throw err
@@ -359,10 +359,10 @@ export const useGanttStore = defineStore('gantt', () => {
       
       const index = views.value.findIndex(v => v.id === viewData.id)
       if (index !== -1) {
-        views.value[index] = response.data
+        views.value[index] = response
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '更新视图失败'
       throw err
@@ -410,8 +410,8 @@ export const useGanttStore = defineStore('gantt', () => {
         params: { project_id: targetProjectId }
       })
       
-      baselines.value = response.data
-      return response.data
+      baselines.value = response
+      return response
     } catch (err: any) {
       error.value = err.message || '加载基线失败'
       throw err
@@ -429,8 +429,8 @@ export const useGanttStore = defineStore('gantt', () => {
         project_id: currentProjectId.value
       })
       
-      baselines.value.push(response.data)
-      return response.data
+      baselines.value.push(response)
+      return response
     } catch (err: any) {
       error.value = err.message || '创建基线失败'
       throw err
@@ -443,10 +443,10 @@ export const useGanttStore = defineStore('gantt', () => {
       
       const index = baselines.value.findIndex(b => b.id === baselineData.id)
       if (index !== -1) {
-        baselines.value[index] = response.data
+        baselines.value[index] = response
       }
       
-      return response.data
+      return response
     } catch (err: any) {
       error.value = err.message || '更新基线失败'
       throw err

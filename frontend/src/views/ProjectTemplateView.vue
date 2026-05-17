@@ -183,7 +183,7 @@ const fetchTemplates = async () => {
 const fetchCategories = async () => {
   try {
     const response = await axios.get('/api/v1/project-templates/categories/list')
-    categories.value = response.data.categories
+    categories.value = response.categories
   } catch (error) {
     categories.value = [
       { id: 'general', name: '通用' },

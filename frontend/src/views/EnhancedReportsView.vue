@@ -229,7 +229,7 @@ const fetchTrends = async () => {
 const fetchTeamPerformance = async () => {
   loading.value = true
   try {
-    const response = await api.get(`/reports/team`)
+    const response = await api.get('/reports/team/performance')
     const data = response.data?.data || response.data || {}
     teamPerformance.value = data.performance || data.team || []
   } catch (error) {
@@ -246,8 +246,8 @@ const fetchProjectProgress = async () => {
     // 从 dashboard 获取项目数据
     const response = await api.get(`/reports/dashboard`)
     const data = response.data?.data || response.data || {}
-    // 使用 top_performers 数据作为项目进度
-    projectProgress.value = data.projects ? [data.projects] : []
+    // 使用 project_list 数据作为项目进度
+    projectProgress.value = data.project_list || []
   } catch (error) {
     console.error('获取项目进度失败', error)
     projectProgress.value = []
@@ -262,7 +262,7 @@ const fetchOverdueTasks = async () => {
     const response = await api.get('/tasks/', {
       params: { status: 'overdue', page_size: 50 }
     })
-    const data = response.data || response
+    const data = response
     overdueTasks.value = data.items || []
   } catch (error) {
     console.error('获取逾期任务失败', error)

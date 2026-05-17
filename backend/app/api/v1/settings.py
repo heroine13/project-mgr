@@ -84,11 +84,18 @@ def _load_provider_config(db: Session, provider_name: str) -> Optional[Dict]:
 
 def _save_provider_config(db: Session, provider_name: str, config: ProviderConfig) -> None:
     """保存某个provider的完整配置到数据库"""
+    # 如果apiKey为空，先保留现有的，避免清空已配置的密钥
+    api_key_to_save = config.apiKey
+    if not api_key_to_save:
+        existing = _load_provider_config(db, provider_name)
+        if existing and existing.get('apiKey'):
+            api_key_to_save = existing['apiKey']
+    
     config_data = {
         "name": config.name,
         "baseUrl": config.baseUrl,
         "api": config.api,
-        "apiKey": config.apiKey,
+        "apiKey": api_key_to_save,
         "models": [
             {"id": m.id, "name": m.name, "isDefault": m.isDefault}
             for m in config.models

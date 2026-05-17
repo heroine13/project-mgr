@@ -39,8 +39,8 @@ class IssueBase(BaseModel):
     """Base Issue schema"""
     title: str = Field(..., min_length=1, max_length=255)
     description: Optional[str] = None
-    issue_type: IssueTypeEnum = IssueTypeEnum.BUG
-    priority: IssuePriorityEnum = IssuePriorityEnum.MEDIUM
+    issue_type: str = "bug"
+    priority: str = "medium"
     project_id: int
     task_id: Optional[int] = None
     assignee_id: Optional[int] = None
@@ -56,9 +56,9 @@ class IssueUpdate(BaseModel):
     """Issue update schema"""
     title: Optional[str] = Field(None, min_length=1, max_length=255)
     description: Optional[str] = None
-    issue_type: Optional[IssueTypeEnum] = None
-    status: Optional[IssueStatusEnum] = None
-    priority: Optional[IssuePriorityEnum] = None
+    issue_type: Optional[str] = None
+    status: Optional[str] = None
+    priority: Optional[str] = None
     task_id: Optional[int] = None
     assignee_id: Optional[int] = None
     labels: Optional[str] = None
@@ -67,7 +67,7 @@ class IssueUpdate(BaseModel):
 
 class IssueStatusUpdate(BaseModel):
     """Issue status update schema"""
-    status: IssueStatusEnum
+    status: str
 
 
 class IssueAssigneeUpdate(BaseModel):
@@ -78,7 +78,7 @@ class IssueAssigneeUpdate(BaseModel):
 class IssueResponse(IssueBase):
     """Issue response schema"""
     id: int
-    status: IssueStatusEnum
+    status: str
     is_resolved: bool
     resolved_at: Optional[datetime]
     reporter_id: int
@@ -87,6 +87,7 @@ class IssueResponse(IssueBase):
     
     class Config:
         from_attributes = True
+        use_enum_values = True
 
 
 class IssueListResponse(BaseModel):
@@ -129,6 +130,7 @@ class IssueCommentResponse(IssueCommentBase):
     
     class Config:
         from_attributes = True
+        use_enum_values = True
 
 
 class IssueCommentListResponse(BaseModel):
@@ -152,9 +154,11 @@ class IssueAttachmentResponse(BaseModel):
     
     class Config:
         from_attributes = True
+        use_enum_values = True
 
 
 # ============ Issue with Details ============
+
 
 class IssueWithComments(IssueResponse):
     """Issue with comments"""

@@ -101,7 +101,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Refresh, Calendar } from '@element-plus/icons-vue'
-import axios from 'axios'
+import api from '@/utils/api'
 
 const API_BASE = '/api/v1'
 
@@ -121,7 +121,7 @@ const getColumnTasks = (status) => {
 
 const fetchColumns = async () => {
   try {
-    const response = await axios.get(`${API_BASE}/kanban/columns`)
+    const response = await api.get(`${API_BASE}/kanban/columns`)
     columns.value = response.data
   } catch (error) {
     console.error('获取列配置失败', error)
@@ -142,14 +142,12 @@ const fetchTasks = async () => {
     if (selectedProject.value) {
       params.project_id = selectedProject.value
     }
-    const response = await axios.get(`${API_BASE}/kanban/tasks`, { params })
-    // API返回 { columns: [...], tasks: {...} }
-    const data = response.data
-    tasks.value = data.tasks || {}
+    const data = await api.get(`${API_BASE}/kanban/tasks`, { params })
+    tasks.value = data?.tasks || data?.data?.tasks || {}
     
     // Also fetch stats
-    const statsResponse = await axios.get(`${API_BASE}/kanban/stats`, { params })
-    stats.value = statsResponse.data
+    const statsResponse = await api.get(`${API_BASE}/kanban/stats`, { params })
+    stats.value = statsResponse?.data || statsResponse
   } catch (error) {
     console.warn('获取任务失败', error)
     tasks.value = {}
@@ -160,8 +158,8 @@ const fetchTasks = async () => {
 
 const fetchProjects = async () => {
   try {
-    const response = await axios.get(`${API_BASE}/projects/`)
-    projects.value = response.data
+    const response = await api.get(`${API_BASE}/projects/`)
+    projects.value = response || []
   } catch (error) {
     console.warn('获取项目失败', error)
     projects.value = []
@@ -198,7 +196,7 @@ const handleDrop = async (event, targetStatus) => {
   
   // API call to update status
   try {
-    await axios.put(`${API_BASE}/kanban/tasks/${taskId}/move`, {
+    await api.put(`${API_BASE}/kanban/tasks/${taskId}/move`, {
       status: targetStatus
     })
     ElMessage.success(`已移动到 ${getStatusText(targetStatus)}`)

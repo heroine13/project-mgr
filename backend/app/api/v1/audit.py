@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 
 from app.core.database import get_db
 from app.core.security import get_current_user
+from app.crud.user_mgmt import create_audit_log as _create_audit_log
 from app.models.user import User
 from app.models.audit import AuditLog, AuditLogSummary
 
@@ -89,8 +90,9 @@ async def get_audit_logs(
     
     # Order by created_at descending
     logs = query.order_by(AuditLog.created_at.desc()).offset(skip).limit(limit).all()
+    total = query.count()
     
-    return logs
+    return {"logs": logs, "total": total, "page": skip // limit + 1, "page_size": limit}
 
 
 @router.get("/logs/{log_id}", response_model=AuditLogResponse)

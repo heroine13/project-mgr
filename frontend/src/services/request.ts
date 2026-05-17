@@ -44,7 +44,13 @@ request.interceptors.request.use(
 // 响应拦截器
 request.interceptors.response.use(
   (response: AxiosResponse) => {
-    return response.data
+    const data = response.data
+    // 后端统一格式: {code: 0, msg: 'success', data: {...}}
+    // 如果包含 code 字段，返回内层的 data；否则直接返回
+    if (data && typeof data === 'object' && 'code' in data && 'data' in data) {
+      return data.data
+    }
+    return data
   },
   (error) => {
     // 处理错误

@@ -84,3 +84,19 @@ def delete_task(db: Session, task_id: int) -> bool:
         db.commit()
         return True
     return False
+
+def _audit_log(db, user_id, action, resource, resource_id, details=None):
+    """Helper to create audit log"""
+    try:
+        from app.models.audit_log import AuditLog
+        log = AuditLog(
+            user_id=user_id,
+            action=action,
+            resource=resource,
+            resource_id=resource_id,
+            details=details,
+        )
+        db.add(log)
+        db.commit()
+    except Exception as e:
+        print(f"Audit log error: {e}")

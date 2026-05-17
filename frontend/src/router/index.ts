@@ -42,6 +42,11 @@ const routes = [
         component: () => import('@/views/ProjectListView.vue')
       },
       {
+        path: 'archived',
+        name: 'projects-archived',
+        component: () => import('@/views/ArchivedProjectsView.vue')
+      },
+      {
         path: ':id',
         name: 'project-detail',
         component: () => import('@/views/ProjectDetailView.vue')
@@ -69,16 +74,19 @@ const routes = [
         path: '',
         name: 'tasks-page',
         component: () => import('@/views/TaskDetailView.vue')
-      }
-    ]
-  },
-  {
-    path: '/tasks/new',
-    name: 'create-task',
-    component: MainLayout,
-    children: [
+      },
       {
-        path: '',
+        path: 'my',
+        name: 'tasks-my',
+        component: () => import('@/views/MyTasksView.vue')
+      },
+      {
+        path: 'overdue',
+        name: 'tasks-overdue',
+        component: () => import('@/views/OverdueTasksView.vue')
+      },
+      {
+        path: 'new',
         name: 'create-task-page',
         component: () => import('@/views/CreateTaskView.vue')
       }

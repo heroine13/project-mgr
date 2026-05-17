@@ -87,6 +87,7 @@ const loadIssues = async () => {
   loading.value = true
   try {
     const params: any = { page: page.value, page_size: pageSize.value }
+    console.log('Loading issues with params:', params)
     if (searchText.value) params.search = searchText.value
     if (filterStatus.value) params.status = filterStatus.value
     if (filterPriority.value) params.priority = filterPriority.value
@@ -94,9 +95,10 @@ const loadIssues = async () => {
     if (filterProject.value) params.project_id = filterProject.value
     
     const res = await api.get('/issues/', { params })
-    const data = res.data || res
-    issues.value = data.items || []
-    total.value = data.total || 0
+    // res is already unwrapped by api interceptor
+    // backend returns IssueListResponse: { total, items, page, page_size, pages }
+    issues.value = Array.isArray(res) ? res : (res.items || res.data || [])
+    total.value = res.total || 0
   } catch (error) {
     console.warn('加载Issue失败', error)
     issues.value = []
@@ -110,7 +112,7 @@ const loadStats = async () => {
     const res = await api.get('/issues/stats', { 
       params: filterProject.value ? { project_id: filterProject.value } : {} 
     })
-    stats.value = res.data || res
+    stats.value = res || res.data || {}
   } catch (error) {
     console.error('加载统计失败', error)
   }

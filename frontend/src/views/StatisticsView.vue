@@ -380,43 +380,69 @@ import {
 
 const { t } = useI18n()
 
-// Mock data
+// Real data from API
 const overviewStats = ref([
-  { id: 1, label: t('dashboard.activeProjects'), value: '8', icon: 'Folder', color: '#4CAF50', trendIcon: 'ArrowUp', trendValue: '+12%', trendClass: 'positive' },
-  { id: 2, label: t('dashboard.totalTasks'), value: '156', icon: 'Tickets', color: '#2196F3', trendIcon: 'ArrowUp', trendValue: '+8%', trendClass: 'positive' },
-  { id: 3, label: t('dashboard.overdueTasks'), value: '14', icon: 'AlarmClock', color: '#FF9800', trendIcon: 'ArrowDown', trendValue: '-3%', trendClass: 'negative' },
-  { id: 4, label: t('statistics.completionRate'), value: '78%', icon: 'TrendCharts', color: '#9C27B0', trendIcon: 'ArrowUp', trendValue: '+5%', trendClass: 'positive' }
+  { id: 1, label: '进行中项目', value: '0', icon: 'Folder', color: '#4CAF50', trendIcon: 'ArrowUp', trendValue: '', trendClass: 'positive' },
+  { id: 2, label: '总任务数', value: '0', icon: 'Tickets', color: '#2196F3', trendIcon: 'ArrowUp', trendValue: '', trendClass: 'positive' },
+  { id: 3, label: '逾期任务', value: '0', icon: 'Warning', color: '#FF9800', trendIcon: 'ArrowDown', trendValue: '', trendClass: 'negative' },
+  { id: 4, label: '完成率', value: '0%', icon: 'TrendCharts', color: '#9C27B0', trendIcon: 'ArrowUp', trendValue: '', trendClass: 'positive' }
 ])
 
-const projectsReport = ref([
-  { id: 1, name: 'Website Redesign', code: 'WEB-001', status: 'active', total_tasks: 25, completed_tasks: 18, completion_rate: 72, budget_utilization: 65, owner: 'John Doe' },
-  { id: 2, name: 'Mobile App Development', code: 'MOB-001', status: 'active', total_tasks: 42, completed_tasks: 32, completion_rate: 76, budget_utilization: 45, owner: 'Jane Smith' },
-  { id: 3, name: 'Marketing Campaign', code: 'MRK-001', status: 'planning', total_tasks: 15, completed_tasks: 3, completion_rate: 20, budget_utilization: 30, owner: 'Mike Johnson' }
-])
+const projectsReport = ref<any[]>([])
+const tasksReport = ref<any[]>([])
+const usersReport = ref<any[]>([])
+const availableProjects = ref<any[]>([])
+const availableUsers = ref<any[]>([])
 
-const tasksReport = ref([
-  { id: 1, title: 'Homepage Layout Design', project_name: 'Website Redesign', status: 'completed', priority: 'high', assignee: 'John Doe', due_date: '2026-04-10', estimated_hours: 20, actual_hours: 18, time_variance: -2 },
-  { id: 2, title: 'API Integration', project_name: 'Mobile App Development', status: 'in_progress', priority: 'urgent', assignee: 'Jane Smith', due_date: '2026-04-05', estimated_hours: 15, actual_hours: 20, time_variance: 5 },
-  { id: 3, title: 'Content Strategy', project_name: 'Marketing Campaign', status: 'pending', priority: 'medium', assignee: 'Mike Johnson', due_date: '2026-04-15', estimated_hours: 10, actual_hours: 0, time_variance: -10 }
-])
-
-const usersReport = ref([
-  { id: 1, name: 'John Doe', role: 'Frontend Developer', total_tasks: 25, completed_tasks: 20, completion_rate: 80, overdue_tasks: 2, avg_completion_time: 12.5, productivity_score: 4 },
-  { id: 2, name: 'Jane Smith', role: 'Backend Developer', total_tasks: 18, completed_tasks: 15, completion_rate: 83, overdue_tasks: 1, avg_completion_time: 14.2, productivity_score: 5 },
-  { id: 3, name: 'Mike Johnson', role: 'Project Manager', total_tasks: 12, completed_tasks: 8, completion_rate: 67, overdue_tasks: 0, avg_completion_time: 18.7, productivity_score: 3 }
-])
-
-const availableProjects = ref([
-  { id: 1, name: 'Website Redesign' },
-  { id: 2, name: 'Mobile App Development' },
-  { id: 3, name: 'Marketing Campaign' }
-])
-
-const availableUsers = ref([
-  { id: 1, name: 'John Doe' },
-  { id: 2, name: 'Jane Smith' },
-  { id: 3, name: 'Mike Johnson' }
-])
+const loadStatisticsData = async () => {
+  try {
+    // Load dashboard summary for overview stats
+    const summaryRes = await api.get('/reports/dashboard/summary')
+    const summary = summaryRes || {}
+    overviewStats.value[0].value = String(summary.projects?.total || 0)
+    overviewStats.value[1].value = String(summary.tasks?.total || 0)
+    overviewStats.value[3].value = String((summary.tasks?.completion_rate || 0) + '%')
+    
+    // Load projects progress for projects report
+    const projRes = await api.get('/projects/overview/summary')
+    const projData = (projRes.projects || projRes.data?.projects || [])
+    projectsReport.value = projData.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      code: p.code,
+      status: p.status,
+      total_tasks: p.task_count || 0,
+      completed_tasks: p.completed_tasks || 0,
+      completion_rate: p.completion_rate || 0,
+      budget_utilization: p.budget ? Math.min(Math.round((p.actual_cost || 0) / p.budget * 100), 100) : 0,
+      owner: p.owner_id || ''
+    }))
+    availableProjects.value = projData
+    
+    // Load tasks by assignee for users report
+    const assigneeRes = await api.get('/reports/tasks/by-assignee')
+    usersReport.value = (assigneeRes.assignees || []).map((a: any) => ({
+      name: a.assignee_id,
+      role: '',
+      total_tasks: a.task_count || 0,
+      completed_tasks: 0,
+      completion_rate: 0,
+      overdue_tasks: 0,
+      avg_completion_time: a.estimated_hours || 0,
+      productivity_score: 3
+    }))
+    
+    // Load overdue tasks
+    const overdueRes = await api.get('/reports/tasks/overdue')
+    overviewStats.value[2].value = String(overdueRes.count || 0)
+    
+    // Load projects for tasks report
+    const taskRes = await api.get('/tasks/')
+    tasksReport.value = (taskRes || []).slice(0, 50)
+  } catch (error) {
+    console.error('加载统计数据失败:', error)
+  }
+}
 
 const taskStatuses = ref([
   { value: 'pending', label: 'Pending' },
@@ -498,8 +524,8 @@ const isOverdue = (dueDate: string) => {
 
 // Event Handlers
 const refreshData = () => {
-  // TODO: Refresh data from API
-  console.log('Refreshing data...')
+  loadStatisticsData()
+  initCharts()
 }
 
 const exportReport = () => {
@@ -526,8 +552,7 @@ const handleReportCommand = (command: string) => {
 }
 
 const applyFilters = () => {
-  // TODO: Apply filters and reload data
-  console.log('Applying filters:', { dateRange: dateRange.value, selectedProject: selectedProject.value, selectedUser: selectedUser.value, selectedStatus: selectedStatus.value })
+  loadStatisticsData()
 }
 
 const resetFilters = () => {
@@ -790,6 +815,7 @@ const handleResize = () => {
 
 // Lifecycle
 onMounted(() => {
+  loadStatisticsData()
   nextTick(() => {
     initCharts()
     window.addEventListener('resize', handleResize)

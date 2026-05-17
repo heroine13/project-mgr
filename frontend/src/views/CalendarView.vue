@@ -247,7 +247,7 @@ const fetchEvents = async () => {
     }
     
     const response = await api.get(`${API_BASE}/events`, { params })
-    const data = response.data || response
+    const data = response.data || response || {}
     events.value = data.events || []
   } catch (error) {
     console.warn('获取日历事件失败', error)
@@ -266,7 +266,7 @@ const fetchUpcoming = async () => {
     }
     
     const response = await api.get(`${API_BASE}/upcoming`, { params })
-    const data = response.data || response
+    const data = response.data || response || {}
     upcomingTasks.value = data.upcoming || data.tasks || []
   } catch (error) {
     console.warn('获取即将到期任务失败', error)
@@ -279,7 +279,7 @@ const fetchUpcoming = async () => {
 const fetchProjects = async () => {
   try {
     const response = await api.get('/projects/')
-    const data = response.data || response
+    const data = response.data || response || {}
     projects.value = data.items || data || []
   } catch (error) {
     console.warn('获取项目列表失败', error)

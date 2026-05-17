@@ -23,8 +23,8 @@ class TaskPriority(str, Enum):
 class TaskBase(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     description: Optional[str] = None
-    status: TaskStatus = TaskStatus.PENDING
-    priority: TaskPriority = TaskPriority.MEDIUM
+    status: str = "pending"
+    priority: str = "medium"
     assignee_id: Optional[int] = None
     project_id: int
     due_date: Optional[datetime] = None
@@ -38,8 +38,8 @@ class TaskCreate(TaskBase):
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=200)
     description: Optional[str] = None
-    status: Optional[TaskStatus] = None
-    priority: Optional[TaskPriority] = None
+    status: Optional[str] = None
+    priority: Optional[str] = None
     assignee_id: Optional[int] = None
     due_date: Optional[datetime] = None
     estimated_hours: Optional[int] = Field(None, ge=0)
@@ -54,3 +54,4 @@ class TaskResponse(TaskBase):
     
     class Config:
         from_attributes = True
+        use_enum_values = True

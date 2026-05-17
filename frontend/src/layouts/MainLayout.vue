@@ -381,6 +381,10 @@ const toggleSidebar = () => {
 
 const handleMenuSelect = (index: string) => {
   activeMenu.value = index
+  // 导航到对应路由
+  if (index && router.currentRoute.value.path !== index) {
+    router.push(index)
+  }
 }
 
 const toggleTheme = () => {
@@ -523,6 +527,37 @@ onMounted(() => {
 }
 
 /* Sidebar */
+.sidebar {
+  position: relative;
+}
+
+/* Expand button when sidebar is collapsed */
+.sidebar-expand-trigger {
+  position: fixed;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 64px;
+  background: var(--el-color-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s;
+}
+
+.sidebar-expand-trigger:hover {
+  width: 32px;
+}
+
+.sidebar-expand-trigger .el-icon {
+  font-size: 16px;
+}
+
 .sidebar {
   width: 260px;
   background: var(--el-bg-color-page);
