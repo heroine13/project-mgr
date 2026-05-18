@@ -76,6 +76,11 @@ const routes = [
         component: () => import('@/views/TaskDetailView.vue')
       },
       {
+        path: ':id',
+        name: 'task-detail',
+        component: () => import('@/views/TaskDetailView.vue')
+      },
+      {
         path: 'my',
         name: 'tasks-my',
         component: () => import('@/views/MyTasksView.vue')
@@ -161,6 +166,11 @@ const routes = [
         path: '',
         name: 'issues-page',
         component: () => import('@/views/IssuesView.vue')
+      },
+      {
+        path: ':id',
+        name: 'issue-detail',
+        component: () => import('@/views/IssueDetailView.vue')
       }
     ]
   },

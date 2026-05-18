@@ -3,6 +3,7 @@ Audit Log API Endpoints - System Operation Tracking
 """
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
@@ -51,7 +52,7 @@ class AuditStatsResponse(BaseModel):
 
 # === API Endpoints ===
 
-@router.get("/logs", response_model=List[AuditLogResponse])
+@router.get("/logs")
 async def get_audit_logs(
     user_id: Optional[int] = Query(None),
     action: Optional[str] = Query(None),
@@ -141,22 +142,22 @@ async def get_audit_stats(
     
     # By action
     by_action = {}
-    actions = db.query(AuditLog.action, db.func.count(AuditLog.id)).group_by(AuditLog.action).all()
+    actions = db.query(AuditLog.action, func.count(AuditLog.id)).group_by(AuditLog.action).all()
     for action, count in actions:
         by_action[action] = count
     
     # By resource type
     by_resource = {}
-    resources = db.query(AuditLog.resource_type, db.func.count(AuditLog.id)).group_by(AuditLog.resource_type).all()
+    resources = db.query(AuditLog.resource_type, func.count(AuditLog.id)).group_by(AuditLog.resource_type).all()
     for resource, count in resources:
         by_resource[resource] = count
     
     # Top users
     top_users = []
     users_stats = (
-        db.query(AuditLog.user_id, AuditLog.username, db.func.count(AuditLog.id).label('count'))
+        db.query(AuditLog.user_id, AuditLog.username, func.count(AuditLog.id).label('count'))
         .group_by(AuditLog.user_id, AuditLog.username)
-        .order_by(db.func.count(AuditLog.id).desc())
+        .order_by(func.count(AuditLog.id).desc())
         .limit(10)
         .all()
     )

@@ -416,7 +416,7 @@ def reload_config():
         try:
             from sqlalchemy import create_engine
             from sqlalchemy.orm import Session
-            engine = create_engine(db_path.replace('mysql://', 'mysql+mysqlconnector://'))
+            engine = create_engine(db_path.replace('mysql://', 'mysql+pymysql://'))
             with Session(engine) as db:
                 from app.models.system_setting import SystemSetting
                 setting = db.query(SystemSetting).filter(
