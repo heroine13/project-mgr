@@ -162,6 +162,15 @@
         </div>
       </div>
     </div>
+
+    <!-- Sidebar expand trigger (shown only when sidebar is collapsed) -->
+    <div
+      v-if="isCollapsed"
+      class="sidebar-expand-trigger"
+      @click="toggleSidebar"
+    >
+      <el-icon><ArrowRightBold /></el-icon>
+    </div>
     
     <!-- Main Content -->
     <div class="main-content" :class="{ 'content-expanded': isCollapsed }">
@@ -332,7 +341,8 @@ import {
   DataAnalysis, Setting, Expand, Fold,
   Moon, Sunny, More, Plus, FolderAdd,
   Search, Bell, ArrowDown, CircleCheck,
-  Warning
+  Warning,
+  ArrowRightBold
 } from '@element-plus/icons-vue'
 
 const router = useRouter()
@@ -540,7 +550,7 @@ onMounted(() => {
 /* Expand button when sidebar is collapsed */
 .sidebar-expand-trigger {
   position: fixed;
-  left: 0;
+  left: 64px;
   top: 50%;
   transform: translateY(-50%);
   width: 24px;
@@ -553,11 +563,13 @@ onMounted(() => {
   border-radius: 0 8px 8px 0;
   cursor: pointer;
   z-index: 1000;
-  transition: all 0.3s;
+  transition: left 0.3s ease, all 0.3s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .sidebar-expand-trigger:hover {
   width: 32px;
+  left: 56px;
 }
 
 .sidebar-expand-trigger .el-icon {
@@ -654,11 +666,12 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  margin-left: 260px;
   transition: margin-left 0.3s ease;
 }
 
 .content-expanded {
-  margin-left: 0;
+  margin-left: 64px;
 }
 
 /* Top Navigation */
