@@ -57,7 +57,7 @@
 
       <!-- 描述标签页（原有） -->
       <el-tab-pane :label="$t('project.description')" name="description">
-      <el-row :gutter="20">
+        <el-row :gutter="20">
         <!-- Left Column -->
         <el-col :xs="24" :md="16">
           <!-- Project Description -->
