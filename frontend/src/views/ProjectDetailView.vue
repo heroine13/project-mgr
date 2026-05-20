@@ -54,8 +54,6 @@
           </div>
         </el-card>
         </el-tab-pane>
-
-      <!-- 描述标签页（原有） -->
       <el-tab-pane :label="$t('project.description')" name="description">
         <el-row :gutter="20">
         <!-- Left Column -->
