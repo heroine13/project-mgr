@@ -311,6 +311,7 @@
         </el-col>
       </el-row>
     </div>
+    </el-tab-pane>
 
     <!-- Edit Project Dialog -->
     <el-dialog
