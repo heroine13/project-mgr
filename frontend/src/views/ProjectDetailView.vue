@@ -44,7 +44,19 @@
     </div>
 
     <!-- Main Content -->
-    <div class="project-content">
+    <el-tabs v-model="activeTab" class="project-tabs">
+      <!-- 甘特图标签页（新增） -->
+      <el-tab-pane :label="$t('gantt')" name="gantt">
+        <el-card v-loading="ganttLoading" class="gantt-card">
+          <div class="gantt-container" style="height: 600px;">
+            <GanttChart v-if="ganttStore.tasks.length > 0" />
+            <el-empty v-else description="暂无甘特图数据，请先添加任务" />
+          </div>
+        </el-card>
+      </el-tab-pane>
+
+      <!-- 描述标签页（原有） -->
+      <el-tab-pane :label="$t('project.description')" name="description">
       <el-row :gutter="20">
         <!-- Left Column -->
         <el-col :xs="24" :md="16">
@@ -131,6 +143,18 @@
                     <el-button type="text" size="small" @click="editTask(task)">
                       <el-icon><Edit /></el-icon>
                     </el-button>
+                    <el-popconfirm
+                      title="确定要删除这个任务吗？"
+                      confirm-button-text="确定"
+                      cancel-button-text="取消"
+                      @confirm="deleteTask(task)"
+                    >
+                      <template #reference>
+                        <el-button type="text" size="small" @click>
+                          <el-icon><Delete /></el-icon>
+                        </el-button>
+                      </template>
+                    </el-popconfirm>
                   </div>
                 </div>
               </div>
@@ -316,13 +340,19 @@ import {
   Clock, Setting, UserFilled, Upload,
   View, Delete, Document, Picture, Folder
 } from '@element-plus/icons-vue'
+import GanttChart from '@/components/gantt/GanttChart.vue'
+import { useGanttStore } from '@/stores/gantt'
 import request from '@/services/request'
 
 const route = useRoute()
 const router = useRouter()
 const { t } = useI18n()
+const ganttStore = useGanttStore()
 
 const projectId = computed(() => Number(route.params.id))
+
+// 标签页
+const activeTab = ref('description')
 
 // 加载状态
 const loading = ref(false)
@@ -433,6 +463,7 @@ const getFileIcon = (fileType: string) => {
 // API 加载
 async function loadProjectDetail() {
   loading.value = true
+  ganttLoading.value = true
   try {
     const res: any = await request.get(`/projects/${projectId.value}/detail`)
     project.value = res.project
@@ -441,13 +472,19 @@ async function loadProjectDetail() {
     teamMembers.value = res.teamMembers
     timelineEvents.value = res.timelineEvents
     attachments.value = res.attachments
+    // 加载甘特图数据
+    await ganttStore.fetchGanttTasks()
   } catch (err: any) {
     console.error('加载项目详情失败:', err)
     ElMessage.error(err?.response?.data?.detail || '加载项目详情失败')
   } finally {
     loading.value = false
+    ganttLoading.value = false
   }
 }
+
+// 甘特图加载状态
+const ganttLoading = ref(false)
 
 // 更新任务状态
 async function updateTaskStatus(task: any) {
@@ -540,6 +577,39 @@ async function deleteFile(file: any) {
   } catch (e: any) {
     if (e !== 'cancel') {
       ElMessage.error('删除失败')
+    }
+  }
+}
+
+// 查看任务
+function viewTask(task: any) {
+  router.push({ name: 'task-detail', params: { id: task.id } })
+}
+
+// 创建任务
+function createTask() {
+  router.push({ name: 'create-task-page', query: { projectId: projectId.value } })
+}
+
+// 编辑任务
+function editTask(task: any) {
+  router.push({ name: 'task-detail', params: { id: task.id } })
+}
+
+// 删除任务
+async function deleteTask(task: any) {
+  try {
+    await ElMessageBox.confirm(
+      `确定要删除任务"${task.title}"吗？此操作不可恢复。`,
+      '确认删除',
+      { confirmButtonText: '确定', cancelButtonText: '取消', type: 'warning' }
+    )
+    await request.delete(`/tasks/${task.id}`)
+    ElMessage.success('任务已删除')
+    await loadProjectDetail()
+  } catch (err: any) {
+    if (err !== 'cancel') {
+      ElMessage.error('删除任务失败')
     }
   }
 }
@@ -880,4 +950,27 @@ onMounted(() => {
     margin-top: 10px;
   }
 }
+
+/* 甘特图样式 */
+.project-tabs {
+  margin-top: 20px;
+}
+
+.project-tabs :deep(.el-tabs__header) {
+  margin-bottom: 0;
+}
+
+.project-tabs :deep(.el-tabs__content) {
+  padding: 20px 0;
+}
+
+.gantt-card {
+  min-height: 650px;
+}
+
+.gantt-container {
+  width: 100%;
+  overflow: hidden;
+}
+
 </style>

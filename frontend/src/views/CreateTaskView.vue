@@ -64,17 +64,18 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+const route = useRoute()
 const formRef = ref()
 const submitting = ref(false)
 
 const taskForm = ref({
   title: '',
   description: '',
-  project_id: null as number | null,
+  project_id: route.query.projectId ? Number(route.query.projectId) : null,
   priority: 'medium',
   status: 'pending',
   assignee_id: null as number | null,
