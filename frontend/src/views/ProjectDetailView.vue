@@ -53,7 +53,7 @@
             <el-empty v-else description="暂无甘特图数据，请先添加任务" />
           </div>
         </el-card>
-      </el-tab-pane>
+        </el-tab-pane>
 
       <!-- 描述标签页（原有） -->
       <el-tab-pane :label="$t('project.description')" name="description">
@@ -311,7 +311,10 @@
         </el-col>
       </el-row>
     </div>
-    </el-tab-pane>
+      </el-tab-pane>
+
+    </div>
+  </el-tabs>
 
     <!-- Edit Project Dialog -->
     <el-dialog
@@ -321,7 +324,7 @@
     >
       <!-- Edit form would go here -->
       <span>Edit project form</span>
-            <template #footer>
+      <template #footer>
         <el-button @click="editDialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" @click="saveProject">
           {{ $t('common.save') }}
@@ -329,7 +332,6 @@
       </template>
     </el-dialog>
   </div>
-  </el-tabs>
 </template>
 
 <script setup lang="ts">
