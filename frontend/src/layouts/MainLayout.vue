@@ -288,6 +288,7 @@
             <component :is="Component" />
           </transition>
         </router-view>
+        <div style="border: 3px solid red; padding: 10px; margin-top: 10px;">MAIN LAYOUT RENDERED</div>
       </div>
       
       <!-- Footer -->
@@ -328,6 +329,7 @@
 </template>
 
 <script setup lang="ts">
+console.error("MAIN LAYOUT SCRIPT SETUP LOADED")
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
