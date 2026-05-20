@@ -310,28 +310,26 @@
           </el-card>
         </el-col>
       </el-row>
-    </div>
-      </el-tab-pane>
+  </el-tab-pane>
 
-    </div>
   </el-tabs>
 
-    <!-- Edit Project Dialog -->
-    <el-dialog
-      v-model="editDialogVisible"
-      :title="$t('common.edit')"
-      width="600px"
-    >
-      <!-- Edit form would go here -->
-      <span>Edit project form</span>
-      <template #footer>
-        <el-button @click="editDialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" @click="saveProject">
-          {{ $t('common.save') }}
-        </el-button>
-      </template>
-    </el-dialog>
-  </div>
+  <!-- Edit Project Dialog -->
+  <el-dialog
+    v-model="editDialogVisible"
+    :title="$t('common.edit')"
+    width="600px"
+  >
+    <!-- Edit form would go here -->
+    <span>Edit project form</span>
+    <template #footer>
+      <el-button @click="editDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+      <el-button type="primary" @click="saveProject">
+        {{ $t('common.save') }}
+      </el-button>
+    </template>
+  </el-dialog>
+</div>
 </template>
 
 <script setup lang="ts">
