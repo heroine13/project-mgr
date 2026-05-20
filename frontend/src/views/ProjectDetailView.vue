@@ -6,14 +6,14 @@
     <!-- Project Header -->
     <div class="project-header">
       <div class="header-left">
-        <h1 class="project-title">{{ project.name }}</h1>
+        <h1 class="project-title">{{ project?.name }}</h1>
         <div class="project-meta">
-          <el-tag :type="getStatusType(project.status)" size="small">
-            {{ $t(`status.${project.status}`) }}
+          <el-tag :type="getStatusType(project?.status)" size="small">
+            {{ $t(`status.${project?.status}`) }}
           </el-tag>
-          <span class="project-code">{{ project.code }}</span>
+          <span class="project-code">{{ project?.code }}</span>
           <span class="project-dates">
-            {{ formatDate(project.start_date) }} - {{ formatDate(project.end_date) }}
+            {{ formatDate(project?.start_date) }} - {{ formatDate(project?.end_date) }}
           </span>
         </div>
       </div>
@@ -127,7 +127,7 @@
                     <el-checkbox v-model="task.completed" @change="updateTaskStatus(task)" />
                   </div>
                   <div class="task-info" @click="viewTask(task)">
-                    <div class="task-title">{{ task.title }}</div>
+                    <div class="task-title">{{ task?.title }}</div>
                     <div class="task-meta">
                       <el-tag size="small" :type="getPriorityType(task.priority)">
                         {{ $t(`priority.${task.priority}`) }}
@@ -333,6 +333,7 @@
 </template>
 
 <script setup lang="ts">
+console.error("PROJECT DETAIL VIEW LOADED")
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
