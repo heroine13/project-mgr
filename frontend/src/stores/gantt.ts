@@ -3,7 +3,7 @@
  */
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { api } from '@/services/api'
+import request from '@/services/request'
 import type { 
   GanttTask, 
   GanttDependency, 
@@ -72,7 +72,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      const response = await api.get(`/gantt/tasks`, {
+      const response = await request.get(`/gantt/tasks`, {
         params: {
           project_id: targetProjectId,
           limit: 1000
@@ -99,7 +99,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      const response = await api.get(`/gantt/project/${targetProjectId}/full-data`)
+      const response = await request.get(`/gantt/project/${targetProjectId}/full-data`)
       
       tasks.value = response.tasks || []
       dependencies.value = response.dependencies || []
@@ -124,7 +124,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      const response = await api.post('/gantt/tasks', {
+      const response = await request.post('/gantt/tasks', {
         ...taskData,
         project_id: currentProjectId.value
       })
@@ -144,7 +144,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      const response = await api.put(`/gantt/tasks/${taskData.id}`, taskData)
+      const response = await request.put(`/gantt/tasks/${taskData.id}`, taskData)
       
       const index = tasks.value.findIndex(t => t.id === taskData.id)
       if (index !== -1) {
@@ -165,7 +165,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      await api.delete(`/gantt/tasks/${taskId}`)
+      await request.delete(`/gantt/tasks/${taskId}`)
       
       const index = tasks.value.findIndex(t => t.id === taskId)
       if (index !== -1) {
@@ -191,7 +191,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      const response = await api.post(`/gantt/tasks/${moveData.task_id}/move`, moveData)
+      const response = await request.post(`/gantt/tasks/${moveData.task_id}/move`, moveData)
       
       const index = tasks.value.findIndex(t => t.id === moveData.task_id)
       if (index !== -1) {
@@ -212,7 +212,7 @@ export const useGanttStore = defineStore('gantt', () => {
     error.value = null
 
     try {
-      const response = await api.post('/gantt/tasks/batch-move', batchUpdate)
+      const response = await request.post('/gantt/tasks/batch-move', batchUpdate)
       
       // 更新本地任务列表
       response.forEach((updatedTask: GanttTask) => {
@@ -239,7 +239,7 @@ export const useGanttStore = defineStore('gantt', () => {
     }
 
     try {
-      const response = await api.get('/gantt/dependencies', {
+      const response = await request.get('/gantt/dependencies', {
         params: { project_id: targetProjectId }
       })
       
@@ -253,7 +253,7 @@ export const useGanttStore = defineStore('gantt', () => {
 
   const createDependency = async (dependencyData: Partial<GanttDependency>) => {
     try {
-      const response = await api.post('/gantt/dependencies', dependencyData)
+      const response = await request.post('/gantt/dependencies', dependencyData)
       
       dependencies.value.push(response)
       return response
@@ -265,7 +265,7 @@ export const useGanttStore = defineStore('gantt', () => {
 
   const deleteDependency = async (dependencyId: number) => {
     try {
-      await api.delete(`/gantt/dependencies/${dependencyId}`)
+      await request.delete(`/gantt/dependencies/${dependencyId}`)
       
       const index = dependencies.value.findIndex(d => d.id === dependencyId)
       if (index !== -1) {
@@ -287,7 +287,7 @@ export const useGanttStore = defineStore('gantt', () => {
     }
 
     try {
-      const response = await api.get('/gantt/views', {
+      const response = await request.get('/gantt/views', {
         params: { project_id: targetProjectId }
       })
       
@@ -313,7 +313,7 @@ export const useGanttStore = defineStore('gantt', () => {
     }
 
     try {
-      const response = await api.get('/gantt/views/default', {
+      const response = await request.get('/gantt/views/default', {
         params: { project_id: targetProjectId }
       })
       
@@ -339,7 +339,7 @@ export const useGanttStore = defineStore('gantt', () => {
     }
 
     try {
-      const response = await api.post('/gantt/views', {
+      const response = await request.post('/gantt/views', {
         ...viewData,
         project_id: currentProjectId.value
       })
@@ -355,7 +355,7 @@ export const useGanttStore = defineStore('gantt', () => {
 
   const updateView = async (viewData: Partial<GanttView> & { id: number }) => {
     try {
-      const response = await api.put(`/gantt/views/${viewData.id}`, viewData)
+      const response = await request.put(`/gantt/views/${viewData.id}`, viewData)
       
       const index = views.value.findIndex(v => v.id === viewData.id)
       if (index !== -1) {
@@ -371,7 +371,7 @@ export const useGanttStore = defineStore('gantt', () => {
 
   const deleteView = async (viewId: number) => {
     try {
-      await api.delete(`/gantt/views/${viewId}`)
+      await request.delete(`/gantt/views/${viewId}`)
       
       const index = views.value.findIndex(v => v.id === viewId)
       if (index !== -1) {
@@ -406,7 +406,7 @@ export const useGanttStore = defineStore('gantt', () => {
     }
 
     try {
-      const response = await api.get('/gantt/baselines', {
+      const response = await request.get('/gantt/baselines', {
         params: { project_id: targetProjectId }
       })
       
@@ -424,7 +424,7 @@ export const useGanttStore = defineStore('gantt', () => {
     }
 
     try {
-      const response = await api.post('/gantt/baselines', {
+      const response = await request.post('/gantt/baselines', {
         ...baselineData,
         project_id: currentProjectId.value
       })
@@ -439,7 +439,7 @@ export const useGanttStore = defineStore('gantt', () => {
 
   const updateBaseline = async (baselineData: Partial<GanttBaseline> & { id: number }) => {
     try {
-      const response = await api.put(`/gantt/baselines/${baselineData.id}`, baselineData)
+      const response = await request.put(`/gantt/baselines/${baselineData.id}`, baselineData)
       
       const index = baselines.value.findIndex(b => b.id === baselineData.id)
       if (index !== -1) {
@@ -455,7 +455,7 @@ export const useGanttStore = defineStore('gantt', () => {
 
   const deleteBaseline = async (baselineId: number) => {
     try {
-      await api.delete(`/gantt/baselines/${baselineId}`)
+      await request.delete(`/gantt/baselines/${baselineId}`)
       
       const index = baselines.value.findIndex(b => b.id === baselineId)
       if (index !== -1) {
