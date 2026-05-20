@@ -329,6 +329,7 @@
       </template>
     </el-dialog>
   </div>
+  </el-tabs>
 </template>
 
 <script setup lang="ts">
