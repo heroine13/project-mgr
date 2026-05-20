@@ -150,7 +150,7 @@
                       @confirm="deleteTask(task)"
                     >
                       <template #reference>
-                        <el-button type="text" size="small" @click>
+                        <el-button type="text" size="small" @click.stop>
                           <el-icon><Delete /></el-icon>
                         </el-button>
                       </template>
